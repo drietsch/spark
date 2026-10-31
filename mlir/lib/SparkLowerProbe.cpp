@@ -33,13 +33,32 @@ public:
   }
 };
 
+class LowerSemanticEncode final : public ::mlir::OpRewritePattern<SemanticEncodeOp> {
+public:
+  using ::mlir::OpRewritePattern<SemanticEncodeOp>::OpRewritePattern;
+
+  ::mlir::LogicalResult matchAndRewrite(SemanticEncodeOp op,
+                                        ::mlir::PatternRewriter &rewriter) const override {
+    auto callee = op->getParentOfType<::mlir::ModuleOp>()
+                      .lookupSymbol<::mlir::func::FuncOp>("spark_semantic_encode_v1");
+    if (!callee) return rewriter.notifyMatchFailure(op, "semantic ABI symbol missing");
+    auto call = rewriter.create<::mlir::func::CallOp>(
+        op.getLoc(), callee,
+        ::mlir::ValueRange{op.getEncoderHandle(), op.getTokenIdsAddress(),
+                           op.getTokenCount(), op.getMaskIndex(),
+                           op.getSignatureOutAddress()});
+    rewriter.replaceOp(op, call.getResults());
+    return ::mlir::success();
+  }
+};
+
 struct SparkProbeToFuncPass final
     : public ::mlir::PassWrapper<SparkProbeToFuncPass,
                                   ::mlir::OperationPass<::mlir::ModuleOp>> {
   MLIR_DEFINE_EXPLICIT_INTERNAL_INLINE_TYPE_ID(SparkProbeToFuncPass)
   ::llvm::StringRef getArgument() const final { return "spark-probe-to-func"; }
   ::llvm::StringRef getDescription() const final {
-    return "Lower spark.mlm_probe to the spark_mlm_probe_v1 native C ABI";
+    return "Lower spark.mlm_probe and spark.semantic_encode to native C ABIs";
   }
 
   void runOnOperation() override {
@@ -61,8 +80,22 @@ struct SparkProbeToFuncPass final
       builder.create<::mlir::func::FuncOp>(module.getLoc(),
                                            "spark_mlm_probe_v1", expected);
     }
+    auto encoderSig = ::mlir::FunctionType::get(context,
+                        {i64, i64, i32, i32, i64}, {i32});
+    auto encoderExisting = module.lookupSymbol<::mlir::func::FuncOp>("spark_semantic_encode_v1");
+    if (encoderExisting && encoderExisting.getFunctionType() != encoderSig) {
+      module.emitError("spark_semantic_encode_v1 has incompatible ABI signature");
+      signalPassFailure();
+      return;
+    }
+    if (!encoderExisting) {
+      ::mlir::OpBuilder builder(context);
+      builder.setInsertionPointToStart(module.getBody());
+      builder.create<::mlir::func::FuncOp>(module.getLoc(),
+                                           "spark_semantic_encode_v1", encoderSig);
+    }
     ::mlir::RewritePatternSet patterns(context);
-    patterns.add<LowerMLMProbe>(context);
+    patterns.add<LowerMLMProbe, LowerSemanticEncode>(context);
     if (::mlir::failed(::mlir::applyPatternsAndFoldGreedily(module,
                                                              std::move(patterns)))) {
       signalPassFailure();
@@ -70,8 +103,9 @@ struct SparkProbeToFuncPass final
     }
     bool remains = false;
     module.walk([&](MLMProbeOp) { remains = true; });
+    module.walk([&](SemanticEncodeOp) { remains = true; });
     if (remains) {
-      module.emitError("unlowered spark.mlm_probe remains");
+      module.emitError("unlowered spark probe/encode operation remains");
       signalPassFailure();
     }
   }
