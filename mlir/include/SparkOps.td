@@ -38,4 +38,24 @@ def Spark_MLMProbeOp : Spark_Op<"mlm_probe"> {
                        I32Attr:$max_candidates);
   let hasVerifier = 1;
 }
+
+// M3: encode raw token IDs with the learned integer-only student encoder.
+// The 32-byte result is written to a caller-owned buffer. No floats or matrix
+// kernels occur in the native runtime or the compiled student.
+def Spark_SemanticEncodeOp : Spark_Op<"semantic_encode"> {
+  let summary = "Encode token context as a teacher-supervised 256-bit signature";
+  let description = [{
+    Arguments: live encoder handle i64, token array address i64 (uint32_t*),
+    token count i32 (1..8192), mask position i32, output signature address i64
+    (at least 32 writable bytes). Returns 0 or a negative error code.
+    Not pure or speculatable: reads a model and external token buffer and
+    writes an output signature. Addresses are trusted in-process pointers.
+    ABI: spark_semantic_encode_v1(i64,i64,i32,i32,i64)->i32.
+  }];
+  let results = (outs I32:$status);
+  let arguments = (ins I64:$encoder_handle, I64:$token_ids_address,
+                       I32:$token_count, I32:$mask_index,
+                       I64:$signature_out_address);
+}
+
 #endif // SPARK_OPS_TD
