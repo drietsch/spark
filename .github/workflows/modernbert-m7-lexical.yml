@@ -1,0 +1,79 @@
+name: SPARK M7 large lexical-memory quality comparison
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [ci/spark-m6-valid-teacher]
+    paths:
+      - '.github/workflows/modernbert-m7-lexical.yml'
+      - 'spark/m7_context.py'
+      - 'tools/m7_lexical_benchmark.py'
+      - 'tests/test_m7_lexical.py'
+  push:
+    paths:
+      - '.github/workflows/modernbert-m7-lexical.yml'
+permissions:
+  contents: read
+  actions: read
+jobs:
+  large-lexical-memory:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 100
+    env:
+      OUT: artifacts/modernbert-m7
+      OMP_NUM_THREADS: '2'
+      TOKENIZERS_PARALLELISM: 'false'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dataset and tokenizer dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install 'transformers>=4.48,<5' 'datasets>=3,<5'
+      - name: Run all matrix-free regression tests
+        run: python -m unittest discover -s tests -v
+      - name: Download frozen valid ModernBERT M6 teacher observations
+        uses: actions/download-artifact@v4
+        with:
+          name: spark-modernbert-m6-quality
+          run-id: 41234988861
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: artifacts/modernbert-m6
+      - name: Audit input artifact and prepare output
+        run: |
+          test -s artifacts/modernbert-m6/teacher.jsonl
+          mkdir -p "$OUT"
+          cp artifacts/modernbert-m6/quality_comparison.json "$OUT/m6_reference.json"
+      - name: Train 550k lexical examples from WikiText-2 training corpus only
+        run: |
+          python tools/m7_lexical_benchmark.py artifacts/modernbert-m6/teacher.jsonl --max-lexical-tokens 550000 --output "$OUT/report.json"
+      - name: Show comparable held-out agreement
+        if: success()
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          p=Path(os.environ['OUT'])
+          r=json.loads((p/'report.json').read_text())
+          old=json.loads((p/'m6_reference.json').read_text())
+          x=['# SPARK M7: 500 held-out ModernBERT masks',
+            'Original SPARK 256-bit (M6): '+f"{old['spark_256bit']['agreement']:.2%}",
+            'Sparse teacher-supervised (M6): '+f"{old['sparse_supervised']['agreement']:.2%}",
+            'M7 lexical n-gram memory: '+f"{r['lexical_ngram_only']['teacher_top1_agreement']:.2%}",
+            'M7 sparse teacher-only: '+f"{r['supervised_sparse_only']['teacher_top1_agreement']:.2%}",
+            'M7 combined multistage: '+f"{r['multi_stage_fusion']['teacher_top1_agreement']:.2%}",
+            'Training: '+str(r['lexical_memory']['observations'])+' text token examples from WikiText train ONLY',
+            'Final validation: 500 examples from WikiText validation; never tuned on this split',
+            'Student inference in this experiment is Python sparse lookup, NOT native C++.']
+          with open(os.environ['GITHUB_STEP_SUMMARY'],'a') as f: f.write('\n\n'.join(x)+'\n')
+          PY
+      - name: Upload report regardless of outcome
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: spark-m7-lexical-comparison
+          path: artifacts/modernbert-m7/
+          retention-days: 7
+          if-no-files-found: warn
