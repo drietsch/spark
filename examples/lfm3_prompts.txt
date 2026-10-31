@@ -1,0 +1,13 @@
+# Small PUBLIC demonstration-only prompt corpus. Replace with a much larger authorized corpus.
+The capital of France is a city known for its museums and famous tower.
+In computer science, a compiler translates a source language into machine instructions.
+When water freezes, it expands and becomes solid ice below zero degrees Celsius.
+A red bicycle was parked outside the library after the rain had stopped.
+The engineer described a new memory architecture using sparse associative lookups.
+In mathematics, the derivative describes how rapidly a function changes as the input changes.
+A language model predicts tokens based on the context that precedes the next token.
+The old bridge crosses the river near the edge of the mountain village.
+An efficient program avoids unnecessary memory allocations and copies.
+My favorite recipe combines tomatoes, fresh basil, garlic, and olive oil.
+The scientist recorded the experiment results in a notebook every morning.
+A careful evaluator must separate training examples from held-out examples.

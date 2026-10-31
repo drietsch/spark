@@ -1,0 +1,4 @@
+{"context":[10,20,30],"targets":[{"token":40,"weight":9},{"token":41,"weight":2}]}
+{"context":[10,20,30],"targets":[{"token":40,"weight":3}]}
+{"context":[11,20,30],"targets":[{"token":42,"weight":7}]}
+{"context":[10,20,40],"targets":[{"token":50,"weight":6}]}
