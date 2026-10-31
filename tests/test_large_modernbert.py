@@ -32,5 +32,30 @@ class LargeCorpusTests(unittest.TestCase):
     def test_no_existing_mask(self):
         self.assertIsNone(module.pick_mask("This paragraph has [MASK] already but plenty of otherwise interesting words for testing.","key",42))
 
+
+class TeacherWindowTests(unittest.TestCase):
+    def test_window_preserves_mask_near_end(self):
+        from tools.modernbert_teacher import mask_preserving_window
+        ids = list(range(300))
+        ids[270] = 10000
+        cropped, was_cropped = mask_preserving_window(ids, 10000, 126)
+        self.assertTrue(was_cropped)
+        self.assertEqual(len(cropped), 126)
+        self.assertEqual(cropped.count(10000), 1)
+
+    def test_window_preserves_mask_near_start(self):
+        from tools.modernbert_teacher import mask_preserving_window
+        ids = list(range(300))
+        ids[2] = 10000
+        cropped, was_cropped = mask_preserving_window(ids, 10000, 126)
+        self.assertTrue(was_cropped)
+        self.assertEqual(cropped.index(10000), 2)
+
+    def test_window_rejects_missing_or_duplicate_mask(self):
+        from tools.modernbert_teacher import mask_preserving_window
+        for tokens in ([13, 11, 12], [10, 10, 12]):
+            with self.assertRaises(ValueError):
+                mask_preserving_window(tokens, 10, 2)
+
 if __name__=="__main__":
     unittest.main()
