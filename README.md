@@ -56,13 +56,20 @@ python -m unittest discover -s tests -v
 
 ## ModernBERT semantic-signature extension (M1)
 
-[Semantic ModernBERT experiment](docs/SEMANTIC_MODERNBERT.md): the offline
-teacher collector supports `--emit-hidden`, and
-`tools/modernbert_semantic.py` learns 256-bit integer-vote signatures
-from teacher embeddings, then creates a fingerprint-bound `SPARKMLM` index.
+[`docs/SEMANTIC_MODERNBERT.md`](docs/SEMANTIC_MODERNBERT.md) adds a teacher-hidden-state-supervised
+256-bit **integer-only** signature encoder and a binding between the learned
+encoder and its SPARKMLM binary index. Run the teacher collector with
+`--emit-hidden`, then `tools/modernbert_semantic.py compile` and `evaluate`.
+The `mlir/` directory now contains an out-of-tree `spark.mlm_probe` ODS/C++
+**dialect skeleton**, which requires an MLIR SDK to build. There is **no LLVM
+lowering yet** and no claim of semantic equivalence to ModernBERT.
 
-The `mlir/` subtree contains an experimental out-of-tree
-`spark.mlm_probe` dialect definition and verifier. **It is not yet
-build-tested against MLIR or lowered to LLVM**; the matrix-free Python
-student is tested offline. This is a supervised retrieval experiment,
-not verified semantic equivalence to ModernBERT.
+## M2: native MLM probe + MLIR lowering draft
+
+A tested, matrix-free C++17 `SPARKMLM` index loader and probing ABI now lives in
+`runtime/spark_mlm_runtime.cpp` and `include/spark_mlm_runtime.h`. The
+`spark-probe-to-func` MLIR pass lowers `spark.mlm_probe` into a `func.call` of
+`@spark_mlm_probe_v1`, which can subsequently be lowered to LLVM IR. The
+**native runtime and Python/native parity tests are executable**; the MLIR C++
+pass is **not yet build-tested** without the MLIR SDK. See
+[`docs/M2_LLVM.md`](docs/M2_LLVM.md) for its ABI, assumptions and build steps.

@@ -7,3 +7,9 @@ target_include_directories(spark_runtime PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/incl
 target_compile_options(spark_runtime PRIVATE -Wall -Wextra -Wpedantic)
 add_executable(spark_demo tools/spark_demo.cpp)
 target_link_libraries(spark_demo PRIVATE spark_runtime)
+
+add_library(spark_mlm_runtime SHARED runtime/spark_mlm_runtime.cpp)
+target_include_directories(spark_mlm_runtime PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_compile_options(spark_mlm_runtime PRIVATE -Wall -Wextra -Wpedantic)
+add_executable(spark_mlm_demo tools/spark_mlm_demo.cpp)
+target_link_libraries(spark_mlm_demo PRIVATE spark_mlm_runtime)
