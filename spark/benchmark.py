@@ -92,6 +92,18 @@ def latency_summary(samples_ns: list[int]) -> dict:
                              if samples_ns and sum(samples_ns) > 0 else None}
 
 
+def wilson_95_interval(successes: int, count: int) -> list[float] | None:
+    """Two-sided Wilson interval for a Bernoulli proportion (approximate, z=1.96)."""
+    if count <= 0 or successes < 0 or successes > count:
+        return None
+    z = 1.959963984540054
+    p = successes / count
+    d = 1 + z * z / count
+    center = (p + z * z / (2 * count)) / d
+    half = z * math.sqrt((p * (1 - p) + z * z / (4 * count)) / count) / d
+    return [max(0.0, center - half), min(1.0, center + half)]
+
+
 def evaluate_predictions(rows: list[dict], predictions: list[int | None]) -> dict:
     if len(rows) != len(predictions):
         raise ValueError('prediction count mismatch')
@@ -101,6 +113,7 @@ def evaluate_predictions(rows: list[dict], predictions: list[int | None]) -> dic
     return {
         'examples': len(rows), 'coverage': covered / len(rows) if rows else 0,
         'top1_agreement_all': correct / len(rows) if rows else None,
+        'top1_agreement_wilson95': wilson_95_interval(correct, len(rows)),
         'top1_agreement_covered': correct / covered if covered else None,
         'unanswered': len(rows) - covered,
         'distinct_teacher_labels': len(set(labels)),
