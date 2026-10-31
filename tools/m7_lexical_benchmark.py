@@ -46,14 +46,17 @@ def wikitext_training_samples(dataset, tokenizer, *, limit: int = 550000, max_ch
             tokens, offsets = encoded["input_ids"], encoded["offset_mapping"]
             if not 9 <= len(tokens) <= 192:
                 continue
-            positions = {tuple(span): i for i, span in enumerate(offsets) if span[1] > span[0]}
+            # ModernBERT's tokenizer can include leading whitespace in token
+            # offsets. Match each actual alphabetic token span rather than
+            # requiring exact regex word boundaries (which yielded only 17k
+            # observations). Subword targets are allowed and reported.
             context = [cls, *tokens, sep]
-            for match in WORDS.finditer(sentence):
-                if match.group(0).casefold() in STOP:
+            for pos, (start, end) in enumerate(offsets):
+                if not 0 <= start < end <= len(sentence):
                     continue
-                pos = positions.get(match.span())
-                if pos is None:
-                    continue  # multilayer / multi-subword word; not a single MLM target
+                surface = sentence[start:end].strip()
+                if not 3 <= len(surface) <= 18 or not surface.isalpha() or surface.casefold() in STOP:
+                    continue
                 target = tokens[pos]
                 if target in (cls, sep, mask, tokenizer.unk_token_id):
                     continue
@@ -139,7 +142,8 @@ def run(traces: Path, corpus, tokenizer, *, limit: int = 550000) -> dict:
         "dataset": "Salesforce/wikitext / wikitext-2-raw-v1 (TRAIN ONLY)",
         "teacher": "answerdotai/ModernBERT-base",
         "training_teacher_examples": len(train), "held_out_validation": len(validation),
-        "lexical_memory": {**memory.stats(), "build_seconds": lexical_build_s},
+        "lexical_memory": {**memory.stats(), "build_seconds": lexical_build_s,
+                           "token_selection": "alphabetic tokenizer spans, including BPE subwords"},
         "train_only_tuning": {"inner_train": len(inner), "inner_tune": len(tune),
                                "best_inner_correct": best_hits, "grid_size": len(params),
                                "smoothing": smoothing, "specificity": specificity,
