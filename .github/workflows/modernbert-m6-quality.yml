@@ -1,0 +1,85 @@
+name: SPARK M6 corrected ModernBERT quality benchmark
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/modernbert-m6-quality.yml'
+      - 'tools/modernbert_teacher.py'
+      - 'spark/associative_classifier.py'
+      - 'tools/compare_sparse_student.py'
+  push:
+    paths:
+      - '.github/workflows/modernbert-m6-quality.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  quality-benchmark:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 100
+    env:
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '2'
+      TOKENIZERS_PARALLELISM: 'false'
+      OUT: artifacts/modernbert-m6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install model and dataset dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install 'transformers>=4.48,<5' 'datasets>=3,<5' torch
+      - name: Run regression tests
+        run: python -m unittest discover -s tests -v
+      - name: Prepare independent WikiText-2 masks
+        run: |
+          mkdir -p "$OUT"
+          python tools/prepare_large_modernbert.py "$OUT/masks.jsonl" --train 5000 --validation 500 --seed 20261031
+      - name: Execute real ModernBERT with correct CLS and SEP inputs
+        run: |
+          python tools/modernbert_teacher.py "$OUT/masks.jsonl" "$OUT/teacher.jsonl" --model answerdotai/ModernBERT-base --device cpu --emit-hidden --topk 16 --max-length 128 --honor-input-split
+      - name: Compile existing SPARK signature student
+        run: python tools/modernbert_semantic.py compile "$OUT/teacher.jsonl" "$OUT/model"
+      - name: Build matrix-free native SPARK
+        run: |
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+          cmake --build build -j2
+      - name: Measure corrected SPARK native performance
+        run: |
+          python tools/modernbert_benchmark.py "$OUT/teacher.jsonl" "$OUT/model" --build build --repeat 2 --output "$OUT/report.json"
+      - name: Train and compare sparse supervised student
+        run: |
+          python tools/compare_sparse_student.py "$OUT/teacher.jsonl" --student-prefix "$OUT/model" --require-boundaries --output "$OUT/quality_comparison.json"
+      - name: Publish honest comparisons
+        if: success()
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ["OUT"])
+          r=json.loads((p/"quality_comparison.json").read_text())
+          b=json.loads((p/"report.json").read_text())
+          lines=["# SPARK M6: corrected ModernBERT teacher benchmark",
+            f"5000 train, 500 held-out validation masks. Invalid teacher boundaries: {r['invalid_teacher_boundaries']}",
+            f"ModernBERT special top-1 fraction: {r['teacher_special_top1_fraction']:.2%}",
+            f"Majority teacher agreement: {r['majority']['agreement']:.2%}",
+            f"Original SPARK signatures agreement: {r['spark_256bit']['agreement']:.2%}",
+            f"Sparse supervised student agreement: {r['sparse_supervised']['agreement']:.2%}",
+            f"Native SPARK p50/p95 ms: {b['native_student']['latency']['p50_ms']} / {b['native_student']['latency']['p95_ms']}",
+            "Teacher predictions are reference targets, not ground truth. No claim of model equivalence."]
+          with open(os.environ["GITHUB_STEP_SUMMARY"],"a") as f:
+              f.write("\n\n".join(lines)+"\n")
+          PY
+      - name: Upload reports and actual teacher observations
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: spark-modernbert-m6-quality
+          path: artifacts/modernbert-m6/
+          retention-days: 7
+          if-no-files-found: warn
