@@ -31,6 +31,7 @@ def main() -> None:
     p.add_argument("--topk", type=int, default=16)
     p.add_argument("--emit-hidden", action="store_true", help="Store final mask hidden state for offline semantic-signature training (large traces)")
     p.add_argument("--validation-fraction", type=float, default=0.3)
+    p.add_argument("--honor-input-split", action="store_true", help="Preserve trusted corpus train/validation labels instead of hash splitting")
     p.add_argument("--max-length", type=int, default=128)
     a = p.parse_args()
     if not 0 < a.validation_fraction < 1 or not 1 <= a.topk <= 256:
@@ -81,7 +82,12 @@ def main() -> None:
             source_group = item.get('group_id')
             if source_group is not None and (not isinstance(source_group, str) or not source_group.strip()):
                 raise ValueError(f'line {line_number}: group_id must be a nonblank string')
-            split = split_id(ids, pos, a.validation_fraction, group_key=source_group or text)
+            if a.honor_input_split:
+                split = item.get("split")
+                if split not in ("train", "validation"):
+                    raise ValueError(f"line {line_number}: --honor-input-split requires train/validation")
+            else:
+                split = split_id(ids, pos, a.validation_fraction, group_key=source_group or text)
             trace = {"input_ids": ids, "mask_index": pos, "topk": [
                 {"token": int(tok), "prob": float(prob)}
                 for tok, prob in zip(indices.cpu().tolist(), values.cpu().tolist())
