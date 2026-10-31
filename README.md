@@ -104,3 +104,17 @@ python tools/modernbert_benchmark.py artifacts/m4/teacher.jsonl artifacts/m4/stu
 
 **ModernBERT is a bidirectional masked LM**, not an autoregressive LLM.
 The current SPARK prototype remains a research baseline.
+
+
+## M7: lexical memory quality breakthrough (experimental)
+
+The corrected ModernBERT benchmark of 500 independent WikiText-2 validation
+masks measured **15.2% held-out teacher top-1 agreement** for a matrix-free
+lexical-plus-supervised-sparse student, up from **4.6%** for the M6 supervised
+sparse baseline. Lexical-only agreement is **15.0%**. The new student builds
+550,000 token observations from WikiText-2 **train only**; hyperparameter
+tuning uses the teacher TRAIN split, not validation.
+
+This is a Python prototype and **not a native C++ performance benchmark**.
+See [M7 experiments](docs/M7_LEXICAL_MEMORY.md) and the
+[successful GitHub run](https://github.com/drietsch/spark/actions/runs/41243701560).
