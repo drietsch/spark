@@ -1,0 +1,76 @@
+name: SPARK ModernBERT large held-out benchmark
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/modernbert-large.yml'
+permissions:
+  contents: read
+jobs:
+  large-modernbert-cpu:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 100
+    env:
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      OMP_NUM_THREADS: '2'
+      OPENBLAS_NUM_THREADS: '2'
+      TOKENIZERS_PARALLELISM: 'false'
+      OUT: artifacts/modernbert-large
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install 'transformers>=4.48,<5' 'datasets>=3,<5' torch
+      - name: Test dataset preparation
+        run: python -m unittest discover -s tests -p 'test_large_modernbert.py' -v
+      - name: Generate 5000 train and 500 validation examples from WikiText-2
+        run: |
+          mkdir -p "$OUT"
+          python tools/prepare_large_modernbert.py "$OUT/masks.jsonl" --train 5000 --validation 500 --seed 20261031
+      - name: Collect real ModernBERT teacher predictions and hidden states
+        run: |
+          python tools/modernbert_teacher.py "$OUT/masks.jsonl" "$OUT/teacher.jsonl" --model answerdotai/ModernBERT-base --device cpu --emit-hidden --topk 16 --max-length 128 --honor-input-split
+      - name: Compile matrix-free student and memory index
+        run: |
+          python tools/modernbert_semantic.py compile "$OUT/teacher.jsonl" "$OUT/model"
+      - name: Build native SPARK C++ student
+        run: |
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+          cmake --build build -j2
+      - name: Evaluate on held-out examples
+        run: |
+          python tools/modernbert_benchmark.py "$OUT/teacher.jsonl" "$OUT/model" --build build --repeat 2 --output "$OUT/report.json"
+      - name: Summarize result
+        if: success()
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          root=Path(os.environ["OUT"])
+          report=json.loads((root/"report.json").read_text())
+          manifest=json.loads((root/"masks.manifest.json").read_text())
+          val=report["native_student"]
+          lines=["# SPARK large ModernBERT benchmark",
+            f"Dataset: {manifest['dataset']} / {manifest['config']}",
+            f"Train: {report['trace_audit']['train']}; validation: {report['trace_audit']['validation']}",
+            f"SPARK native top-1 teacher agreement: {val['top1_agreement_all']:.2%}",
+            f"95% Wilson interval: {val['top1_agreement_wilson95']}",
+            f"Majority baseline: {report['baseline']['top1_agreement_all']:.2%}",
+            f"Python/native disagreements: {val['python_disagreement_count']}",
+            f"Native p50 / p95 latency (ms): {val['latency']['p50_ms']} / {val['latency']['p95_ms']}",
+            "**Masked-token teacher agreement, not ground-truth language accuracy or autoregressive generation speed.**"]
+          with open(os.environ["GITHUB_STEP_SUMMARY"],"a") as f:
+              f.write("\n\n".join(lines)+"\n")
+          PY
+      - name: Upload reproducible artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: spark-modernbert-large
+          path: artifacts/modernbert-large/
+          retention-days: 7
+          if-no-files-found: warn
