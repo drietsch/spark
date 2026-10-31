@@ -1,0 +1,6 @@
+set(LLVM_TARGET_DEFINITIONS SparkOps.td)
+mlir_tablegen(SparkOps.h.inc -gen-op-decls)
+mlir_tablegen(SparkOps.cpp.inc -gen-op-defs)
+mlir_tablegen(SparkDialect.h.inc -gen-dialect-decls -dialect=spark)
+mlir_tablegen(SparkDialect.cpp.inc -gen-dialect-defs -dialect=spark)
+add_public_tablegen_target(SparkOpsIncGen)
