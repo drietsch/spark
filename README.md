@@ -73,3 +73,15 @@ A tested, matrix-free C++17 `SPARKMLM` index loader and probing ABI now lives in
 **native runtime and Python/native parity tests are executable**; the MLIR C++
 pass is **not yet build-tested** without the MLIR SDK. See
 [`docs/M2_LLVM.md`](docs/M2_LLVM.md) for its ABI, assumptions and build steps.
+
+## M3: matrix-free native semantic student
+
+The semantic compiler now emits a **portable binary encoder**
+`<prefix>.encoder.senc`, in addition to its JSON encoder and `.smlm`
+index. C++17 `spark_semantic_runtime` generates teacher-supervised 256-bit
+signatures using only integer votes and memory lookups; the composed
+`spark_semantic_predict_v1` calls the native MLM index without Python or
+PyTorch at inference time. The MLIR dialect includes `spark.semantic_encode`
+and a func-call lowering; LLVM IR emission still requires SDK testing.
+
+See [M3 native semantic experiment](docs/M3_NATIVE_SEMANTIC.md).
