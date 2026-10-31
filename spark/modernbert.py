@@ -94,20 +94,26 @@ class Entry:
 
 
 class Index:
-    def __init__(self, entries: list[Entry]):
+    def __init__(self, entries: list[Entry], encoder=None):
         self.entries = entries
+        self.encoder = encoder
         self.buckets = defaultdict(list)
+        # Less brittle LSH for noisy learned signatures; baseline remains 8x32.
+        self.band_bits = 8 if encoder is not None else BAND_BITS
+        self.bands = 256 // self.band_bits
+        mask = (1 << self.band_bits) - 1
         for i, entry in enumerate(entries):
-            for band in range(BANDS):
-                self.buckets[(band, (entry.bits >> (BAND_BITS * band)) & 0xFFFFFFFF)].append(i)
+            for band in range(self.bands):
+                self.buckets[(band, (entry.bits >> (self.band_bits * band)) & mask)].append(i)
 
     def predict(self, token_ids: list[int], mask_index: int, *, neighbors: int = 8, fallback: bool = False):
         if neighbors < 1:
             raise ValueError("neighbors must be positive")
-        sig = signature(token_ids, mask_index)
+        sig = self.encoder.encode(token_ids, mask_index) if self.encoder is not None else signature(token_ids, mask_index)
         candidate_indices = set()
-        for band in range(BANDS):
-            candidate_indices.update(self.buckets.get((band, (sig >> (BAND_BITS * band)) & 0xFFFFFFFF), ()))
+        mask = (1 << self.band_bits) - 1
+        for band in range(self.bands):
+            candidate_indices.update(self.buckets.get((band, (sig >> (self.band_bits * band)) & mask), ()))
         used_fallback = False
         if not candidate_indices and fallback:
             candidate_indices = set(range(len(self.entries)))
@@ -125,16 +131,22 @@ class Index:
         return {"token": winner, "retrieved": len(candidate_indices), "distance": ranked[0][0], "fallback": used_fallback}
 
 
-def compile_index(traces: list[dict], path: Path) -> dict:
+def compile_index(traces: list[dict], path: Path, *, signatures: list[int] | None = None, encoder=None) -> dict:
+    if (signatures is None) != (encoder is None):
+        raise ValueError("semantic signatures require an encoder and vice versa")
+    if signatures is not None and len(signatures) != len(traces):
+        raise ValueError("signatures length mismatch")
     seen = set()
     entries = []
-    for trace in traces:
+    for row_index, trace in enumerate(traces):
         validate_trace(trace)
         key = (tuple(trace["input_ids"]), trace["mask_index"])
         if key in seen:
             raise ValueError("duplicate prompt in train set; deduplicate before compiling")
         seen.add(key)
-        bits = signature(*key)
+        bits = signatures[row_index] if signatures is not None else signature(*key)
+        if type(bits) is not int or not 0 <= bits < 1 << 256:
+            raise ValueError("invalid 256-bit signature")
         targets = tuple((t["token"], float(t["prob"])) for t in trace["topk"])
         entries.append(Entry(bits, targets))
     count = sum(len(entry.targets) for entry in entries)
@@ -142,7 +154,7 @@ def compile_index(traces: list[dict], path: Path) -> dict:
     total = data_offset + count * CANDIDATE.size
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("wb") as f:
-        f.write(HEADER.pack(MAGIC, *VERSION, 0, len(entries), count, HEADER.size, data_offset, total, 0))
+        f.write(HEADER.pack(MAGIC, *VERSION, 1 if encoder else 0, len(entries), count, HEADER.size, data_offset, total, encoder.fingerprint64() if encoder else 0))
         offset = 0
         for entry in entries:
             f.write(RECORD.pack(entry.bits.to_bytes(32, "little"), offset, len(entry.targets), 0))
@@ -153,14 +165,18 @@ def compile_index(traces: list[dict], path: Path) -> dict:
     return {"prompts": len(entries), "candidates": count, "bytes": total}
 
 
-def load_index(path: Path) -> Index:
+def load_index(path: Path, *, encoder=None) -> Index:
     with path.open("rb") as f:
         raw = f.read(HEADER.size)
         if len(raw) != HEADER.size:
             raise ValueError("short index header")
         magic, major, minor, flags, n, candidates, rec_off, data_off, total, reserved = HEADER.unpack(raw)
-        if (magic, major, flags, reserved) != (MAGIC, VERSION[0], 0, 0):
+        if magic != MAGIC or major != VERSION[0] or flags not in (0, 1):
             raise ValueError("unsupported index header")
+        if flags == 0 and (reserved != 0 or encoder is not None):
+            raise ValueError("baseline index requires no semantic encoder")
+        if flags == 1 and (encoder is None or reserved != encoder.fingerprint64()):
+            raise ValueError("semantic index requires its exact encoder")
         if (minor > VERSION[1] or rec_off != HEADER.size or
                 data_off != HEADER.size + n * RECORD.size or
                 total != data_off + candidates * CANDIDATE.size):
@@ -179,7 +195,7 @@ def load_index(path: Path) -> Index:
         if any(not math.isfinite(prob) or not 0 <= prob <= 1 for _, prob in targets):
             raise ValueError("invalid candidate probability in index")
         entries.append(Entry(int.from_bytes(raw_sig, "little"), targets))
-    return Index(entries)
+    return Index(entries, encoder=encoder)
 
 
 def evaluate(index: Index, traces: list[dict], *, fallback: bool = False) -> dict:
