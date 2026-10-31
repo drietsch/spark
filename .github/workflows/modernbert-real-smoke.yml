@@ -1,0 +1,58 @@
+name: SPARK ModernBERT real-model smoke benchmark
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/modernbert-real-smoke.yml'
+
+jobs:
+  modernbert-cpu-smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install teacher dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install 'transformers>=4.48,<5' torch
+      - name: Build SPARK native C++ runtime
+        run: |
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+          cmake --build build -j2
+      - name: Run actual ModernBERT teacher and matrix-free SPARK student
+        env:
+          HF_HUB_DISABLE_TELEMETRY: '1'
+          OMP_NUM_THREADS: '2'
+        run: |
+          mkdir -p artifacts/modernbert-real-smoke
+          python tools/modernbert_teacher.py examples/modernbert_masks.jsonl artifacts/modernbert-real-smoke/teacher.jsonl --device cpu --emit-hidden --topk 16
+          python tools/modernbert_semantic.py compile artifacts/modernbert-real-smoke/teacher.jsonl artifacts/modernbert-real-smoke/model
+          python tools/modernbert_benchmark.py artifacts/modernbert-real-smoke/teacher.jsonl artifacts/modernbert-real-smoke/model --build build --repeat 10 --require-native-parity --output artifacts/modernbert-real-smoke/report.json
+      - name: Publish benchmark summary
+        if: success()
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('artifacts/modernbert-real-smoke/report.json').read_text())
+          s=['# SPARK M4 real ModernBERT CPU smoke benchmark',
+             'Training examples: '+str(r['trace_audit']['train']),
+             'Validation examples: '+str(r['trace_audit']['validation']),
+             'Student teacher top-1 agreement: '+str(r['native_student']['top1_agreement_all']),
+             'Student native p50 latency (ms): '+str(r['native_student']['latency']['p50_ms']),
+             'Python/native disagreements: '+str(r['native_student']['python_disagreement_count']),
+             '**Small sample: smoke test only; not quality proof.**']
+          with open(__import__('os').environ['GITHUB_STEP_SUMMARY'],'a') as f: f.write('\n'.join(s)+'\n')
+          PY
+      - name: Upload benchmark artifact (even on failure)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: spark-modernbert-real-smoke
+          path: artifacts/modernbert-real-smoke/
+          retention-days: 7
