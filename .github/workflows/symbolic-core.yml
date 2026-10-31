@@ -1,0 +1,60 @@
+name: SPARK M8 trainable symbolic model
+on:
+  push:
+    paths:
+      - 'spark/symbolic_program.py'
+      - 'tools/symbolic_experiment.py'
+      - 'tests/test_symbolic_program.py'
+      - '.github/workflows/symbolic-core.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'spark/symbolic_program.py'
+      - 'tools/symbolic_experiment.py'
+      - 'tests/test_symbolic_program.py'
+      - '.github/workflows/symbolic-core.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  discover-and-compile:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install symbolic synthesis dependency
+        run: python -m pip install numpy
+      - name: Run program synthesis tests
+        run: python -m unittest discover -s tests -p 'test_symbolic_program.py' -v
+      - name: Learn rules, compile native state machine and test generalization
+        run: python tools/symbolic_experiment.py --output artifacts/symbolic-m8
+      - name: Validate native parity and out-of-distribution generalization
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('artifacts/symbolic-m8/report.json').read_text())
+          p=r['physics']; b=r['parity']
+          assert p['iid_mse'] < 1e-20, p
+          assert p['extrapolation_mse'] < 1e-20, p
+          assert p['max_long_rollout_error'] < 1e-9, p
+          assert p['max_native_rollout_error'] < 1e-9, p
+          assert b['python_exact_sequences'] == 32, b
+          assert b['native_exact_sequences'] == 32, b
+          with open(__import__('os').environ['GITHUB_STEP_SUMMARY'],'a') as f:
+              f.write('## SPARK M8 symbolic model\n\n')
+              f.write('Learned rational recurrent mathematical expressions; compiled C++17.\n\n')
+              f.write(f'Physics OOD MSE: {p["extrapolation_mse"]:.3e}; affine baseline: {p["affine_extrapolation_mse"]:.3e}\n\n')
+              f.write(f'Parity: {b["native_exact_sequences"]}/{b["rollout_sequences"]} unseen native rollouts correct through {b["longest_rollout_steps"]} steps.\n\n')
+              f.write('**Synthetic constrained grammar only; no Transformer quality or speed comparison.**\n')
+          PY
+      - name: Archive executable expressions and report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: spark-m8-symbolic-programs
+          path: artifacts/symbolic-m8/
+          retention-days: 14
