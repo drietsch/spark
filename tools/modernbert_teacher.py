@@ -22,6 +22,42 @@ def split_id(ids: list[int], mask_index: int, validation_fraction: float,
     return "validation" if ratio < validation_fraction else "train"
 
 
+
+def mask_preserving_window(token_ids: list[int], mask_id: int, capacity: int) -> tuple[list[int], bool]:
+    """Keep exactly one mask even when the text exceeds max sequence length."""
+    if capacity < 1:
+        raise ValueError("token window capacity must be positive")
+    positions = [i for i, token in enumerate(token_ids) if token == mask_id]
+    if len(positions) != 1:
+        raise ValueError("masked context must contain exactly one mask token")
+    if len(token_ids) <= capacity:
+        return token_ids, False
+    start = max(0, min(positions[0] - capacity // 2, len(token_ids) - capacity))
+    return token_ids[start:start + capacity], True
+
+
+def prepare_masked_inputs(tokenizer, rendered: str, max_length: int) -> tuple[list[int], int, bool]:
+    """Build ModernBERT inputs with explicit [CLS]/[SEP] boundaries.
+
+    Some fast-tokenizer build_inputs_with_special_tokens() implementations do
+    not insert those boundaries when invoked directly.
+    """
+    cls, sep, mask = tokenizer.cls_token_id, tokenizer.sep_token_id, tokenizer.mask_token_id
+    if any(type(v) is not int or v < 0 for v in (cls, sep, mask)):
+        raise ValueError("ModernBERT tokenizer requires CLS, SEP and MASK token IDs")
+    if max_length < 3:
+        raise ValueError("max_length must accommodate CLS, MASK, SEP")
+    content = tokenizer(rendered, add_special_tokens=False, truncation=False)["input_ids"]
+    if hasattr(content, "tolist"):
+        content = content.tolist()
+    window, cropped = mask_preserving_window(content, mask, max_length - 2)
+    ids = [cls, *window, sep]
+    if not (len(ids) <= max_length and ids.count(cls) == 1 and ids.count(sep) == 1
+            and ids.count(mask) == 1 and 0 < ids.index(mask) < len(ids) - 1):
+        raise ValueError("invalid ModernBERT special-token structure")
+    return ids, ids.index(mask), cropped
+
+
 def main() -> None:
     p = argparse.ArgumentParser()
     p.add_argument("inputs", type=Path, help='JSONL with {"text": "... [MASK] ..."}')
@@ -57,12 +93,9 @@ def main() -> None:
             if text.count("[MASK]") != 1:
                 raise ValueError(f"line {line_number}: exactly one literal [MASK] required")
             rendered = text.replace("[MASK]", tokenizer.mask_token)
-            enc = tokenizer(rendered, return_tensors="pt", truncation=True, max_length=a.max_length)
-            ids = enc["input_ids"][0].tolist()
-            mask_positions = [i for i, token in enumerate(ids) if token == tokenizer.mask_token_id]
-            if len(mask_positions) != 1:
-                raise ValueError(f"line {line_number}: mask missing or truncated")
-            pos = mask_positions[0]
+            ids, pos, cropped = prepare_masked_inputs(tokenizer, rendered, a.max_length)
+            enc = {"input_ids": torch.tensor([ids], dtype=torch.long),
+                   "attention_mask": torch.ones((1, len(ids)), dtype=torch.long)}
             key = (tuple(ids), pos)
             if key in seen:
                 continue
@@ -94,7 +127,11 @@ def main() -> None:
             ], "split": split, "model": a.model, "source_text": text,
                      "teacher_forward_ms": round(teacher_forward_ms, 4),
                      "teacher_device": a.device,
-                     "teacher_revision": getattr(model.config, '_commit_hash', None)}
+                     "teacher_revision": getattr(model.config, '_commit_hash', None),
+                     "teacher_input_has_boundaries": True,
+                     "teacher_window_cropped": cropped,
+                     "teacher_cls_id": tokenizer.cls_token_id,
+                     "teacher_sep_id": tokenizer.sep_token_id}
             if source_group is not None:
                 trace["source_group"] = source_group
             if a.emit_hidden:
