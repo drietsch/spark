@@ -6,6 +6,27 @@ It is **not** a complete MLIR/LLVM model compiler, a transformer converter, or a
 2T parameter LLM. The current baseline uses exact-context n-gram matching and
 FNV-1a hashing, not learned associative representations.
 
+## Current architecture: compiled mathematical programs (M8–M9)
+
+**SPARK's research target is not a distilled Transformer or a token-lookup engine.**
+It is an alternative architecture that *learns program structure and numerical
+constants*, then executes compiled mathematical state-transition functions.
+
+- **M8:** learns rational polynomial recurrences and compiles native C++ functions.
+- **M9:** learns conditional guards and branch-specific equations; the resulting
+  recurring mathematical program runs without neural weight matrices or memory
+  retrieval. Three synthetic known-law tasks pass 900 independent OOD transitions
+  and 144 native unseen sequence rollouts, up to 4,096 steps.
+- **Research status:** these are grammar-constrained synthetic proofs of mechanism.
+  SPARK has **not** shown superiority over Transformers or language understanding.
+
+See [M8 symbolic programs](docs/M8_SYMBOLIC_PROGRAMS.md),
+[M9 learned conditional programs](docs/M9_CONDITIONAL_PROGRAMS.md), and the
+[M9 verified GitHub runner](https://github.com/drietsch/spark/actions/runs/41247494757).
+
+The older M1–M7 sparse lexical/semantic memory trials are historical baselines
+and do not define the new architectural direction.
+
 ## Run locally
 
 ```sh
