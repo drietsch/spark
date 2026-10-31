@@ -25,6 +25,7 @@ def main() -> None:
     p.add_argument("--model", default="answerdotai/ModernBERT-base")
     p.add_argument("--device", choices=("cpu", "cuda"), default="cpu")
     p.add_argument("--topk", type=int, default=16)
+    p.add_argument("--emit-hidden", action="store_true", help="Write final mask hidden state for offline semantic distillation")
     p.add_argument("--validation-fraction", type=float, default=0.3)
     p.add_argument("--max-length", type=int, default=128)
     a = p.parse_args()
@@ -62,7 +63,7 @@ def main() -> None:
                 continue
             seen.add(key)
             with torch.no_grad():
-                result = model(**{k: v.to(a.device) for k, v in enc.items()})
+                result = model(**{k: v.to(a.device) for k, v in enc.items()}, output_hidden_states=a.emit_hidden)
                 logits = result.logits[0, pos].float()
                 probs = torch.softmax(logits, dim=-1)
                 values, indices = torch.topk(probs, a.topk)
@@ -71,6 +72,11 @@ def main() -> None:
                 {"token": int(tok), "prob": float(prob)}
                 for tok, prob in zip(indices.cpu().tolist(), values.cpu().tolist())
             ], "split": split, "model": a.model, "source_text": text}
+            if a.emit_hidden:
+                if not result.hidden_states:
+                    raise RuntimeError("teacher did not return hidden states")
+                hidden = result.hidden_states[-1][0, pos].float().cpu().tolist()
+                trace["mask_hidden"] = [round(float(x), 6) for x in hidden]
             out.write(json.dumps(trace, ensure_ascii=False) + "\n")
             counts[split] += 1
     print(json.dumps({"saved": sum(counts.values()), **counts, "output": str(a.output)}))
