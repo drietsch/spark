@@ -8,12 +8,16 @@ Requires torch + transformers>=4.48 and downloads answerdotai/ModernBERT-base.
 import argparse
 import hashlib
 import json
+from time import perf_counter_ns
 from pathlib import Path
 
 
-def split_id(ids: list[int], mask_index: int, validation_fraction: float) -> str:
-    # Same token sequence always lands in the same split, independent of row order.
-    text = json.dumps([ids, mask_index], separators=(",", ":"))
+def split_id(ids: list[int], mask_index: int, validation_fraction: float,
+             group_key: str | None = None) -> str:
+    # A caller-supplied source group keeps related masks from the same document
+    # on one side of the holdout; older callers retain token-based grouping.
+    text = ('source:' + ' '.join(group_key.casefold().split())) if group_key is not None else \
+           json.dumps([ids, mask_index], separators=(",", ":"))
     ratio = int.from_bytes(hashlib.sha256(text.encode()).digest()[:8], "big") / 2**64
     return "validation" if ratio < validation_fraction else "train"
 
@@ -25,7 +29,7 @@ def main() -> None:
     p.add_argument("--model", default="answerdotai/ModernBERT-base")
     p.add_argument("--device", choices=("cpu", "cuda"), default="cpu")
     p.add_argument("--topk", type=int, default=16)
-    p.add_argument("--emit-hidden", action="store_true", help="Write final mask hidden state for offline semantic distillation")
+    p.add_argument("--emit-hidden", action="store_true", help="Store final mask hidden state for offline semantic-signature training (large traces)")
     p.add_argument("--validation-fraction", type=float, default=0.3)
     p.add_argument("--max-length", type=int, default=128)
     a = p.parse_args()
@@ -62,16 +66,31 @@ def main() -> None:
             if key in seen:
                 continue
             seen.add(key)
+            inputs = {k: v.to(a.device) for k, v in enc.items()}
+            if a.device == "cuda":
+                torch.cuda.synchronize()
+            start = perf_counter_ns()
             with torch.no_grad():
-                result = model(**{k: v.to(a.device) for k, v in enc.items()}, output_hidden_states=a.emit_hidden)
+                result = model(**inputs, output_hidden_states=a.emit_hidden)
                 logits = result.logits[0, pos].float()
                 probs = torch.softmax(logits, dim=-1)
                 values, indices = torch.topk(probs, a.topk)
-            split = split_id(ids, pos, a.validation_fraction)
+            if a.device == "cuda":
+                torch.cuda.synchronize()
+            teacher_forward_ms = (perf_counter_ns() - start) / 1e6
+            source_group = item.get('group_id')
+            if source_group is not None and (not isinstance(source_group, str) or not source_group.strip()):
+                raise ValueError(f'line {line_number}: group_id must be a nonblank string')
+            split = split_id(ids, pos, a.validation_fraction, group_key=source_group or text)
             trace = {"input_ids": ids, "mask_index": pos, "topk": [
                 {"token": int(tok), "prob": float(prob)}
                 for tok, prob in zip(indices.cpu().tolist(), values.cpu().tolist())
-            ], "split": split, "model": a.model, "source_text": text}
+            ], "split": split, "model": a.model, "source_text": text,
+                     "teacher_forward_ms": round(teacher_forward_ms, 4),
+                     "teacher_device": a.device,
+                     "teacher_revision": getattr(model.config, '_commit_hash', None)}
+            if source_group is not None:
+                trace["source_group"] = source_group
             if a.emit_hidden:
                 if not result.hidden_states:
                     raise RuntimeError("teacher did not return hidden states")
