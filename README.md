@@ -85,3 +85,22 @@ PyTorch at inference time. The MLIR dialect includes `spark.semantic_encode`
 and a func-call lowering; LLVM IR emission still requires SDK testing.
 
 See [M3 native semantic experiment](docs/M3_NATIVE_SEMANTIC.md).
+
+## M4: auditable ModernBERT teacher-versus-SPARK benchmark
+
+The M4 experiment adds a real-model trace collection runner, group-aware
+train/validation split checks, a training-majority baseline, masked-token
+teacher agreement and native/Python comparison with latency and disk metrics.
+No real ModernBERT quality score is claimed; offline CI uses synthetic fixtures.
+See [M4 benchmark guide](docs/M4_BENCHMARK.md).
+
+```sh
+python -m pip install 'transformers>=4.48.0' torch
+bash scripts/run_m4_modernbert.sh examples/modernbert_masks.jsonl artifacts/m4
+# or benchmark already collected teacher traces without torch:
+python tools/modernbert_benchmark.py artifacts/m4/teacher.jsonl artifacts/m4/student \
+  --build build --output artifacts/m4/report.json
+```
+
+**ModernBERT is a bidirectional masked LM**, not an autoregressive LLM.
+The current SPARK prototype remains a research baseline.
