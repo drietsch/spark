@@ -78,6 +78,7 @@ struct spark_mlm_index {
     std::unordered_map<BandKey, std::vector<uint32_t>, BandHash> buckets;
     uint32_t band_bits;
     uint32_t bands;
+    uint64_t encoder_fingerprint;
 };
 
 extern "C" int32_t spark_mlm_index_open_v1(const char *path, spark_mlm_index_t **out) {
@@ -102,6 +103,7 @@ extern "C" int32_t spark_mlm_index_open_v1(const char *path, spark_mlm_index_t *
             data_off != kHeader + n * kRecBytes || total != data_off + nc * kCandBytes ||
             total != static_cast<uint64_t>(file_size)) return SPARK_MLM_EFORMAT;
         auto index = std::make_unique<spark_mlm_index>();
+        index->encoder_fingerprint = fingerprint;
         index->band_bits = flags ? 8 : 32;
         index->bands = 256 / index->band_bits;
         std::vector<uint8_t> records(static_cast<size_t>(n * kRecBytes));
@@ -141,6 +143,10 @@ extern "C" int32_t spark_mlm_index_open_v1(const char *path, spark_mlm_index_t *
 }
 
 extern "C" void spark_mlm_index_close_v1(spark_mlm_index_t *index) { delete index; }
+
+extern "C" uint64_t spark_mlm_index_fingerprint_v1(const spark_mlm_index_t *index) {
+    return index ? index->encoder_fingerprint : 0;
+}
 
 extern "C" int32_t spark_mlm_probe_v1(uint64_t index_handle, uint64_t signature_address,
                                          int32_t max_candidates, uint64_t token_out_address,
