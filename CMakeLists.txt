@@ -13,3 +13,11 @@ target_include_directories(spark_mlm_runtime PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/
 target_compile_options(spark_mlm_runtime PRIVATE -Wall -Wextra -Wpedantic)
 add_executable(spark_mlm_demo tools/spark_mlm_demo.cpp)
 target_link_libraries(spark_mlm_demo PRIVATE spark_mlm_runtime)
+
+# M3 matrix-free native encoder and its composed runtime, depending on MLM v1.
+add_library(spark_semantic_runtime SHARED runtime/spark_semantic_runtime.cpp)
+target_include_directories(spark_semantic_runtime PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_link_libraries(spark_semantic_runtime PUBLIC spark_mlm_runtime)
+target_compile_options(spark_semantic_runtime PRIVATE -Wall -Wextra -Wpedantic)
+add_executable(spark_semantic_demo tools/spark_semantic_demo.cpp)
+target_link_libraries(spark_semantic_demo PRIVATE spark_semantic_runtime)
