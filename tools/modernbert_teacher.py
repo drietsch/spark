@@ -22,6 +22,26 @@ def split_id(ids: list[int], mask_index: int, validation_fraction: float,
     return "validation" if ratio < validation_fraction else "train"
 
 
+
+def mask_preserving_window(token_ids: list[int], mask_id: int, capacity: int) -> tuple[list[int], bool]:
+    """Trim around the mask instead of dropping it with right truncation.
+
+    ``token_ids`` excludes model-specific boundary/special tokens. The caller
+    adds those after selecting the window and reserves their capacity.
+    """
+    if capacity < 1:
+        raise ValueError("token window capacity must be positive")
+    positions = [i for i, token in enumerate(token_ids) if token == mask_id]
+    if len(positions) != 1:
+        raise ValueError("masked context must contain exactly one mask token")
+    if len(token_ids) <= capacity:
+        return token_ids, False
+    position = positions[0]
+    start = max(0, min(position - capacity // 2, len(token_ids) - capacity))
+    window = token_ids[start:start + capacity]
+    assert window.count(mask_id) == 1
+    return window, True
+
 def main() -> None:
     p = argparse.ArgumentParser()
     p.add_argument("inputs", type=Path, help='JSONL with {"text": "... [MASK] ..."}')
@@ -57,12 +77,17 @@ def main() -> None:
             if text.count("[MASK]") != 1:
                 raise ValueError(f"line {line_number}: exactly one literal [MASK] required")
             rendered = text.replace("[MASK]", tokenizer.mask_token)
-            enc = tokenizer(rendered, return_tensors="pt", truncation=True, max_length=a.max_length)
-            ids = enc["input_ids"][0].tolist()
-            mask_positions = [i for i, token in enumerate(ids) if token == tokenizer.mask_token_id]
-            if len(mask_positions) != 1:
-                raise ValueError(f"line {line_number}: mask missing or truncated")
-            pos = mask_positions[0]
+            # Keep a centered masked window in long WikiText sentences.
+            content_ids = tokenizer(rendered, add_special_tokens=False, truncation=False)["input_ids"]
+            reserve = tokenizer.num_special_tokens_to_add(pair=False)
+            window, cropped = mask_preserving_window(
+                content_ids, tokenizer.mask_token_id, a.max_length - reserve)
+            ids = tokenizer.build_inputs_with_special_tokens(window)
+            if len(ids) > a.max_length or ids.count(tokenizer.mask_token_id) != 1:
+                raise RuntimeError(f"line {line_number}: invalid mask-preserving token window")
+            pos = ids.index(tokenizer.mask_token_id)
+            enc = {"input_ids": torch.tensor([ids], dtype=torch.long),
+                   "attention_mask": torch.ones((1, len(ids)), dtype=torch.long)}
             key = (tuple(ids), pos)
             if key in seen:
                 continue
@@ -94,7 +119,8 @@ def main() -> None:
             ], "split": split, "model": a.model, "source_text": text,
                      "teacher_forward_ms": round(teacher_forward_ms, 4),
                      "teacher_device": a.device,
-                     "teacher_revision": getattr(model.config, '_commit_hash', None)}
+                     "teacher_revision": getattr(model.config, '_commit_hash', None),
+                     "context_window_cropped": cropped}
             if source_group is not None:
                 trace["source_group"] = source_group
             if a.emit_hidden:
