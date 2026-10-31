@@ -32,6 +32,8 @@ enum {
 
 int32_t spark_mlm_index_open_v1(const char *path, spark_mlm_index_t **out);
 void spark_mlm_index_close_v1(spark_mlm_index_t *index);
+/* 0 for baseline; nonzero semantic index binding fingerprint. */
+uint64_t spark_mlm_index_fingerprint_v1(const spark_mlm_index_t *index);
 
 /*
  * Arguments: index handle, ptr to 32 signature bytes, top-k (1..64),
