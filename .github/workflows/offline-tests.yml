@@ -1,0 +1,19 @@
+name: SPARK offline tests
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+jobs:
+  native-and-python:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Build native C++ reference runtimes
+        run: |
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+          cmake --build build -j2
+      - name: Run all offline tests without model downloads
+        run: python -m unittest discover -s tests -v
