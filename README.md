@@ -53,3 +53,16 @@ python tools/modernbert_spark.py compile artifacts/modernbert_traces.jsonl artif
 python tools/modernbert_spark.py evaluate artifacts/modernbert_traces.jsonl artifacts/modernbert.smlm
 python -m unittest discover -s tests -v
 ```
+
+## ModernBERT semantic-signature extension (M1)
+
+[Semantic ModernBERT experiment](docs/SEMANTIC_MODERNBERT.md): the offline
+teacher collector supports `--emit-hidden`, and
+`tools/modernbert_semantic.py` learns 256-bit integer-vote signatures
+from teacher embeddings, then creates a fingerprint-bound `SPARKMLM` index.
+
+The `mlir/` subtree contains an experimental out-of-tree
+`spark.mlm_probe` dialect definition and verifier. **It is not yet
+build-tested against MLIR or lowered to LLVM**; the matrix-free Python
+student is tested offline. This is a supervised retrieval experiment,
+not verified semantic equivalence to ModernBERT.
