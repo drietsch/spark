@@ -3,6 +3,7 @@
 from __future__ import annotations
 import argparse
 import copy
+import contextlib
 import json
 import os
 import re
@@ -10,8 +11,34 @@ import shutil
 import subprocess
 import sys
 import time
+import types
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT))
+
+
+def precision_reference(model):
+    """Same equations/parameters, evaluating RoPE and softmax in float64 too."""
+    high=copy.deepcopy(model).double()
+    def rotary(self,x,position_ids):
+        import torch
+        phase=position_ids.to(torch.float64)[...,None]*self.inv_freq.to(torch.float64)[None,None,:]
+        phase=torch.cat((phase,phase),dim=-1)
+        return phase.cos()*self.attention_scaling,phase.sin()*self.attention_scaling
+    for layer in high.model.layers:layer.attn.rotary_emb.forward=types.MethodType(rotary,layer.attn.rotary_emb)
+    return high
+
+
+@contextlib.contextmanager
+def precision_softmax():
+    import torch
+    import torch.nn.functional as functional
+    original=functional.softmax
+    def accurate(input,dim=None,_stacklevel=3,dtype=None):
+        if input.dtype==torch.float64:dtype=torch.float64
+        return original(input,dim=dim,_stacklevel=_stacklevel,dtype=dtype)
+    functional.softmax=accurate
+    try:yield
+    finally:functional.softmax=original
 
 
 def convert(args,report):
@@ -29,6 +56,7 @@ def convert(args,report):
     teacher=AutoModelForMaskedLM.from_pretrained(args.model,revision=args.revision,config=config,
         token=False,trust_remote_code=False,use_safetensors=True,torch_dtype=torch.float32,attn_implementation='eager').cpu().eval()
     tokenizer=AutoTokenizer.from_pretrained(args.model,revision=args.revision,token=False,trust_remote_code=False)
+    high_precision=precision_reference(teacher)
     package=args.output/'package';package.mkdir(parents=True,exist_ok=True)
     report['stage']='export_complete_program'
     manifest=export_model(teacher,package,source={'checkpoint':args.model,'revision':args.revision,'pretrained':True})
@@ -65,7 +93,7 @@ def convert(args,report):
         at=length//2;ids[at]=tokenizer.mask_token_id
         cases.append({'name':f'local_global_window_{length}','ids':ids,'queries':[at]})
     c=cases[-1];cases.append({**c,'name':'maximum_rotary_position','positions':list(range(config.max_position_embeddings-len(c['ids']),config.max_position_embeddings))})
-    comparisons=[];top1=top5=0;logit_values=0;max_logit=max_hidden=0.;allclose=True
+    comparisons=[];top1=top5=0;logit_values=0;max_logit=max_hidden=max_precision_logit=0.;allclose=True
     absolute_tolerance=.002;relative_tolerance=.0001
     with NativeModernBert(package) as native:
         for case in cases:
@@ -75,27 +103,36 @@ def convert(args,report):
                 ref=teacher(input_ids=torch.tensor([ids]),attention_mask=torch.tensor([mask]),position_ids=torch.tensor([positions]),output_hidden_states=True)
                 expected=ref.logits[0,case['queries']].float().numpy()
                 expected_hidden=teacher.model.final_norm(ref.hidden_states[-1])[0].float().numpy()
+            with torch.inference_mode(),precision_softmax():
+                reference_high=high_precision(input_ids=torch.tensor([ids]),attention_mask=torch.tensor([mask]),position_ids=torch.tensor([positions]),output_hidden_states=True)
+                expected_logits_high=reference_high.logits[0,case['queries']].numpy()
+                expected_hidden_high=high_precision.model.final_norm(reference_high.hidden_states[-1])[0].numpy()
             teacher_ms=(time.perf_counter()-before)*1000
             before=time.perf_counter();actual=native.run(ids,attention_mask=mask,position_ids=positions,query_positions=case['queries'],return_hidden=True);native_ms=(time.perf_counter()-before)*1000
             values=np.ctypeslib.as_array(actual['logits']).reshape(len(case['queries']),native.vocab)
             hidden=np.ctypeslib.as_array(actual['hidden']).reshape(len(ids),native.hidden)
             valid=np.asarray(mask,dtype=bool)
-            le=float(np.max(np.abs(values-expected)));he=float(np.max(np.abs(hidden[valid]-expected_hidden[valid])))
-            close=np.allclose(values,expected,atol=absolute_tolerance,rtol=relative_tolerance) and np.allclose(hidden[valid],expected_hidden[valid],atol=absolute_tolerance,rtol=relative_tolerance)
+            le=float(np.max(np.abs(values-expected)));he=float(np.max(np.abs(hidden[valid]-expected_hidden_high[valid])))
+            precision_logit=float(np.max(np.abs(values-expected_logits_high)))
+            close=(np.allclose(values,expected,atol=absolute_tolerance,rtol=relative_tolerance) and
+                np.allclose(values,expected_logits_high,atol=1e-7,rtol=1e-7) and
+                np.allclose(hidden[valid],expected_hidden_high[valid],atol=1e-7,rtol=1e-7))
             native_ids=np.argmax(values,axis=1);teacher_ids=np.argmax(expected,axis=1)
             hits=int(np.sum(native_ids==teacher_ids));top1+=hits;top5+=sum(set(np.argsort(a)[-5:])==set(np.argsort(b)[-5:]) for a,b in zip(values,expected))
-            logit_values+=values.size;max_logit=max(max_logit,le);max_hidden=max(max_hidden,he);allclose=allclose and close
+            logit_values+=values.size;max_logit=max(max_logit,le);max_hidden=max(max_hidden,he);max_precision_logit=max(max_precision_logit,precision_logit);allclose=allclose and close
             predictions=[{'position':position,'token':int(tok),'text':tokenizer.decode([int(tok)])} for position,tok in zip(case['queries'],native_ids)]
-            difference=np.abs(hidden-expected_hidden);worst=np.unravel_index(np.argmax(np.where(valid[:,None],difference,-1)),difference.shape)
+            difference=np.abs(hidden-expected_hidden_high);worst=np.unravel_index(np.argmax(np.where(valid[:,None],difference,-1)),difference.shape)
             comparisons.append({'case':case['name'],'sequence_length':len(ids),'queries':len(case['queries']),'max_logit_error':le,'max_hidden_error':he,
-                'hidden_relative_l2':float(np.linalg.norm((hidden-expected_hidden)[valid])/max(np.linalg.norm(expected_hidden[valid]),1e-20)),
-                'worst_hidden':{'position':int(worst[0]),'channel':int(worst[1]),'native':float(hidden[worst]),'reference':float(expected_hidden[worst])},
+                'high_precision_logit_error':precision_logit,
+                'source_float32_hidden_difference':float(np.max(np.abs(hidden[valid]-expected_hidden[valid]))),
+                'hidden_relative_l2':float(np.linalg.norm((hidden-expected_hidden_high)[valid])/max(np.linalg.norm(expected_hidden_high[valid]),1e-20)),
+                'worst_hidden':{'position':int(worst[0]),'channel':int(worst[1]),'native':float(hidden[worst]),'reference':float(expected_hidden_high[worst])},
                 'allclose':bool(close),'top1_correct':hits,'teacher_ms':teacher_ms,'native_ms':native_ms,'predictions':predictions})
             print(json.dumps(comparisons[-1]),flush=True)
         failed=next((c for c,r in zip(cases,comparisons) if not r['allclose']),None)
         if failed is not None:
             ids=failed['ids'];mask=failed.get('mask',[1]*len(ids));positions=failed.get('positions',list(range(len(ids))))
-            with torch.inference_mode():ref=teacher(input_ids=torch.tensor([ids]),attention_mask=torch.tensor([mask]),position_ids=torch.tensor([positions]),output_hidden_states=True)
+            with torch.inference_mode(),precision_softmax():ref=high_precision(input_ids=torch.tensor([ids]),attention_mask=torch.tensor([mask]),position_ids=torch.tensor([positions]),output_hidden_states=True)
             result=native.run(ids,attention_mask=mask,position_ids=positions,query_positions=failed['queries'],return_hidden=True,trace=True)
             states=np.ctypeslib.as_array(result['trace']).reshape(2*native.layers+2,len(ids),native.hidden)
             layer_errors=[]
@@ -104,16 +141,7 @@ def convert(args,report):
                 wanted=expected_state[0].numpy()
                 layer_errors.append({'layer':index,'max_abs':float(np.max(np.abs(actual_state-wanted))),
                     'relative_l2':float(np.linalg.norm(actual_state-wanted)/max(np.linalg.norm(wanted),1e-20))})
-            with torch.inference_mode():
-                higher=copy.deepcopy(teacher.model).double()
-                reference64=higher(input_ids=torch.tensor([ids]),attention_mask=torch.tensor([mask]),position_ids=torch.tensor([positions])).last_hidden_state[0].numpy()
-                reference32=teacher.model.final_norm(ref.hidden_states[-1])[0].numpy()
-            del higher
-            actual_hidden=np.ctypeslib.as_array(result['hidden']).reshape(len(ids),native.hidden)
-            report['hidden_diagnostics']={'case':failed['name'],'stages':layer_errors,
-                'torch32_vs_torch64_max_abs':float(np.max(np.abs(reference32-reference64))),
-                'native32_vs_torch64_max_abs':float(np.max(np.abs(actual_hidden-reference64))),
-                'torch32_vs_torch64_relative_l2':float(np.linalg.norm(reference32-reference64)/max(np.linalg.norm(reference64),1e-20))}
+            report['hidden_diagnostics']={'case':failed['name'],'stages':layer_errors,'reference':'same mathematical equations evaluated fully in float64'}
         # Batch masking is checked against a padded two-sequence teacher batch;
         # the mathematical runtime executes independent batch rows explicitly.
         pair=[cases[0],cases[-2]];length=max(len(c['ids']) for c in pair)
@@ -139,6 +167,7 @@ def convert(args,report):
             'coefficient_changed_output':bool(np.max(np.abs(updated-baseline))>0),'coefficient_restore_exact':bool(np.array_equal(reset,baseline)),
             'checkpoint_unchanged':sha256_file(package/'weights.sparkmb')==before_hash}
     report['stage']='independent_package_inference'
+    del high_precision
     environment=os.environ.copy();environment['OPENBLAS_NUM_THREADS']='2'
     independent=subprocess.run([sys.executable,str(package/'tools/run_converted_modernbert.py'),'--model',str(package),
         '--text',rows[0]['text']],capture_output=True,text=True,check=True,env=environment)
@@ -150,6 +179,9 @@ def convert(args,report):
         layers=config.num_hidden_layers,program_nodes=len(manifest['program']),payload_bytes=manifest['parameter_payload_bytes'],
         weights_sha256=manifest['weights_sha256'],test_cases=len(cases),masked_queries=queries,logit_values_checked=logit_values,
         top1_agreement=top1,top5_set_agreement=int(top5),allclose=bool(allclose),max_logit_error=max_logit,max_hidden_error=max_hidden,
+        max_high_precision_logit_error=max_precision_logit,arithmetic_precision='float64; original float32 coefficient values preserved',
+        mathematical_reference='PyTorch float64 with RoPE and attention softmax also evaluated in float64; equations and weights unchanged',
+        mathematical_absolute_tolerance=1e-7,mathematical_relative_tolerance=1e-7,
         absolute_tolerance=absolute_tolerance,relative_tolerance=relative_tolerance,padded_batch_max_logit_error=batch_error,
         live_function_checks=live,independent_inference=isolated,comparisons=comparisons,elapsed_seconds=time.perf_counter()-started,
         scope='Complete ModernBERT-base MLM inference lowering; original dimensions, attention and dense arithmetic retained.',

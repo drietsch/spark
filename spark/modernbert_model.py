@@ -14,8 +14,8 @@ import subprocess
 from pathlib import Path
 
 FORMAT='spark-modernbert-mathematical-model-v1'
-HEADER=struct.Struct('<8s12I3f')
-MAGIC=b'SPRKMB01'
+HEADER=struct.Struct('<8s12I3d')
+MAGIC=b'SPRKMB02'
 ACTIVATIONS={'gelu':0,'gelu_pytorch_tanh':1,'gelu_new':1}
 
 
@@ -59,7 +59,7 @@ def export_model(model,directory,*,source):
         if not np.isfinite(a).all():raise ValueError('nonfinite source weights')
         return np.asarray(a,dtype='<f4',order='C')
     with tmp.open('wb') as f:
-        f.write(HEADER.pack(MAGIC,1,h,i,l,heads,vocab,c.max_position_embeddings,c.local_attention,c.global_attn_every_n_layers,
+        f.write(HEADER.pack(MAGIC,2,h,i,l,heads,vocab,c.max_position_embeddings,c.local_attention,c.global_attn_every_n_layers,
                 int(tied),ACTIVATIONS[c.hidden_activation],ACTIVATIONS[c.classifier_activation],c.norm_eps,c.global_rope_theta,c.local_rope_theta or c.global_rope_theta))
         def write(name,value,shape=None):
             a=array(value) if value is not None else np.zeros(shape,dtype='<f4')
@@ -93,7 +93,8 @@ def export_model(model,directory,*,source):
             'mlp_activation':c.hidden_activation,'prediction_activation':c.classifier_activation},
         'program':expected_program(l,c.global_attn_every_n_layers,tied),'parameters':weights,'parameter_payload_bytes':(directory/'weights.sparkmb').stat().st_size,
         'weights_sha256':sha256_file(directory/'weights.sparkmb'),'inference':'masked-language-model evaluation; no training/autograd',
-        'representation':'explicit typed function composition; original Transformer dimensions and arithmetic retained'}
+        'representation':'explicit typed function composition; original Transformer dimensions and float32 coefficient values retained',
+        'arithmetic_precision':'float64'}
     (directory/'model.json').write_text(json.dumps(manifest,sort_keys=True,indent=2)+'\n')
     return manifest
 
@@ -125,7 +126,7 @@ def validate_manifest(directory,*,verify=True):
     path=directory/'weights.sparkmb'
     if not HEADER.size<=path.stat().st_size<=2*2**30 or path.stat().st_size!=d['parameter_payload_bytes']:raise ValueError('invalid parameter payload size')
     with path.open('rb') as f:header=HEADER.unpack(f.read(HEADER.size))
-    if header[:2]!=(MAGIC,1):raise ValueError('invalid parameter binary format')
+    if header[:2]!=(MAGIC,2) or d.get('arithmetic_precision')!='float64':raise ValueError('invalid parameter binary format/precision')
     if header[2:11]!=(g['hidden'],g['intermediate'],g['layers'],g['heads'],g['vocab'],g['max_sequence'],g['local_window'],g['global_every'],int(g['tied_decoder'])):
         raise ValueError('parameter header and program geometry disagree')
     constants=d['constants']
@@ -149,14 +150,14 @@ class NativeModernBert:
         path=compile_runtime(directory)
         try:self.lib=ctypes.CDLL(str(path.resolve()))
         except OSError:self.lib=ctypes.CDLL(str(compile_runtime(directory,force=True).resolve()))
-        L=self.lib;P=ctypes.c_void_p;I=ctypes.POINTER(ctypes.c_int32);F=ctypes.POINTER(ctypes.c_float)
+        L=self.lib;P=ctypes.c_void_p;I=ctypes.POINTER(ctypes.c_int32);F=ctypes.POINTER(ctypes.c_double)
         L.spark_mb_load.argtypes=[ctypes.c_char_p];L.spark_mb_load.restype=P
         L.spark_mb_error.restype=ctypes.c_char_p;L.spark_mb_destroy.argtypes=[P]
         L.spark_mb_meta.argtypes=[P,I]
         L.spark_mb_run.argtypes=[P,I,I,I,ctypes.c_int,I,ctypes.c_int,F,F]
         L.spark_mb_run_trace.argtypes=[P,I,I,I,ctypes.c_int,I,ctypes.c_int,F,F,F]
         L.spark_mb_set_width.argtypes=[P,ctypes.c_int,ctypes.c_int]
-        L.spark_mb_set_coefficient.argtypes=[P,ctypes.c_int,ctypes.c_int,ctypes.c_uint64,ctypes.c_float]
+        L.spark_mb_set_coefficient.argtypes=[P,ctypes.c_int,ctypes.c_int,ctypes.c_uint64,ctypes.c_double]
         self.handle=L.spark_mb_load(os.fsencode(self.directory/'weights.sparkmb'))
         if not self.handle:raise ValueError(self._error())
         meta=(ctypes.c_int32*6)();L.spark_mb_meta(self.handle,meta)
@@ -176,8 +177,8 @@ class NativeModernBert:
         if len(positions)!=n or any(type(v) is not int or not 0<=v<self.max_sequence for v in positions):raise ValueError('invalid rotary positions')
         if not 1<=len(query)<=n or len(set(query))!=len(query) or any(type(v) is not int or not 0<=v<n or not mask[v] for v in query):raise ValueError('invalid prediction query positions')
         ids=(ctypes.c_int32*n)(*input_ids);m=(ctypes.c_int32*n)(*mask);p=(ctypes.c_int32*n)(*positions);q=(ctypes.c_int32*len(query))(*query)
-        output=(ctypes.c_float*(len(query)*self.vocab))();hidden=(ctypes.c_float*(n*self.hidden))() if return_hidden else None
-        traces=(ctypes.c_float*((2*self.layers+2)*n*self.hidden))() if trace else None
+        output=(ctypes.c_double*(len(query)*self.vocab))();hidden=(ctypes.c_double*(n*self.hidden))() if return_hidden else None
+        traces=(ctypes.c_double*((2*self.layers+2)*n*self.hidden))() if trace else None
         ok=(self.lib.spark_mb_run_trace(self.handle,ids,m,p,n,q,len(query),output,hidden,traces) if trace else
             self.lib.spark_mb_run(self.handle,ids,m,p,n,q,len(query),output,hidden))
         if not ok:raise RuntimeError(self._error())
