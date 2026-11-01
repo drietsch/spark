@@ -1,0 +1,73 @@
+name: SPARK M14–M16 predictive programs, consolidation, memory
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'spark/predictive_state.py'
+      - 'spark/consolidation.py'
+      - 'spark/algorithmic_memory.py'
+      - 'tools/research_experiment.py'
+      - 'tests/test_research_m14_m16.py'
+      - '.github/workflows/predictive-research-m14-m16.yml'
+  push:
+    paths:
+      - 'spark/predictive_state.py'
+      - 'spark/consolidation.py'
+      - 'spark/algorithmic_memory.py'
+      - 'tools/research_experiment.py'
+      - 'tests/test_research_m14_m16.py'
+      - '.github/workflows/predictive-research-m14-m16.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  compile-and-validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install offline-only fitting dependency
+        run: python -m pip install numpy
+      - name: Test learned state, consolidation and memory
+        run: python -m unittest discover -s tests -p test_research_m14_m16.py -v
+      - name: Execute three milestones and compile C++ programs
+        run: python tools/research_experiment.py --output artifacts/m14-16
+      - name: Verify independent measured results
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          r=json.loads(Path('artifacts/m14-16/report.json').read_text())
+          a,b,c=r['m14'],r['m15'],r['m16']
+          assert a['learned_memory_order']==2, a
+          assert a['heldout_mse']<1e-10 and a['missing_15pct_mse']<1e-8, a
+          assert a['order1_baseline_mse']>1e-4, a
+          assert a['shift_online_last600_mse']*10<a['shift_frozen_last600_mse'], a
+          assert a['native_python_max_difference']<1e-11, a
+          assert b['consolidation']['accepted'] and not b['bad_candidate']['accepted'], b
+          assert b['retained_validated_expression'] and b['native_python_max_difference']<1e-11, b
+          assert c['program_memory_correct']==c['read_queries']>10000, c
+          assert c['last_value_baseline_correct']<c['program_memory_correct'], c
+          assert c['explicit_delayed_recall_steps']==4096 and c['delayed_recall_correct'], c
+          assert c['native_python_mismatches']==0 and c['capacity_eviction_ok'], c
+          summary=['## SPARK M14–M16 native research benchmark',
+            f"M14: learned order {a['learned_memory_order']}, OOD MSE {a['heldout_mse']:.3g}, online shift MSE {a['shift_online_last600_mse']:.3g}",
+            f"M15: consolidation accepted {b['consolidation']['accepted']}, bad candidate rejected {not b['bad_candidate']['accepted']}",
+            f"M16: read queries {c['read_queries']}, correct {c['program_memory_correct']}, 4096-delay recall {c['delayed_recall_correct']}, native mismatches {c['native_python_mismatches']}",
+            'These are synthetic constrained prototypes, NOT language models or matched Transformer comparisons.']
+          with open(os.environ['GITHUB_STEP_SUMMARY'],'a') as f:f.write('\n\n'.join(summary)+'\n')
+          PY
+      - name: Upload learned programs, generated code and metrics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: spark-m14-m16-predictive-symbolic-memory
+          path: artifacts/m14-16/
+          retention-days: 14
+          if-no-files-found: warn
