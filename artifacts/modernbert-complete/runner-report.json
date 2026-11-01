@@ -1,5 +1,863 @@
 {
-  "status": "running",
-  "stage": "installing-dependencies",
-  "workflow_url": "https://github.com/drietsch/spark/actions/runs/41347113945"
+  "status": "failed",
+  "stage": "complete",
+  "workflow_url": "https://github.com/drietsch/spark/actions/runs/41347113945",
+  "hidden_diagnostics": {
+    "case": "local_global_window_131",
+    "stages": [
+      {
+        "layer": 0,
+        "max_abs": 4.76837158203125e-07,
+        "relative_l2": 3.325153130617764e-08
+      },
+      {
+        "layer": 1,
+        "max_abs": 1.239776611328125e-05,
+        "relative_l2": 3.9710704413664644e-07
+      },
+      {
+        "layer": 2,
+        "max_abs": 1.9073486328125e-05,
+        "relative_l2": 5.434007448457123e-07
+      },
+      {
+        "layer": 3,
+        "max_abs": 2.288818359375e-05,
+        "relative_l2": 6.465401156674488e-07
+      },
+      {
+        "layer": 4,
+        "max_abs": 3.4332275390625e-05,
+        "relative_l2": 7.170713729465206e-07
+      },
+      {
+        "layer": 5,
+        "max_abs": 0.00201416015625,
+        "relative_l2": 1.9924216303479625e-06
+      },
+      {
+        "layer": 6,
+        "max_abs": 0.00201416015625,
+        "relative_l2": 2.0312766082497546e-06
+      },
+      {
+        "layer": 7,
+        "max_abs": 0.00201416015625,
+        "relative_l2": 1.840029426602996e-06
+      },
+      {
+        "layer": 8,
+        "max_abs": 0.00201416015625,
+        "relative_l2": 1.7211415297424537e-06
+      },
+      {
+        "layer": 9,
+        "max_abs": 0.00201416015625,
+        "relative_l2": 1.7565515690876055e-06
+      },
+      {
+        "layer": 10,
+        "max_abs": 0.00128173828125,
+        "relative_l2": 1.4196115216691396e-06
+      },
+      {
+        "layer": 11,
+        "max_abs": 0.000507354736328125,
+        "relative_l2": 1.1866119393744157e-06
+      },
+      {
+        "layer": 12,
+        "max_abs": 0.025390625,
+        "relative_l2": 2.428042762403493e-06
+      },
+      {
+        "layer": 13,
+        "max_abs": 0.025390625,
+        "relative_l2": 2.406401790722157e-06
+      },
+      {
+        "layer": 14,
+        "max_abs": 0.025390625,
+        "relative_l2": 2.406537760180072e-06
+      },
+      {
+        "layer": 15,
+        "max_abs": 0.025390625,
+        "relative_l2": 2.4329431198566454e-06
+      },
+      {
+        "layer": 16,
+        "max_abs": 0.529296875,
+        "relative_l2": 1.3845556168234907e-05
+      },
+      {
+        "layer": 17,
+        "max_abs": 0.529296875,
+        "relative_l2": 1.3695061170437839e-05
+      },
+      {
+        "layer": 18,
+        "max_abs": 0.529296875,
+        "relative_l2": 1.3616730029752944e-05
+      },
+      {
+        "layer": 19,
+        "max_abs": 0.529296875,
+        "relative_l2": 1.3459176443575416e-05
+      },
+      {
+        "layer": 20,
+        "max_abs": 0.529296875,
+        "relative_l2": 1.3359787772060372e-05
+      },
+      {
+        "layer": 21,
+        "max_abs": 0.529296875,
+        "relative_l2": 1.3398309420153964e-05
+      },
+      {
+        "layer": 22,
+        "max_abs": 0.529296875,
+        "relative_l2": 1.3544595276471227e-05
+      }
+    ],
+    "torch32_vs_torch64_max_abs": 0.0035043737812791853,
+    "native32_vs_torch64_max_abs": 0.009695939071580312,
+    "torch32_vs_torch64_relative_l2": 1.6326172876726012e-05
+  },
+  "checkpoint": "answerdotai/ModernBERT-base",
+  "revision": "8949b909ec900327062f0ebf497f51aef5e6f0c8",
+  "parameter_count": 149655232,
+  "layers": 22,
+  "program_nodes": 48,
+  "payload_bytes": 599315012,
+  "weights_sha256": "1f3f36efc98ae0817679e4c09662c483c5dcd69c5c8e0a3180a04212801e5ece",
+  "test_cases": 26,
+  "masked_queries": 27,
+  "logit_values_checked": 1359936,
+  "top1_agreement": 27,
+  "top5_set_agreement": 27,
+  "allclose": false,
+  "max_logit_error": 6.881356239318848e-05,
+  "max_hidden_error": 0.013200312852859497,
+  "absolute_tolerance": 0.002,
+  "relative_tolerance": 0.0001,
+  "padded_batch_max_logit_error": 3.9577484130859375e-05,
+  "live_function_checks": {
+    "width_changed_output": true,
+    "width_restore_exact": true,
+    "coefficient_changed_output": true,
+    "coefficient_restore_exact": true,
+    "checkpoint_unchanged": true
+  },
+  "independent_inference": {
+    "backend": "spark-native-mathematical-program",
+    "predictions": [
+      {
+        "position": 6,
+        "topk": [
+          {
+            "token": 7785,
+            "text": " Paris",
+            "logit": 22.13159942626953,
+            "prob": 0.9233349832425864
+          },
+          {
+            "token": 42268,
+            "text": " Lyon",
+            "logit": 18.885662078857422,
+            "prob": 0.03594732778619001
+          },
+          {
+            "token": 23397,
+            "text": " Nancy",
+            "logit": 18.44130516052246,
+            "prob": 0.023050739046186437
+          },
+          {
+            "token": 29902,
+            "text": " Nice",
+            "logit": 17.123096466064453,
+            "prob": 0.006168706282299375
+          },
+          {
+            "token": 20159,
+            "text": " Orleans",
+            "logit": 16.25305938720703,
+            "prob": 0.0025842932294062584
+          }
+        ]
+      }
+    ],
+    "framework_imports": {
+      "torch": false,
+      "transformers": false,
+      "numpy": false
+    }
+  },
+  "comparisons": [
+    {
+      "case": "prompt0",
+      "sequence_length": 9,
+      "queries": 1,
+      "max_logit_error": 2.5272369384765625e-05,
+      "max_hidden_error": 1.52587890625e-05,
+      "hidden_relative_l2": 9.435284482606221e-07,
+      "worst_hidden": {
+        "position": 6,
+        "channel": 67,
+        "native": 27.40631866455078,
+        "reference": 27.40630340576172
+      },
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 74.85780000001796,
+      "native_ms": 50.88230100000146,
+      "predictions": [
+        {
+          "position": 6,
+          "token": 7785,
+          "text": " Paris"
+        }
+      ]
+    },
+    {
+      "case": "prompt1",
+      "sequence_length": 9,
+      "queries": 1,
+      "max_logit_error": 2.765655517578125e-05,
+      "max_hidden_error": 1.52587890625e-05,
+      "hidden_relative_l2": 1.0569024198048282e-06,
+      "worst_hidden": {
+        "position": 0,
+        "channel": 67,
+        "native": 23.804019927978516,
+        "reference": 23.804035186767578
+      },
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 74.34996300000307,
+      "native_ms": 49.77033400001574,
+      "predictions": [
+        {
+          "position": 6,
+          "token": 12911,
+          "text": " Berlin"
+        }
+      ]
+    },
+    {
+      "case": "prompt2",
+      "sequence_length": 9,
+      "queries": 1,
+      "max_logit_error": 6.881356239318848e-05,
+      "max_hidden_error": 0.00010824203491210938,
+      "hidden_relative_l2": 4.3904037738684565e-06,
+      "worst_hidden": {
+        "position": 1,
+        "channel": 67,
+        "native": -5.662795066833496,
+        "reference": -5.662903308868408
+      },
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 74.0796929999874,
+      "native_ms": 49.99708400001168,
+      "predictions": [
+        {
+          "position": 6,
+          "token": 12300,
+          "text": " Rome"
+        }
+      ]
+    },
+    {
+      "case": "prompt3",
+      "sequence_length": 10,
+      "queries": 1,
+      "max_logit_error": 2.288818359375e-05,
+      "max_hidden_error": 1.33514404296875e-05,
+      "hidden_relative_l2": 9.735741741678794e-07,
+      "worst_hidden": {
+        "position": 4,
+        "channel": 67,
+        "native": 22.96428871154785,
+        "reference": 22.964275360107422
+      },
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 75.34485899998344,
+      "native_ms": 53.949928999998065,
+      "predictions": [
+        {
+          "position": 7,
+          "token": 5893,
+          "text": " animal"
+        }
+      ]
+    },
+    {
+      "case": "prompt4",
+      "sequence_length": 9,
+      "queries": 1,
+      "max_logit_error": 2.384185791015625e-05,
+      "max_hidden_error": 1.33514404296875e-05,
+      "hidden_relative_l2": 8.469825161228073e-07,
+      "worst_hidden": {
+        "position": 8,
+        "channel": 254,
+        "native": -16.65959930419922,
+        "reference": -16.65961265563965
+      },
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 88.31631300000709,
+      "native_ms": 50.47716400000013,
+      "predictions": [
+        {
+          "position": 6,
+          "token": 5893,
+          "text": " animal"
+        }
+      ]
+    },
+    {
+      "case": "prompt5",
+      "sequence_length": 10,
+      "queries": 1,
+      "max_logit_error": 2.193450927734375e-05,
+      "max_hidden_error": 1.33514404296875e-05,
+      "hidden_relative_l2": 1.0501905762794195e-06,
+      "worst_hidden": {
+        "position": 5,
+        "channel": 67,
+        "native": 6.872183799743652,
+        "reference": 6.872197151184082
+      },
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 100.05384799998751,
+      "native_ms": 54.20537199998421,
+      "predictions": [
+        {
+          "position": 7,
+          "token": 330,
+          "text": " C"
+        }
+      ]
+    },
+    {
+      "case": "prompt6",
+      "sequence_length": 10,
+      "queries": 1,
+      "max_logit_error": 2.6702880859375e-05,
+      "max_hidden_error": 9.5367431640625e-06,
+      "hidden_relative_l2": 9.959978797269287e-07,
+      "worst_hidden": {
+        "position": 7,
+        "channel": 67,
+        "native": 29.715024948120117,
+        "reference": 29.71503448486328
+      },
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 100.20531400002142,
+      "native_ms": 54.25123100002338,
+      "predictions": [
+        {
+          "position": 7,
+          "token": 4146,
+          "text": " Sun"
+        }
+      ]
+    },
+    {
+      "case": "prompt7",
+      "sequence_length": 9,
+      "queries": 1,
+      "max_logit_error": 2.193450927734375e-05,
+      "max_hidden_error": 1.049041748046875e-05,
+      "hidden_relative_l2": 7.918792448435852e-07,
+      "worst_hidden": {
+        "position": 2,
+        "channel": 67,
+        "native": 13.86106014251709,
+        "reference": 13.86107063293457
+      },
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 88.57738499997936,
+      "native_ms": 50.7498030000022,
+      "predictions": [
+        {
+          "position": 6,
+          "token": 1071,
+          "text": " test"
+        }
+      ]
+    },
+    {
+      "case": "prompt8",
+      "sequence_length": 8,
+      "queries": 1,
+      "max_logit_error": 1.811981201171875e-05,
+      "max_hidden_error": 1.33514404296875e-05,
+      "hidden_relative_l2": 8.905886943466612e-07,
+      "worst_hidden": {
+        "position": 4,
+        "channel": 67,
+        "native": 10.976302146911621,
+        "reference": 10.97631549835205
+      },
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 97.3266289999799,
+      "native_ms": 45.94609200000832,
+      "predictions": [
+        {
+          "position": 5,
+          "token": 2127,
+          "text": " code"
+        }
+      ]
+    },
+    {
+      "case": "prompt9",
+      "sequence_length": 13,
+      "queries": 1,
+      "max_logit_error": 2.47955322265625e-05,
+      "max_hidden_error": 1.3828277587890625e-05,
+      "hidden_relative_l2": 1.0230594398308313e-06,
+      "worst_hidden": {
+        "position": 8,
+        "channel": 67,
+        "native": 6.608679294586182,
+        "reference": 6.608665466308594
+      },
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 114.39593599999398,
+      "native_ms": 59.58523600000376,
+      "predictions": [
+        {
+          "position": 10,
+          "token": 1273,
+          "text": " second"
+        }
+      ]
+    },
+    {
+      "case": "prompt10",
+      "sequence_length": 13,
+      "queries": 1,
+      "max_logit_error": 2.9087066650390625e-05,
+      "max_hidden_error": 2.002716064453125e-05,
+      "hidden_relative_l2": 9.802359954846906e-07,
+      "worst_hidden": {
+        "position": 6,
+        "channel": 67,
+        "native": 14.475836753845215,
+        "reference": 14.47585678100586
+      },
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 113.51403899999468,
+      "native_ms": 71.36629100000391,
+      "predictions": [
+        {
+          "position": 9,
+          "token": 1318,
+          "text": " value"
+        }
+      ]
+    },
+    {
+      "case": "prompt11",
+      "sequence_length": 8,
+      "queries": 1,
+      "max_logit_error": 2.47955322265625e-05,
+      "max_hidden_error": 1.1444091796875e-05,
+      "hidden_relative_l2": 8.568668476982566e-07,
+      "worst_hidden": {
+        "position": 7,
+        "channel": 67,
+        "native": -17.31723403930664,
+        "reference": -17.317222595214844
+      },
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 90.7496910000134,
+      "native_ms": 45.900994000021456,
+      "predictions": [
+        {
+          "position": 5,
+          "token": 2127,
+          "text": " code"
+        }
+      ]
+    },
+    {
+      "case": "prompt12",
+      "sequence_length": 9,
+      "queries": 1,
+      "max_logit_error": 2.86102294921875e-05,
+      "max_hidden_error": 1.71661376953125e-05,
+      "hidden_relative_l2": 1.2683814247793634e-06,
+      "worst_hidden": {
+        "position": 5,
+        "channel": 67,
+        "native": 25.57217788696289,
+        "reference": 25.572195053100586
+      },
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 88.24209200000155,
+      "native_ms": 50.08653799998797,
+      "predictions": [
+        {
+          "position": 6,
+          "token": 26229,
+          "text": " Vienna"
+        }
+      ]
+    },
+    {
+      "case": "prompt13",
+      "sequence_length": 9,
+      "queries": 1,
+      "max_logit_error": 2.002716064453125e-05,
+      "max_hidden_error": 8.58306884765625e-06,
+      "hidden_relative_l2": 8.038277883315459e-07,
+      "worst_hidden": {
+        "position": 3,
+        "channel": 67,
+        "native": 15.080251693725586,
+        "reference": 15.080243110656738
+      },
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 88.56654800001706,
+      "native_ms": 50.01150600000415,
+      "predictions": [
+        {
+          "position": 6,
+          "token": 6150,
+          "text": " sea"
+        }
+      ]
+    },
+    {
+      "case": "prompt14",
+      "sequence_length": 9,
+      "queries": 1,
+      "max_logit_error": 2.1457672119140625e-05,
+      "max_hidden_error": 1.1444091796875e-05,
+      "hidden_relative_l2": 7.412301670228771e-07,
+      "worst_hidden": {
+        "position": 1,
+        "channel": 67,
+        "native": 25.955778121948242,
+        "reference": 25.955766677856445
+      },
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 88.20528700002228,
+      "native_ms": 50.090224000001626,
+      "predictions": [
+        {
+          "position": 6,
+          "token": 1895,
+          "text": " problem"
+        }
+      ]
+    },
+    {
+      "case": "prompt15",
+      "sequence_length": 9,
+      "queries": 1,
+      "max_logit_error": 1.6808509826660156e-05,
+      "max_hidden_error": 1.52587890625e-05,
+      "hidden_relative_l2": 9.359098385175457e-07,
+      "worst_hidden": {
+        "position": 8,
+        "channel": 67,
+        "native": -17.261260986328125,
+        "reference": -17.261276245117188
+      },
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 87.86762099998668,
+      "native_ms": 50.27617300001452,
+      "predictions": [
+        {
+          "position": 6,
+          "token": 3120,
+          "text": " card"
+        }
+      ]
+    },
+    {
+      "case": "prompt16",
+      "sequence_length": 9,
+      "queries": 1,
+      "max_logit_error": 1.8596649169921875e-05,
+      "max_hidden_error": 1.33514404296875e-05,
+      "hidden_relative_l2": 9.30081284877815e-07,
+      "worst_hidden": {
+        "position": 1,
+        "channel": 67,
+        "native": 23.733184814453125,
+        "reference": 23.733171463012695
+      },
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 88.65336799999568,
+      "native_ms": 50.22906199999966,
+      "predictions": [
+        {
+          "position": 6,
+          "token": 26654,
+          "text": " Wikipedia"
+        }
+      ]
+    },
+    {
+      "case": "prompt17",
+      "sequence_length": 9,
+      "queries": 1,
+      "max_logit_error": 2.288818359375e-05,
+      "max_hidden_error": 1.049041748046875e-05,
+      "hidden_relative_l2": 8.012033276827424e-07,
+      "worst_hidden": {
+        "position": 2,
+        "channel": 67,
+        "native": 12.668957710266113,
+        "reference": 12.668968200683594
+      },
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 88.72417399999222,
+      "native_ms": 50.2414209999813,
+      "predictions": [
+        {
+          "position": 6,
+          "token": 2854,
+          "text": " drug"
+        }
+      ]
+    },
+    {
+      "case": "prompt18",
+      "sequence_length": 10,
+      "queries": 1,
+      "max_logit_error": 1.3336539268493652e-05,
+      "max_hidden_error": 1.1444091796875e-05,
+      "hidden_relative_l2": 7.377444717349135e-07,
+      "worst_hidden": {
+        "position": 9,
+        "channel": 67,
+        "native": -17.273107528686523,
+        "reference": -17.27311897277832
+      },
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 99.7238829999958,
+      "native_ms": 54.0286270000081,
+      "predictions": [
+        {
+          "position": 7,
+          "token": 2829,
+          "text": " table"
+        }
+      ]
+    },
+    {
+      "case": "prompt19",
+      "sequence_length": 9,
+      "queries": 1,
+      "max_logit_error": 2.2411346435546875e-05,
+      "max_hidden_error": 1.1444091796875e-05,
+      "hidden_relative_l2": 9.663363016443327e-07,
+      "worst_hidden": {
+        "position": 1,
+        "channel": 67,
+        "native": 24.936620712280273,
+        "reference": 24.936609268188477
+      },
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 88.80518600000187,
+      "native_ms": 50.04784999999856,
+      "predictions": [
+        {
+          "position": 6,
+          "token": 4131,
+          "text": " morning"
+        }
+      ]
+    },
+    {
+      "case": "multiple_masks",
+      "sequence_length": 9,
+      "queries": 2,
+      "max_logit_error": 2.956390380859375e-05,
+      "max_hidden_error": 9.5367431640625e-06,
+      "hidden_relative_l2": 9.543064152239822e-07,
+      "worst_hidden": {
+        "position": 8,
+        "channel": 67,
+        "native": -17.34477996826172,
+        "reference": -17.344789505004883
+      },
+      "allclose": true,
+      "top1_correct": 2,
+      "teacher_ms": 88.59420000001705,
+      "native_ms": 51.248060000006035,
+      "predictions": [
+        {
+          "position": 2,
+          "token": 7908,
+          "text": " flag"
+        },
+        {
+          "position": 6,
+          "token": 5112,
+          "text": " French"
+        }
+      ]
+    },
+    {
+      "case": "left_padding",
+      "sequence_length": 14,
+      "queries": 1,
+      "max_logit_error": 2.288818359375e-05,
+      "max_hidden_error": 1.71661376953125e-05,
+      "hidden_relative_l2": 9.777415925782407e-07,
+      "worst_hidden": {
+        "position": 6,
+        "channel": 67,
+        "native": 24.22805404663086,
+        "reference": 24.228036880493164
+      },
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 111.34241400000633,
+      "native_ms": 69.02158599999098,
+      "predictions": [
+        {
+          "position": 11,
+          "token": 7785,
+          "text": " Paris"
+        }
+      ]
+    },
+    {
+      "case": "right_padding",
+      "sequence_length": 14,
+      "queries": 1,
+      "max_logit_error": 3.147125244140625e-05,
+      "max_hidden_error": 2.09808349609375e-05,
+      "hidden_relative_l2": 1.0384839015387115e-06,
+      "worst_hidden": {
+        "position": 6,
+        "channel": 67,
+        "native": 27.40632438659668,
+        "reference": 27.40630340576172
+      },
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 108.92897100001164,
+      "native_ms": 63.15057100002264,
+      "predictions": [
+        {
+          "position": 6,
+          "token": 7785,
+          "text": " Paris"
+        }
+      ]
+    },
+    {
+      "case": "local_global_window_131",
+      "sequence_length": 131,
+      "queries": 1,
+      "max_logit_error": 3.910064697265625e-05,
+      "max_hidden_error": 0.013200312852859497,
+      "hidden_relative_l2": 6.150845001684502e-05,
+      "worst_hidden": {
+        "position": 92,
+        "channel": 67,
+        "native": 0.1776733249425888,
+        "reference": 0.1908736377954483
+      },
+      "allclose": false,
+      "top1_correct": 1,
+      "teacher_ms": 329.20579299999986,
+      "native_ms": 274.06243600000835,
+      "predictions": [
+        {
+          "position": 65,
+          "token": 9826,
+          "text": " ordinary"
+        }
+      ]
+    },
+    {
+      "case": "local_global_window_259",
+      "sequence_length": 259,
+      "queries": 1,
+      "max_logit_error": 3.9577484130859375e-05,
+      "max_hidden_error": 0.0003452301025390625,
+      "hidden_relative_l2": 3.283405703768949e-06,
+      "worst_hidden": {
+        "position": 247,
+        "channel": 251,
+        "native": -14.067837715148926,
+        "reference": -14.067492485046387
+      },
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 568.2432130000166,
+      "native_ms": 555.4261910000093,
+      "predictions": [
+        {
+          "position": 129,
+          "token": 50282,
+          "text": "[SEP]"
+        }
+      ]
+    },
+    {
+      "case": "maximum_rotary_position",
+      "sequence_length": 259,
+      "queries": 1,
+      "max_logit_error": 5.435943603515625e-05,
+      "max_hidden_error": 0.0042171478271484375,
+      "hidden_relative_l2": 1.6614998457953334e-05,
+      "worst_hidden": {
+        "position": 247,
+        "channel": 251,
+        "native": -14.043001174926758,
+        "reference": -14.047218322753906
+      },
+      "allclose": false,
+      "top1_correct": 1,
+      "teacher_ms": 568.3645520000198,
+      "native_ms": 551.5394169999865,
+      "predictions": [
+        {
+          "position": 129,
+          "token": 50282,
+          "text": "[SEP]"
+        }
+      ]
+    }
+  ],
+  "elapsed_seconds": 19.268007272999995,
+  "scope": "Complete ModernBERT-base MLM inference lowering; original dimensions, attention and dense arithmetic retained.",
+  "unsupported": "Training/autograd, custom RoPE scaling, arbitrary architectures, compact full-model replacement.",
+  "error_type": "AssertionError",
+  "error": "full conversion parity gate failed",
+  "artifact_url": "",
+  "artifact_id": "",
+  "conversion_outcome": "failure"
 }
