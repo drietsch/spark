@@ -1,0 +1,65 @@
+name: SPARK M13 live plastic neural mathematical function
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'spark/plastic_function.py'
+      - 'tools/plastic_experiment.py'
+      - 'tests/test_plastic_function.py'
+      - 'docs/M13_LIVE_PLASTIC_NEURAL_FUNCTION.md'
+      - '.github/workflows/plastic-neural-function.yml'
+  push:
+    paths:
+      - 'spark/plastic_function.py'
+      - 'tools/plastic_experiment.py'
+      - 'tests/test_plastic_function.py'
+      - 'docs/M13_LIVE_PLASTIC_NEURAL_FUNCTION.md'
+      - '.github/workflows/plastic-neural-function.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native-live-adaptation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate mutable AST, serialization and online native parity
+        run: python -m unittest discover -s tests -p 'test_plastic_function.py' -v
+      - name: Compile, adapt to live environment drift and measure held-out error
+        run: python tools/plastic_experiment.py --output artifacts/m13
+      - name: Enforce live-adaptation improvement and native correctness
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          r=json.loads(Path('artifacts/m13/report.json').read_text())
+          assert r['online_only'] is True, r
+          assert r['observations_environment_a']==1100, r
+          assert r['observations_after_abrupt_drift']==850, r
+          assert r['neural_initial_active']==8 and r['neural_final_active']==12, r
+          assert r['mutable_scalar_parameters']==109, r
+          assert r['environment_b_mse_after_live_adaptation']<.007, r
+          assert r['environment_b_mse_after_live_adaptation']<r['environment_b_frozen_mse']*.1, r
+          assert r['max_python_native_step_difference']<1e-9, r
+          assert r['max_python_native_parameter_difference']<1e-9, r
+          assert r['max_checkpoint_output_difference']==0, r
+          with open(os.environ['GITHUB_STEP_SUMMARY'],'a') as f:
+              f.write('## M13 live neural mathematical function\n\n')
+              f.write(f"- Frozen post-drift MSE: {r['environment_b_frozen_mse']:.6g}\n")
+              f.write(f"- Online post-drift MSE: {r['environment_b_mse_after_live_adaptation']:.6g}\n")
+              f.write(f"- Error reduction: {r['environment_b_adaptation_improvement_factor']:.1f}×\n")
+              f.write(f"- Native plastic updates/s: {r['native_steps_per_second_with_online_learning']:.0f}\n")
+              f.write('**Synthetic supervised transitions, not a general reasoning or Transformer benchmark.**\n')
+          PY
+      - name: Upload compiled dynamic function, mutable checkpoint and report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: spark-m13-live-plastic-function
+          path: artifacts/m13/
+          retention-days: 14
+          if-no-files-found: warn
