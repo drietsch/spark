@@ -1,5 +1,795 @@
 {
-  "status": "running",
-  "stage": "installing-dependencies",
-  "workflow_url": "https://github.com/drietsch/spark/actions/runs/41348755846"
+  "status": "completed",
+  "stage": "complete",
+  "workflow_url": "https://github.com/drietsch/spark/actions/runs/41348755846",
+  "checkpoint": "answerdotai/ModernBERT-base",
+  "revision": "8949b909ec900327062f0ebf497f51aef5e6f0c8",
+  "parameter_count": 149655232,
+  "layers": 22,
+  "program_nodes": 48,
+  "payload_bytes": 603509328,
+  "weights_sha256": "c323c702d9ef69b8b6e62fa74075c26a0dcad49b38492270f1897eb35439996e",
+  "test_cases": 26,
+  "masked_queries": 27,
+  "logit_values_checked": 1359936,
+  "top1_agreement": 27,
+  "top5_set_agreement": 27,
+  "allclose": true,
+  "max_logit_error": 8.430828989602901e-05,
+  "max_hidden_error": 2.41051623106614e-11,
+  "max_high_precision_logit_error": 2.2382096176443156e-13,
+  "arithmetic_precision": "float64; original float32 coefficient values preserved",
+  "mathematical_reference": "PyTorch float64 arithmetic and softmax with original float32 rotary constants; equations and weights unchanged",
+  "mathematical_absolute_tolerance": 1e-07,
+  "mathematical_relative_tolerance": 1e-07,
+  "absolute_tolerance": 0.002,
+  "relative_tolerance": 0.0001,
+  "padded_batch_max_logit_error": 2.312755940303557e-05,
+  "live_function_checks": {
+    "width_changed_output": true,
+    "width_restore_exact": true,
+    "coefficient_changed_output": true,
+    "coefficient_restore_exact": true,
+    "checkpoint_unchanged": true
+  },
+  "independent_inference": {
+    "backend": "spark-native-mathematical-program",
+    "predictions": [
+      {
+        "position": 6,
+        "topk": [
+          {
+            "token": 7785,
+            "text": " Paris",
+            "logit": 22.131599715212303,
+            "prob": 0.9233348219277109
+          },
+          {
+            "token": 42268,
+            "text": " Lyon",
+            "logit": 18.885662758972472,
+            "prob": 0.035947335567468916
+          },
+          {
+            "token": 23397,
+            "text": " Nancy",
+            "logit": 18.44131114622867,
+            "prob": 0.023050866333974775
+          },
+          {
+            "token": 29902,
+            "text": " Nice",
+            "logit": 17.12309767425079,
+            "prob": 0.0061687108751164125
+          },
+          {
+            "token": 20159,
+            "text": " Orleans",
+            "logit": 16.25306312552472,
+            "prob": 0.002584301692117186
+          }
+        ]
+      }
+    ],
+    "framework_imports": {
+      "torch": false,
+      "transformers": false,
+      "numpy": false
+    }
+  },
+  "comparisons": [
+    {
+      "case": "prompt0",
+      "sequence_length": 9,
+      "queries": 1,
+      "max_logit_error": 1.880982601676351e-05,
+      "max_hidden_error": 8.881784197001252e-14,
+      "high_precision_logit_error": 9.769962616701378e-14,
+      "source_float32_hidden_difference": 7.900823025153159e-06,
+      "hidden_relative_l2": 4.205744007673994e-15,
+      "worst_hidden": {
+        "position": 6,
+        "channel": 67,
+        "native": 27.406307039916264,
+        "reference": 27.406307039916353
+      },
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 182.7194760000026,
+      "native_ms": 482.6266299999986,
+      "predictions": [
+        {
+          "position": 6,
+          "token": 7785,
+          "text": " Paris"
+        }
+      ]
+    },
+    {
+      "case": "prompt1",
+      "sequence_length": 9,
+      "queries": 1,
+      "max_logit_error": 1.693147106962556e-05,
+      "max_hidden_error": 8.171241461241152e-14,
+      "high_precision_logit_error": 1.2967404927621828e-13,
+      "source_float32_hidden_difference": 1.1829700039100999e-05,
+      "hidden_relative_l2": 3.550457264220951e-15,
+      "worst_hidden": {
+        "position": 6,
+        "channel": 67,
+        "native": 28.23920810167446,
+        "reference": 28.23920810167438
+      },
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 177.6286409999983,
+      "native_ms": 73.88036800000464,
+      "predictions": [
+        {
+          "position": 6,
+          "token": 12911,
+          "text": " Berlin"
+        }
+      ]
+    },
+    {
+      "case": "prompt2",
+      "sequence_length": 9,
+      "queries": 1,
+      "max_logit_error": 8.430828989602901e-05,
+      "max_hidden_error": 9.237055564881302e-14,
+      "high_precision_logit_error": 9.681144774731365e-14,
+      "source_float32_hidden_difference": 0.0001409403441474666,
+      "hidden_relative_l2": 3.297629240924826e-15,
+      "worst_hidden": {
+        "position": 6,
+        "channel": 67,
+        "native": 29.509386963429613,
+        "reference": 29.50938696342952
+      },
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 204.38608000000613,
+      "native_ms": 73.80135900000084,
+      "predictions": [
+        {
+          "position": 6,
+          "token": 12300,
+          "text": " Rome"
+        }
+      ]
+    },
+    {
+      "case": "prompt3",
+      "sequence_length": 10,
+      "queries": 1,
+      "max_logit_error": 1.917348604862923e-05,
+      "max_hidden_error": 3.552713678800501e-14,
+      "high_precision_logit_error": 9.059419880941277e-14,
+      "source_float32_hidden_difference": 1.3760699356879513e-05,
+      "hidden_relative_l2": 3.2020104309180243e-15,
+      "worst_hidden": {
+        "position": 5,
+        "channel": 67,
+        "native": 10.353658527985015,
+        "reference": 10.35365852798498
+      },
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 235.68407700000193,
+      "native_ms": 78.71187199999952,
+      "predictions": [
+        {
+          "position": 7,
+          "token": 5893,
+          "text": " animal"
+        }
+      ]
+    },
+    {
+      "case": "prompt4",
+      "sequence_length": 9,
+      "queries": 1,
+      "max_logit_error": 1.5597213048224035e-05,
+      "max_hidden_error": 3.552713678800501e-14,
+      "high_precision_logit_error": 1.1368683772161603e-13,
+      "source_float32_hidden_difference": 1.056288254908111e-05,
+      "hidden_relative_l2": 3.1971401669178744e-15,
+      "worst_hidden": {
+        "position": 6,
+        "channel": 67,
+        "native": 34.00579587279712,
+        "reference": 34.00579587279709
+      },
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 212.2668499999918,
+      "native_ms": 73.31950399999698,
+      "predictions": [
+        {
+          "position": 6,
+          "token": 5893,
+          "text": " animal"
+        }
+      ]
+    },
+    {
+      "case": "prompt5",
+      "sequence_length": 10,
+      "queries": 1,
+      "max_logit_error": 1.8832885999131577e-05,
+      "max_hidden_error": 7.105427357601002e-14,
+      "high_precision_logit_error": 1.412203687323199e-13,
+      "source_float32_hidden_difference": 1.3241631350524585e-05,
+      "hidden_relative_l2": 3.903755729281819e-15,
+      "worst_hidden": {
+        "position": 7,
+        "channel": 67,
+        "native": 26.71951232250902,
+        "reference": 26.71951232250909
+      },
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 232.29009400000677,
+      "native_ms": 78.10029200000201,
+      "predictions": [
+        {
+          "position": 7,
+          "token": 330,
+          "text": " C"
+        }
+      ]
+    },
+    {
+      "case": "prompt6",
+      "sequence_length": 10,
+      "queries": 1,
+      "max_logit_error": 1.9832668396446707e-05,
+      "max_hidden_error": 7.105427357601002e-14,
+      "high_precision_logit_error": 1.0658141036401503e-13,
+      "source_float32_hidden_difference": 1.6667942247750034e-05,
+      "hidden_relative_l2": 3.4709806555296212e-15,
+      "worst_hidden": {
+        "position": 7,
+        "channel": 67,
+        "native": 29.715017816921033,
+        "reference": 29.715017816921105
+      },
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 234.45916999999383,
+      "native_ms": 78.41096900000366,
+      "predictions": [
+        {
+          "position": 7,
+          "token": 4146,
+          "text": " Sun"
+        }
+      ]
+    },
+    {
+      "case": "prompt7",
+      "sequence_length": 9,
+      "queries": 1,
+      "max_logit_error": 1.2503810435049445e-05,
+      "max_hidden_error": 3.552713678800501e-14,
+      "high_precision_logit_error": 7.549516567451064e-14,
+      "source_float32_hidden_difference": 1.5637261171264072e-05,
+      "hidden_relative_l2": 2.819516675830659e-15,
+      "worst_hidden": {
+        "position": 6,
+        "channel": 67,
+        "native": 31.91575048244816,
+        "reference": 31.915750482448125
+      },
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 179.9110630000058,
+      "native_ms": 73.72931099999391,
+      "predictions": [
+        {
+          "position": 6,
+          "token": 1071,
+          "text": " test"
+        }
+      ]
+    },
+    {
+      "case": "prompt8",
+      "sequence_length": 8,
+      "queries": 1,
+      "max_logit_error": 1.312463913727413e-05,
+      "max_hidden_error": 5.5067062021407764e-14,
+      "high_precision_logit_error": 2.2382096176443156e-13,
+      "source_float32_hidden_difference": 8.029927677455362e-06,
+      "hidden_relative_l2": 3.574853667505664e-15,
+      "worst_hidden": {
+        "position": 3,
+        "channel": 67,
+        "native": 15.37126229220648,
+        "reference": 15.371262292206534
+      },
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 154.03970599999184,
+      "native_ms": 69.08230399999127,
+      "predictions": [
+        {
+          "position": 5,
+          "token": 2127,
+          "text": " code"
+        }
+      ]
+    },
+    {
+      "case": "prompt9",
+      "sequence_length": 13,
+      "queries": 1,
+      "max_logit_error": 1.6574190766505126e-05,
+      "max_hidden_error": 4.973799150320701e-14,
+      "high_precision_logit_error": 1.2967404927621828e-13,
+      "source_float32_hidden_difference": 1.6053898516332765e-05,
+      "hidden_relative_l2": 3.701673120102067e-15,
+      "worst_hidden": {
+        "position": 10,
+        "channel": 67,
+        "native": 22.437253317709693,
+        "reference": 22.437253317709644
+      },
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 202.5919640000069,
+      "native_ms": 80.8725299999935,
+      "predictions": [
+        {
+          "position": 10,
+          "token": 1273,
+          "text": " second"
+        }
+      ]
+    },
+    {
+      "case": "prompt10",
+      "sequence_length": 13,
+      "queries": 1,
+      "max_logit_error": 2.6991304032719654e-05,
+      "max_hidden_error": 4.618527782440651e-14,
+      "high_precision_logit_error": 1.2612133559741778e-13,
+      "source_float32_hidden_difference": 2.280902014817343e-05,
+      "hidden_relative_l2": 3.203741849210343e-15,
+      "worst_hidden": {
+        "position": 12,
+        "channel": 67,
+        "native": -17.330173413268195,
+        "reference": -17.33017341326815
+      },
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 198.26400599998806,
+      "native_ms": 80.14737999999966,
+      "predictions": [
+        {
+          "position": 9,
+          "token": 1318,
+          "text": " value"
+        }
+      ]
+    },
+    {
+      "case": "prompt11",
+      "sequence_length": 8,
+      "queries": 1,
+      "max_logit_error": 1.631753430952898e-05,
+      "max_hidden_error": 2.4868995751603507e-14,
+      "high_precision_logit_error": 7.593925488436071e-14,
+      "source_float32_hidden_difference": 1.330491411266621e-05,
+      "hidden_relative_l2": 3.058008167060944e-15,
+      "worst_hidden": {
+        "position": 1,
+        "channel": 67,
+        "native": 20.9316602755171,
+        "reference": 20.931660275517075
+      },
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 145.98270199999774,
+      "native_ms": 68.40936300000067,
+      "predictions": [
+        {
+          "position": 5,
+          "token": 2127,
+          "text": " code"
+        }
+      ]
+    },
+    {
+      "case": "prompt12",
+      "sequence_length": 9,
+      "queries": 1,
+      "max_logit_error": 2.20813846780743e-05,
+      "max_hidden_error": 3.552713678800501e-14,
+      "high_precision_logit_error": 9.325873406851315e-14,
+      "source_float32_hidden_difference": 1.2116167022568902e-05,
+      "hidden_relative_l2": 3.1110628366514957e-15,
+      "worst_hidden": {
+        "position": 1,
+        "channel": 67,
+        "native": 23.608835715023645,
+        "reference": 23.60883571502361
+      },
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 178.93767500000024,
+      "native_ms": 73.48480599999618,
+      "predictions": [
+        {
+          "position": 6,
+          "token": 26229,
+          "text": " Vienna"
+        }
+      ]
+    },
+    {
+      "case": "prompt13",
+      "sequence_length": 9,
+      "queries": 1,
+      "max_logit_error": 1.3715801323144206e-05,
+      "max_hidden_error": 4.618527782440651e-14,
+      "high_precision_logit_error": 5.3290705182007514e-14,
+      "source_float32_hidden_difference": 7.222321492861283e-06,
+      "hidden_relative_l2": 2.782169801683874e-15,
+      "worst_hidden": {
+        "position": 1,
+        "channel": 67,
+        "native": 26.82823953051744,
+        "reference": 26.828239530517394
+      },
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 179.0695029999938,
+      "native_ms": 73.804827999993,
+      "predictions": [
+        {
+          "position": 6,
+          "token": 6150,
+          "text": " sea"
+        }
+      ]
+    },
+    {
+      "case": "prompt14",
+      "sequence_length": 9,
+      "queries": 1,
+      "max_logit_error": 1.4165470757276921e-05,
+      "max_hidden_error": 3.552713678800501e-14,
+      "high_precision_logit_error": 6.039613253960852e-14,
+      "source_float32_hidden_difference": 1.0398986750814743e-05,
+      "hidden_relative_l2": 2.7314600300191725e-15,
+      "worst_hidden": {
+        "position": 3,
+        "channel": 67,
+        "native": 16.930995435282163,
+        "reference": 16.9309954352822
+      },
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 178.68490499999723,
+      "native_ms": 73.5151519999988,
+      "predictions": [
+        {
+          "position": 6,
+          "token": 1895,
+          "text": " problem"
+        }
+      ]
+    },
+    {
+      "case": "prompt15",
+      "sequence_length": 9,
+      "queries": 1,
+      "max_logit_error": 1.178671343637916e-05,
+      "max_hidden_error": 3.907985046680551e-14,
+      "high_precision_logit_error": 9.681144774731365e-14,
+      "source_float32_hidden_difference": 2.5465226341836456e-05,
+      "hidden_relative_l2": 2.7317183177888162e-15,
+      "worst_hidden": {
+        "position": 4,
+        "channel": 67,
+        "native": 26.251693728928068,
+        "reference": 26.25169372892803
+      },
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 181.4450660000091,
+      "native_ms": 73.11638299999856,
+      "predictions": [
+        {
+          "position": 6,
+          "token": 3120,
+          "text": " card"
+        }
+      ]
+    },
+    {
+      "case": "prompt16",
+      "sequence_length": 9,
+      "queries": 1,
+      "max_logit_error": 1.342654396352394e-05,
+      "max_hidden_error": 2.842170943040401e-14,
+      "high_precision_logit_error": 9.947598300641403e-14,
+      "source_float32_hidden_difference": 1.3911515233999694e-05,
+      "hidden_relative_l2": 2.8563442231456986e-15,
+      "worst_hidden": {
+        "position": 4,
+        "channel": 67,
+        "native": 13.422396950471251,
+        "reference": 13.42239695047128
+      },
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 179.22236299999383,
+      "native_ms": 74.54410900000141,
+      "predictions": [
+        {
+          "position": 6,
+          "token": 26654,
+          "text": " Wikipedia"
+        }
+      ]
+    },
+    {
+      "case": "prompt17",
+      "sequence_length": 9,
+      "queries": 1,
+      "max_logit_error": 1.9719482681423983e-05,
+      "max_hidden_error": 3.197442310920451e-14,
+      "high_precision_logit_error": 7.904787935331115e-14,
+      "source_float32_hidden_difference": 1.0327668245935229e-05,
+      "hidden_relative_l2": 2.8010634205965062e-15,
+      "worst_hidden": {
+        "position": 1,
+        "channel": 67,
+        "native": 25.183737317561086,
+        "reference": 25.183737317561054
+      },
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 186.60717100000568,
+      "native_ms": 74.75279300000182,
+      "predictions": [
+        {
+          "position": 6,
+          "token": 2854,
+          "text": " drug"
+        }
+      ]
+    },
+    {
+      "case": "prompt18",
+      "sequence_length": 10,
+      "queries": 1,
+      "max_logit_error": 1.2129123702298017e-05,
+      "max_hidden_error": 3.907985046680551e-14,
+      "high_precision_logit_error": 6.572520305780927e-14,
+      "source_float32_hidden_difference": 1.0307440557966174e-05,
+      "hidden_relative_l2": 2.728993234398356e-15,
+      "worst_hidden": {
+        "position": 1,
+        "channel": 67,
+        "native": 26.97123191100802,
+        "reference": 26.971231911008058
+      },
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 203.93062600000178,
+      "native_ms": 78.4305860000103,
+      "predictions": [
+        {
+          "position": 7,
+          "token": 2829,
+          "text": " table"
+        }
+      ]
+    },
+    {
+      "case": "prompt19",
+      "sequence_length": 9,
+      "queries": 1,
+      "max_logit_error": 1.588154375475881e-05,
+      "max_hidden_error": 3.552713678800501e-14,
+      "high_precision_logit_error": 1.0302869668521453e-13,
+      "source_float32_hidden_difference": 1.49489158118854e-05,
+      "hidden_relative_l2": 3.310447610757776e-15,
+      "worst_hidden": {
+        "position": 2,
+        "channel": 67,
+        "native": 10.277406893046308,
+        "reference": 10.277406893046273
+      },
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 179.33909900000344,
+      "native_ms": 73.26027899999588,
+      "predictions": [
+        {
+          "position": 6,
+          "token": 4131,
+          "text": " morning"
+        }
+      ]
+    },
+    {
+      "case": "multiple_masks",
+      "sequence_length": 9,
+      "queries": 2,
+      "max_logit_error": 1.591401629141842e-05,
+      "max_hidden_error": 6.394884621840902e-14,
+      "high_precision_logit_error": 1.0169642905566434e-13,
+      "source_float32_hidden_difference": 1.0585748952962604e-05,
+      "hidden_relative_l2": 3.747169703078686e-15,
+      "worst_hidden": {
+        "position": 6,
+        "channel": 67,
+        "native": 36.44787130352239,
+        "reference": 36.447871303522454
+      },
+      "allclose": true,
+      "top1_correct": 2,
+      "teacher_ms": 205.14919400000053,
+      "native_ms": 83.09981299998981,
+      "predictions": [
+        {
+          "position": 2,
+          "token": 7908,
+          "text": " flag"
+        },
+        {
+          "position": 6,
+          "token": 5112,
+          "text": " French"
+        }
+      ]
+    },
+    {
+      "case": "left_padding",
+      "sequence_length": 14,
+      "queries": 1,
+      "max_logit_error": 2.3694138008067966e-05,
+      "max_hidden_error": 4.973799150320701e-14,
+      "high_precision_logit_error": 1.652011860642233e-13,
+      "source_float32_hidden_difference": 8.654019289622283e-06,
+      "hidden_relative_l2": 3.6072421792010695e-15,
+      "worst_hidden": {
+        "position": 8,
+        "channel": 67,
+        "native": 20.149574410052843,
+        "reference": 20.149574410052793
+      },
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 246.26924100000736,
+      "native_ms": 92.75251100000048,
+      "predictions": [
+        {
+          "position": 11,
+          "token": 7785,
+          "text": " Paris"
+        }
+      ]
+    },
+    {
+      "case": "right_padding",
+      "sequence_length": 14,
+      "queries": 1,
+      "max_logit_error": 2.392985060772901e-05,
+      "max_hidden_error": 8.881784197001252e-14,
+      "high_precision_logit_error": 9.237055564881302e-14,
+      "source_float32_hidden_difference": 1.0590522556697124e-05,
+      "hidden_relative_l2": 3.8864729255389e-15,
+      "worst_hidden": {
+        "position": 1,
+        "channel": 67,
+        "native": 24.228038410278362,
+        "reference": 24.228038410278273
+      },
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 246.15418899999497,
+      "native_ms": 92.95161100000371,
+      "predictions": [
+        {
+          "position": 6,
+          "token": 7785,
+          "text": " Paris"
+        }
+      ]
+    },
+    {
+      "case": "local_global_window_131",
+      "sequence_length": 131,
+      "queries": 1,
+      "max_logit_error": 1.8564082811423077e-05,
+      "max_hidden_error": 7.11064540581674e-12,
+      "high_precision_logit_error": 1.9184653865522705e-13,
+      "source_float32_hidden_difference": 0.003861185199266731,
+      "hidden_relative_l2": 3.358404242937309e-14,
+      "worst_hidden": {
+        "position": 92,
+        "channel": 67,
+        "native": 0.18701245259618157,
+        "reference": 0.18701245258907093
+      },
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 863.7674139999945,
+      "native_ms": 426.9042350000092,
+      "predictions": [
+        {
+          "position": 65,
+          "token": 9826,
+          "text": " ordinary"
+        }
+      ]
+    },
+    {
+      "case": "local_global_window_259",
+      "sequence_length": 259,
+      "queries": 1,
+      "max_logit_error": 2.312755940303557e-05,
+      "max_hidden_error": 2.41051623106614e-11,
+      "high_precision_logit_error": 1.8118839761882555e-13,
+      "source_float32_hidden_difference": 0.0010098246066032601,
+      "hidden_relative_l2": 9.224090344086553e-14,
+      "worst_hidden": {
+        "position": 247,
+        "channel": 251,
+        "native": -14.06850230965299,
+        "reference": -14.068502309628885
+      },
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 1557.0448070000111,
+      "native_ms": 862.9058629999946,
+      "predictions": [
+        {
+          "position": 129,
+          "token": 50282,
+          "text": "[SEP]"
+        }
+      ]
+    },
+    {
+      "case": "maximum_rotary_position",
+      "sequence_length": 259,
+      "queries": 1,
+      "max_logit_error": 5.452769725389217e-05,
+      "max_hidden_error": 6.917133532624575e-12,
+      "high_precision_logit_error": 2.1360690993788012e-13,
+      "source_float32_hidden_difference": 0.0024548899475558272,
+      "hidden_relative_l2": 3.80539628524835e-14,
+      "worst_hidden": {
+        "position": 247,
+        "channel": 251,
+        "native": -14.04476343280635,
+        "reference": -14.044763432813268
+      },
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 1526.1417870000002,
+      "native_ms": 863.6881520000088,
+      "predictions": [
+        {
+          "position": 129,
+          "token": 50282,
+          "text": "[SEP]"
+        }
+      ]
+    }
+  ],
+  "elapsed_seconds": 24.428982546000007,
+  "scope": "Complete ModernBERT-base MLM inference lowering; original dimensions, attention and dense arithmetic retained.",
+  "unsupported": "Training/autograd, custom RoPE scaling, arbitrary architectures, compact full-model replacement.",
+  "artifact_url": "https://github.com/drietsch/spark/actions/runs/41348755846/artifacts/13099344936",
+  "artifact_id": "13099344936",
+  "conversion_outcome": "success"
 }
