@@ -1,0 +1,73 @@
+name: SPARK M17 integrated learned memory and online neural mathematics
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'spark/learned_memory.py'
+      - 'spark/adaptive_reasoner.py'
+      - 'tools/integrated_experiment.py'
+      - 'tools/gru_memory_baseline.py'
+      - 'tests/test_integrated_research.py'
+      - '.github/workflows/integrated-predictive-m17.yml'
+  push:
+    paths:
+      - 'spark/learned_memory.py'
+      - 'spark/adaptive_reasoner.py'
+      - 'tools/integrated_experiment.py'
+      - 'tools/gru_memory_baseline.py'
+      - 'tests/test_integrated_research.py'
+      - '.github/workflows/integrated-predictive-m17.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  learned-memory-hybrid:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install synthesis and GRU comparison dependencies
+        run: python -m pip install numpy torch
+      - name: Test routing, prequential learning, live adaptation and native parity
+        run: python -m unittest discover -s tests -p 'test_integrated_research.py' -v
+      - name: Train memory policy and test integrated SPARK
+        run: python tools/integrated_experiment.py --output artifacts/m17
+      - name: Train neural recurrent comparison on the same training episodes
+        run: python tools/gru_memory_baseline.py --output artifacts/m17/gru.json --epochs 25
+      - name: Verify disjoint long-delay and drift measures
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          r=json.loads(Path('artifacts/m17/report.json').read_text())
+          b=json.loads(Path('artifacts/m17/gru.json').read_text())
+          a=r['unseen_delay_1024_4096']
+          assert a['exact_reads']==a['reads']==240,r
+          assert r['unseen_delay_always_write']['exact_reads']<a['exact_reads'],r
+          assert r['native_memory']['disagreements']==0,r
+          assert r['online_neural']['last_200_improvement_ratio']>20,r
+          assert b['queries'] if 'queries' in b else b['short']['queries']==240,b
+          lines=['## SPARK M17 — first learned delayed-write policy with online neural function',
+           f"- Held-out delayed reads (1,024–4,096 intervening events): {a['exact_reads']}/{a['reads']}",
+           f"- Native/Python policy mismatches: {r['native_memory']['disagreements']}",
+           f"- Last-200 shifted MSE live: {r['online_neural']['changed_last_200_live_mse']:.6g}",
+           f"- Last-200 shifted MSE frozen: {r['online_neural']['changed_last_200_frozen_mse']:.6g}",
+           f"- Neural consolidation candidate accepted: {r['symbolic_consolidation']['proposal']['accepted']}",
+           f"- Larger GRU baseline short MSE: {b['short']['mse']:.6g}",
+           '**Restricted synthetic task with obvious relevance indicator; not Transformer evidence.**']
+          with open(os.environ['GITHUB_STEP_SUMMARY'],'a') as f:f.write('\n\n'.join(lines)+'\n')
+          PY
+      - name: Archive source-derived model, compiled C++ and reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: spark-m17-integrated-learned-memory
+          path: artifacts/m17/
+          retention-days: 14
+          if-no-files-found: warn
