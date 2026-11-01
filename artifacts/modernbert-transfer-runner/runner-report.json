@@ -1,5 +1,18 @@
 {
-  "status": "running",
-  "stage": "dependency-installation",
-  "workflow_url": "https://github.com/drietsch/spark/actions/runs/41339290984"
+  "status": "completed",
+  "checkpoint": "answerdotai/ModernBERT-base",
+  "requested_revision": "main",
+  "layer": 0,
+  "workflow_url": "https://github.com/drietsch/spark/actions/runs/41339290984",
+  "stage": "complete",
+  "resolved_revision": "8949b909ec900327062f0ebf497f51aef5e6f0c8",
+  "hidden": 768,
+  "intermediate": 1152,
+  "activation": "gelu",
+  "reference_samples": 20,
+  "full_checkpoint_downloaded": true,
+  "returned_scope": "Selected feed-forward block and reference data; not the complete checkpoint or converted MLM.",
+  "parameter_count": 149655232,
+  "selected_parameter_count": 2657280,
+  "payload_sha256": "96d5640e3076a66c79f65e9094404b38b866e3c3ab6c6110436b99a624c26172"
 }

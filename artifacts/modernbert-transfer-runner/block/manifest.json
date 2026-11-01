@@ -1,0 +1,15 @@
+{
+  "format": "spark-modernbert-gated-function-v1",
+  "hidden": 768,
+  "intermediate": 1152,
+  "activation": "gelu",
+  "payload_sha256": "96d5640e3076a66c79f65e9094404b38b866e3c3ab6c6110436b99a624c26172",
+  "provenance": {
+    "checkpoint": "answerdotai/ModernBERT-base",
+    "revision": "8949b909ec900327062f0ebf497f51aef5e6f0c8",
+    "layer": 0,
+    "pretrained": true,
+    "source": "https://huggingface.co/answerdotai/ModernBERT-base",
+    "torch": "2.6.0+cpu"
+  }
+}
