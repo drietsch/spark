@@ -9,7 +9,10 @@ import json
 import math
 from dataclasses import dataclass
 from pathlib import Path
-import numpy as np
+try:
+    import numpy as np
+except ImportError:
+    np = None
 
 MAX_ORDER = 6
 
@@ -24,6 +27,7 @@ def _window(sequence, order):
 
 def fit(sequences, *, max_order=4, ridge=1e-6):
     """Fit ARX predictors, choose memory order on TRAIN-only group holdout."""
+    if np is None:raise ImportError('NumPy required for offline fitting only')
     if not 1<=max_order<=MAX_ORDER or len(sequences)<8:raise ValueError('invalid training configuration')
     n=max(2,len(sequences)//5)
     train,tune=sequences[:-n],sequences[-n:]
