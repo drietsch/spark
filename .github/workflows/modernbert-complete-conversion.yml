@@ -1,0 +1,88 @@
+name: Complete ModernBERT mathematical conversion
+on:
+  push:
+    branches:
+      - 'codex/modernbert-complete-*'
+    paths:
+      - '.github/workflows/modernbert-complete-conversion.yml'
+      - 'tools/convert_modernbert_complete.py'
+      - 'tools/run_converted_modernbert.py'
+      - 'spark/modernbert_model.py'
+      - 'runtime/spark_modernbert.cpp'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  convert-and-validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      HF_HUB_DISABLE_XET: '1'
+      OPENBLAS_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Report startup without changing main
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git switch -c "${GITHUB_REF_NAME}-results-${GITHUB_RUN_ID}"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path('artifacts/modernbert-complete');p.mkdir(parents=True,exist_ok=True)
+          (p/'runner-report.json').write_text(json.dumps({'status':'running','stage':'installing-dependencies','workflow_url':f"https://github.com/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}"},indent=2)+'\n')
+          PY
+          git add -f artifacts/modernbert-complete/runner-report.json
+          git commit -m 'Record full ModernBERT conversion startup'
+          git push origin "HEAD:refs/heads/${GITHUB_REF_NAME}-results-${GITHUB_RUN_ID}"
+      - name: Install verified CPU numerical and teacher dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y libopenblas-dev
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.6.0
+          python -m pip install numpy==2.2.6 transformers==4.51.3 safetensors==0.5.3
+      - name: Export all weights and validate native inference
+        id: convert
+        continue-on-error: true
+        env:
+          HF_HOME: ${{ runner.temp }}/modernbert-hub
+        run: python tools/convert_modernbert_complete.py --output artifacts/modernbert-complete
+      - name: Upload the complete runnable converted model
+        id: package
+        if: steps.convert.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: spark-modernbert-base-complete
+          path: artifacts/modernbert-complete/package/
+          compression-level: 6
+          retention-days: 7
+      - name: Return validation and download link through Git
+        if: always()
+        env:
+          ARTIFACT_URL: ${{ steps.package.outputs.artifact-url }}
+          ARTIFACT_ID: ${{ steps.package.outputs.artifact-id }}
+          CONVERSION_OUTCOME: ${{ steps.convert.outcome }}
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          root=Path('artifacts/modernbert-complete');root.mkdir(parents=True,exist_ok=True)
+          path=root/'runner-report.json'
+          r=json.loads(path.read_text()) if path.exists() else {'status':'failed'}
+          if r.get('status')=='running':r.update(status='failed',stage='dependency-installation')
+          r.update(artifact_url=os.environ.get('ARTIFACT_URL'),artifact_id=os.environ.get('ARTIFACT_ID'),conversion_outcome=os.environ.get('CONVERSION_OUTCOME'))
+          path.write_text(json.dumps(r,indent=2)+'\n')
+          PY
+          git add -f artifacts/modernbert-complete/runner-report.json
+          if test -f artifacts/modernbert-complete/validation.json; then git add -f artifacts/modernbert-complete/validation.json; fi
+          if test -f artifacts/modernbert-complete/package/model.json; then cp artifacts/modernbert-complete/package/model.json artifacts/modernbert-complete/program.json; git add -f artifacts/modernbert-complete/program.json; fi
+          git commit -m 'Return complete conversion validation and model artifact link'
+          git push origin "HEAD:refs/heads/${GITHUB_REF_NAME}-results-${GITHUB_RUN_ID}"
+      - name: Preserve conversion failure
+        if: steps.convert.outcome != 'success'
+        run: exit 1
