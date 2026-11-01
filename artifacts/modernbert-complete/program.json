@@ -1,0 +1,2968 @@
+{
+  "arithmetic_precision": "float64",
+  "constants": {
+    "global_rope_theta": 160000.0,
+    "local_rope_theta": 10000.0,
+    "mlp_activation": "gelu",
+    "norm_epsilon": 1e-05,
+    "prediction_activation": "gelu"
+  },
+  "format": "spark-modernbert-mathematical-model-v1",
+  "geometry": {
+    "global_every": 3,
+    "heads": 12,
+    "hidden": 768,
+    "intermediate": 1152,
+    "layers": 22,
+    "local_window": 128,
+    "max_sequence": 8192,
+    "tied_decoder": true,
+    "vocab": 50368
+  },
+  "inference": "masked-language-model evaluation; no training/autograd",
+  "parameter_payload_bytes": 599315024,
+  "parameters": [
+    {
+      "bytes": 154730496,
+      "name": "embedding.weight",
+      "offset": 80,
+      "shape": [
+        50368,
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "embedding.norm.weight",
+      "offset": 154730576,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "embedding.norm.bias",
+      "offset": 154733648,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer0.attention.norm.weight",
+      "offset": 154736720,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer0.attention.norm.bias",
+      "offset": 154739792,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 7077888,
+      "name": "layer0.attention.qkv.weight",
+      "offset": 154742864,
+      "shape": [
+        2304,
+        768
+      ]
+    },
+    {
+      "bytes": 9216,
+      "name": "layer0.attention.qkv.bias",
+      "offset": 161820752,
+      "shape": [
+        2304
+      ]
+    },
+    {
+      "bytes": 2359296,
+      "name": "layer0.attention.output.weight",
+      "offset": 161829968,
+      "shape": [
+        768,
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer0.attention.output.bias",
+      "offset": 164189264,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer0.function.norm.weight",
+      "offset": 164192336,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer0.function.norm.bias",
+      "offset": 164195408,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 7077888,
+      "name": "layer0.function.input.weight",
+      "offset": 164198480,
+      "shape": [
+        2304,
+        768
+      ]
+    },
+    {
+      "bytes": 9216,
+      "name": "layer0.function.input.bias",
+      "offset": 171276368,
+      "shape": [
+        2304
+      ]
+    },
+    {
+      "bytes": 3538944,
+      "name": "layer0.function.output.weight",
+      "offset": 171285584,
+      "shape": [
+        768,
+        1152
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer0.function.output.bias",
+      "offset": 174824528,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 128,
+      "name": "layer0.attention.rotary_frequencies",
+      "offset": 174827600,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer1.attention.norm.weight",
+      "offset": 174827728,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer1.attention.norm.bias",
+      "offset": 174830800,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 7077888,
+      "name": "layer1.attention.qkv.weight",
+      "offset": 174833872,
+      "shape": [
+        2304,
+        768
+      ]
+    },
+    {
+      "bytes": 9216,
+      "name": "layer1.attention.qkv.bias",
+      "offset": 181911760,
+      "shape": [
+        2304
+      ]
+    },
+    {
+      "bytes": 2359296,
+      "name": "layer1.attention.output.weight",
+      "offset": 181920976,
+      "shape": [
+        768,
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer1.attention.output.bias",
+      "offset": 184280272,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer1.function.norm.weight",
+      "offset": 184283344,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer1.function.norm.bias",
+      "offset": 184286416,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 7077888,
+      "name": "layer1.function.input.weight",
+      "offset": 184289488,
+      "shape": [
+        2304,
+        768
+      ]
+    },
+    {
+      "bytes": 9216,
+      "name": "layer1.function.input.bias",
+      "offset": 191367376,
+      "shape": [
+        2304
+      ]
+    },
+    {
+      "bytes": 3538944,
+      "name": "layer1.function.output.weight",
+      "offset": 191376592,
+      "shape": [
+        768,
+        1152
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer1.function.output.bias",
+      "offset": 194915536,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 128,
+      "name": "layer1.attention.rotary_frequencies",
+      "offset": 194918608,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer2.attention.norm.weight",
+      "offset": 194918736,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer2.attention.norm.bias",
+      "offset": 194921808,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 7077888,
+      "name": "layer2.attention.qkv.weight",
+      "offset": 194924880,
+      "shape": [
+        2304,
+        768
+      ]
+    },
+    {
+      "bytes": 9216,
+      "name": "layer2.attention.qkv.bias",
+      "offset": 202002768,
+      "shape": [
+        2304
+      ]
+    },
+    {
+      "bytes": 2359296,
+      "name": "layer2.attention.output.weight",
+      "offset": 202011984,
+      "shape": [
+        768,
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer2.attention.output.bias",
+      "offset": 204371280,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer2.function.norm.weight",
+      "offset": 204374352,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer2.function.norm.bias",
+      "offset": 204377424,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 7077888,
+      "name": "layer2.function.input.weight",
+      "offset": 204380496,
+      "shape": [
+        2304,
+        768
+      ]
+    },
+    {
+      "bytes": 9216,
+      "name": "layer2.function.input.bias",
+      "offset": 211458384,
+      "shape": [
+        2304
+      ]
+    },
+    {
+      "bytes": 3538944,
+      "name": "layer2.function.output.weight",
+      "offset": 211467600,
+      "shape": [
+        768,
+        1152
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer2.function.output.bias",
+      "offset": 215006544,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 128,
+      "name": "layer2.attention.rotary_frequencies",
+      "offset": 215009616,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer3.attention.norm.weight",
+      "offset": 215009744,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer3.attention.norm.bias",
+      "offset": 215012816,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 7077888,
+      "name": "layer3.attention.qkv.weight",
+      "offset": 215015888,
+      "shape": [
+        2304,
+        768
+      ]
+    },
+    {
+      "bytes": 9216,
+      "name": "layer3.attention.qkv.bias",
+      "offset": 222093776,
+      "shape": [
+        2304
+      ]
+    },
+    {
+      "bytes": 2359296,
+      "name": "layer3.attention.output.weight",
+      "offset": 222102992,
+      "shape": [
+        768,
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer3.attention.output.bias",
+      "offset": 224462288,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer3.function.norm.weight",
+      "offset": 224465360,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer3.function.norm.bias",
+      "offset": 224468432,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 7077888,
+      "name": "layer3.function.input.weight",
+      "offset": 224471504,
+      "shape": [
+        2304,
+        768
+      ]
+    },
+    {
+      "bytes": 9216,
+      "name": "layer3.function.input.bias",
+      "offset": 231549392,
+      "shape": [
+        2304
+      ]
+    },
+    {
+      "bytes": 3538944,
+      "name": "layer3.function.output.weight",
+      "offset": 231558608,
+      "shape": [
+        768,
+        1152
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer3.function.output.bias",
+      "offset": 235097552,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 128,
+      "name": "layer3.attention.rotary_frequencies",
+      "offset": 235100624,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer4.attention.norm.weight",
+      "offset": 235100752,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer4.attention.norm.bias",
+      "offset": 235103824,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 7077888,
+      "name": "layer4.attention.qkv.weight",
+      "offset": 235106896,
+      "shape": [
+        2304,
+        768
+      ]
+    },
+    {
+      "bytes": 9216,
+      "name": "layer4.attention.qkv.bias",
+      "offset": 242184784,
+      "shape": [
+        2304
+      ]
+    },
+    {
+      "bytes": 2359296,
+      "name": "layer4.attention.output.weight",
+      "offset": 242194000,
+      "shape": [
+        768,
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer4.attention.output.bias",
+      "offset": 244553296,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer4.function.norm.weight",
+      "offset": 244556368,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer4.function.norm.bias",
+      "offset": 244559440,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 7077888,
+      "name": "layer4.function.input.weight",
+      "offset": 244562512,
+      "shape": [
+        2304,
+        768
+      ]
+    },
+    {
+      "bytes": 9216,
+      "name": "layer4.function.input.bias",
+      "offset": 251640400,
+      "shape": [
+        2304
+      ]
+    },
+    {
+      "bytes": 3538944,
+      "name": "layer4.function.output.weight",
+      "offset": 251649616,
+      "shape": [
+        768,
+        1152
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer4.function.output.bias",
+      "offset": 255188560,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 128,
+      "name": "layer4.attention.rotary_frequencies",
+      "offset": 255191632,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer5.attention.norm.weight",
+      "offset": 255191760,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer5.attention.norm.bias",
+      "offset": 255194832,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 7077888,
+      "name": "layer5.attention.qkv.weight",
+      "offset": 255197904,
+      "shape": [
+        2304,
+        768
+      ]
+    },
+    {
+      "bytes": 9216,
+      "name": "layer5.attention.qkv.bias",
+      "offset": 262275792,
+      "shape": [
+        2304
+      ]
+    },
+    {
+      "bytes": 2359296,
+      "name": "layer5.attention.output.weight",
+      "offset": 262285008,
+      "shape": [
+        768,
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer5.attention.output.bias",
+      "offset": 264644304,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer5.function.norm.weight",
+      "offset": 264647376,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer5.function.norm.bias",
+      "offset": 264650448,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 7077888,
+      "name": "layer5.function.input.weight",
+      "offset": 264653520,
+      "shape": [
+        2304,
+        768
+      ]
+    },
+    {
+      "bytes": 9216,
+      "name": "layer5.function.input.bias",
+      "offset": 271731408,
+      "shape": [
+        2304
+      ]
+    },
+    {
+      "bytes": 3538944,
+      "name": "layer5.function.output.weight",
+      "offset": 271740624,
+      "shape": [
+        768,
+        1152
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer5.function.output.bias",
+      "offset": 275279568,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 128,
+      "name": "layer5.attention.rotary_frequencies",
+      "offset": 275282640,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer6.attention.norm.weight",
+      "offset": 275282768,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer6.attention.norm.bias",
+      "offset": 275285840,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 7077888,
+      "name": "layer6.attention.qkv.weight",
+      "offset": 275288912,
+      "shape": [
+        2304,
+        768
+      ]
+    },
+    {
+      "bytes": 9216,
+      "name": "layer6.attention.qkv.bias",
+      "offset": 282366800,
+      "shape": [
+        2304
+      ]
+    },
+    {
+      "bytes": 2359296,
+      "name": "layer6.attention.output.weight",
+      "offset": 282376016,
+      "shape": [
+        768,
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer6.attention.output.bias",
+      "offset": 284735312,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer6.function.norm.weight",
+      "offset": 284738384,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer6.function.norm.bias",
+      "offset": 284741456,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 7077888,
+      "name": "layer6.function.input.weight",
+      "offset": 284744528,
+      "shape": [
+        2304,
+        768
+      ]
+    },
+    {
+      "bytes": 9216,
+      "name": "layer6.function.input.bias",
+      "offset": 291822416,
+      "shape": [
+        2304
+      ]
+    },
+    {
+      "bytes": 3538944,
+      "name": "layer6.function.output.weight",
+      "offset": 291831632,
+      "shape": [
+        768,
+        1152
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer6.function.output.bias",
+      "offset": 295370576,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 128,
+      "name": "layer6.attention.rotary_frequencies",
+      "offset": 295373648,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer7.attention.norm.weight",
+      "offset": 295373776,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer7.attention.norm.bias",
+      "offset": 295376848,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 7077888,
+      "name": "layer7.attention.qkv.weight",
+      "offset": 295379920,
+      "shape": [
+        2304,
+        768
+      ]
+    },
+    {
+      "bytes": 9216,
+      "name": "layer7.attention.qkv.bias",
+      "offset": 302457808,
+      "shape": [
+        2304
+      ]
+    },
+    {
+      "bytes": 2359296,
+      "name": "layer7.attention.output.weight",
+      "offset": 302467024,
+      "shape": [
+        768,
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer7.attention.output.bias",
+      "offset": 304826320,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer7.function.norm.weight",
+      "offset": 304829392,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer7.function.norm.bias",
+      "offset": 304832464,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 7077888,
+      "name": "layer7.function.input.weight",
+      "offset": 304835536,
+      "shape": [
+        2304,
+        768
+      ]
+    },
+    {
+      "bytes": 9216,
+      "name": "layer7.function.input.bias",
+      "offset": 311913424,
+      "shape": [
+        2304
+      ]
+    },
+    {
+      "bytes": 3538944,
+      "name": "layer7.function.output.weight",
+      "offset": 311922640,
+      "shape": [
+        768,
+        1152
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer7.function.output.bias",
+      "offset": 315461584,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 128,
+      "name": "layer7.attention.rotary_frequencies",
+      "offset": 315464656,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer8.attention.norm.weight",
+      "offset": 315464784,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer8.attention.norm.bias",
+      "offset": 315467856,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 7077888,
+      "name": "layer8.attention.qkv.weight",
+      "offset": 315470928,
+      "shape": [
+        2304,
+        768
+      ]
+    },
+    {
+      "bytes": 9216,
+      "name": "layer8.attention.qkv.bias",
+      "offset": 322548816,
+      "shape": [
+        2304
+      ]
+    },
+    {
+      "bytes": 2359296,
+      "name": "layer8.attention.output.weight",
+      "offset": 322558032,
+      "shape": [
+        768,
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer8.attention.output.bias",
+      "offset": 324917328,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer8.function.norm.weight",
+      "offset": 324920400,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer8.function.norm.bias",
+      "offset": 324923472,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 7077888,
+      "name": "layer8.function.input.weight",
+      "offset": 324926544,
+      "shape": [
+        2304,
+        768
+      ]
+    },
+    {
+      "bytes": 9216,
+      "name": "layer8.function.input.bias",
+      "offset": 332004432,
+      "shape": [
+        2304
+      ]
+    },
+    {
+      "bytes": 3538944,
+      "name": "layer8.function.output.weight",
+      "offset": 332013648,
+      "shape": [
+        768,
+        1152
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer8.function.output.bias",
+      "offset": 335552592,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 128,
+      "name": "layer8.attention.rotary_frequencies",
+      "offset": 335555664,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer9.attention.norm.weight",
+      "offset": 335555792,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer9.attention.norm.bias",
+      "offset": 335558864,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 7077888,
+      "name": "layer9.attention.qkv.weight",
+      "offset": 335561936,
+      "shape": [
+        2304,
+        768
+      ]
+    },
+    {
+      "bytes": 9216,
+      "name": "layer9.attention.qkv.bias",
+      "offset": 342639824,
+      "shape": [
+        2304
+      ]
+    },
+    {
+      "bytes": 2359296,
+      "name": "layer9.attention.output.weight",
+      "offset": 342649040,
+      "shape": [
+        768,
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer9.attention.output.bias",
+      "offset": 345008336,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer9.function.norm.weight",
+      "offset": 345011408,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer9.function.norm.bias",
+      "offset": 345014480,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 7077888,
+      "name": "layer9.function.input.weight",
+      "offset": 345017552,
+      "shape": [
+        2304,
+        768
+      ]
+    },
+    {
+      "bytes": 9216,
+      "name": "layer9.function.input.bias",
+      "offset": 352095440,
+      "shape": [
+        2304
+      ]
+    },
+    {
+      "bytes": 3538944,
+      "name": "layer9.function.output.weight",
+      "offset": 352104656,
+      "shape": [
+        768,
+        1152
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer9.function.output.bias",
+      "offset": 355643600,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 128,
+      "name": "layer9.attention.rotary_frequencies",
+      "offset": 355646672,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer10.attention.norm.weight",
+      "offset": 355646800,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer10.attention.norm.bias",
+      "offset": 355649872,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 7077888,
+      "name": "layer10.attention.qkv.weight",
+      "offset": 355652944,
+      "shape": [
+        2304,
+        768
+      ]
+    },
+    {
+      "bytes": 9216,
+      "name": "layer10.attention.qkv.bias",
+      "offset": 362730832,
+      "shape": [
+        2304
+      ]
+    },
+    {
+      "bytes": 2359296,
+      "name": "layer10.attention.output.weight",
+      "offset": 362740048,
+      "shape": [
+        768,
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer10.attention.output.bias",
+      "offset": 365099344,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer10.function.norm.weight",
+      "offset": 365102416,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer10.function.norm.bias",
+      "offset": 365105488,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 7077888,
+      "name": "layer10.function.input.weight",
+      "offset": 365108560,
+      "shape": [
+        2304,
+        768
+      ]
+    },
+    {
+      "bytes": 9216,
+      "name": "layer10.function.input.bias",
+      "offset": 372186448,
+      "shape": [
+        2304
+      ]
+    },
+    {
+      "bytes": 3538944,
+      "name": "layer10.function.output.weight",
+      "offset": 372195664,
+      "shape": [
+        768,
+        1152
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer10.function.output.bias",
+      "offset": 375734608,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 128,
+      "name": "layer10.attention.rotary_frequencies",
+      "offset": 375737680,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer11.attention.norm.weight",
+      "offset": 375737808,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer11.attention.norm.bias",
+      "offset": 375740880,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 7077888,
+      "name": "layer11.attention.qkv.weight",
+      "offset": 375743952,
+      "shape": [
+        2304,
+        768
+      ]
+    },
+    {
+      "bytes": 9216,
+      "name": "layer11.attention.qkv.bias",
+      "offset": 382821840,
+      "shape": [
+        2304
+      ]
+    },
+    {
+      "bytes": 2359296,
+      "name": "layer11.attention.output.weight",
+      "offset": 382831056,
+      "shape": [
+        768,
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer11.attention.output.bias",
+      "offset": 385190352,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer11.function.norm.weight",
+      "offset": 385193424,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer11.function.norm.bias",
+      "offset": 385196496,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 7077888,
+      "name": "layer11.function.input.weight",
+      "offset": 385199568,
+      "shape": [
+        2304,
+        768
+      ]
+    },
+    {
+      "bytes": 9216,
+      "name": "layer11.function.input.bias",
+      "offset": 392277456,
+      "shape": [
+        2304
+      ]
+    },
+    {
+      "bytes": 3538944,
+      "name": "layer11.function.output.weight",
+      "offset": 392286672,
+      "shape": [
+        768,
+        1152
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer11.function.output.bias",
+      "offset": 395825616,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 128,
+      "name": "layer11.attention.rotary_frequencies",
+      "offset": 395828688,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer12.attention.norm.weight",
+      "offset": 395828816,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer12.attention.norm.bias",
+      "offset": 395831888,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 7077888,
+      "name": "layer12.attention.qkv.weight",
+      "offset": 395834960,
+      "shape": [
+        2304,
+        768
+      ]
+    },
+    {
+      "bytes": 9216,
+      "name": "layer12.attention.qkv.bias",
+      "offset": 402912848,
+      "shape": [
+        2304
+      ]
+    },
+    {
+      "bytes": 2359296,
+      "name": "layer12.attention.output.weight",
+      "offset": 402922064,
+      "shape": [
+        768,
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer12.attention.output.bias",
+      "offset": 405281360,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer12.function.norm.weight",
+      "offset": 405284432,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer12.function.norm.bias",
+      "offset": 405287504,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 7077888,
+      "name": "layer12.function.input.weight",
+      "offset": 405290576,
+      "shape": [
+        2304,
+        768
+      ]
+    },
+    {
+      "bytes": 9216,
+      "name": "layer12.function.input.bias",
+      "offset": 412368464,
+      "shape": [
+        2304
+      ]
+    },
+    {
+      "bytes": 3538944,
+      "name": "layer12.function.output.weight",
+      "offset": 412377680,
+      "shape": [
+        768,
+        1152
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer12.function.output.bias",
+      "offset": 415916624,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 128,
+      "name": "layer12.attention.rotary_frequencies",
+      "offset": 415919696,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer13.attention.norm.weight",
+      "offset": 415919824,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer13.attention.norm.bias",
+      "offset": 415922896,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 7077888,
+      "name": "layer13.attention.qkv.weight",
+      "offset": 415925968,
+      "shape": [
+        2304,
+        768
+      ]
+    },
+    {
+      "bytes": 9216,
+      "name": "layer13.attention.qkv.bias",
+      "offset": 423003856,
+      "shape": [
+        2304
+      ]
+    },
+    {
+      "bytes": 2359296,
+      "name": "layer13.attention.output.weight",
+      "offset": 423013072,
+      "shape": [
+        768,
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer13.attention.output.bias",
+      "offset": 425372368,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer13.function.norm.weight",
+      "offset": 425375440,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer13.function.norm.bias",
+      "offset": 425378512,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 7077888,
+      "name": "layer13.function.input.weight",
+      "offset": 425381584,
+      "shape": [
+        2304,
+        768
+      ]
+    },
+    {
+      "bytes": 9216,
+      "name": "layer13.function.input.bias",
+      "offset": 432459472,
+      "shape": [
+        2304
+      ]
+    },
+    {
+      "bytes": 3538944,
+      "name": "layer13.function.output.weight",
+      "offset": 432468688,
+      "shape": [
+        768,
+        1152
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer13.function.output.bias",
+      "offset": 436007632,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 128,
+      "name": "layer13.attention.rotary_frequencies",
+      "offset": 436010704,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer14.attention.norm.weight",
+      "offset": 436010832,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer14.attention.norm.bias",
+      "offset": 436013904,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 7077888,
+      "name": "layer14.attention.qkv.weight",
+      "offset": 436016976,
+      "shape": [
+        2304,
+        768
+      ]
+    },
+    {
+      "bytes": 9216,
+      "name": "layer14.attention.qkv.bias",
+      "offset": 443094864,
+      "shape": [
+        2304
+      ]
+    },
+    {
+      "bytes": 2359296,
+      "name": "layer14.attention.output.weight",
+      "offset": 443104080,
+      "shape": [
+        768,
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer14.attention.output.bias",
+      "offset": 445463376,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer14.function.norm.weight",
+      "offset": 445466448,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer14.function.norm.bias",
+      "offset": 445469520,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 7077888,
+      "name": "layer14.function.input.weight",
+      "offset": 445472592,
+      "shape": [
+        2304,
+        768
+      ]
+    },
+    {
+      "bytes": 9216,
+      "name": "layer14.function.input.bias",
+      "offset": 452550480,
+      "shape": [
+        2304
+      ]
+    },
+    {
+      "bytes": 3538944,
+      "name": "layer14.function.output.weight",
+      "offset": 452559696,
+      "shape": [
+        768,
+        1152
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer14.function.output.bias",
+      "offset": 456098640,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 128,
+      "name": "layer14.attention.rotary_frequencies",
+      "offset": 456101712,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer15.attention.norm.weight",
+      "offset": 456101840,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer15.attention.norm.bias",
+      "offset": 456104912,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 7077888,
+      "name": "layer15.attention.qkv.weight",
+      "offset": 456107984,
+      "shape": [
+        2304,
+        768
+      ]
+    },
+    {
+      "bytes": 9216,
+      "name": "layer15.attention.qkv.bias",
+      "offset": 463185872,
+      "shape": [
+        2304
+      ]
+    },
+    {
+      "bytes": 2359296,
+      "name": "layer15.attention.output.weight",
+      "offset": 463195088,
+      "shape": [
+        768,
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer15.attention.output.bias",
+      "offset": 465554384,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer15.function.norm.weight",
+      "offset": 465557456,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer15.function.norm.bias",
+      "offset": 465560528,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 7077888,
+      "name": "layer15.function.input.weight",
+      "offset": 465563600,
+      "shape": [
+        2304,
+        768
+      ]
+    },
+    {
+      "bytes": 9216,
+      "name": "layer15.function.input.bias",
+      "offset": 472641488,
+      "shape": [
+        2304
+      ]
+    },
+    {
+      "bytes": 3538944,
+      "name": "layer15.function.output.weight",
+      "offset": 472650704,
+      "shape": [
+        768,
+        1152
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer15.function.output.bias",
+      "offset": 476189648,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 128,
+      "name": "layer15.attention.rotary_frequencies",
+      "offset": 476192720,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer16.attention.norm.weight",
+      "offset": 476192848,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer16.attention.norm.bias",
+      "offset": 476195920,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 7077888,
+      "name": "layer16.attention.qkv.weight",
+      "offset": 476198992,
+      "shape": [
+        2304,
+        768
+      ]
+    },
+    {
+      "bytes": 9216,
+      "name": "layer16.attention.qkv.bias",
+      "offset": 483276880,
+      "shape": [
+        2304
+      ]
+    },
+    {
+      "bytes": 2359296,
+      "name": "layer16.attention.output.weight",
+      "offset": 483286096,
+      "shape": [
+        768,
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer16.attention.output.bias",
+      "offset": 485645392,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer16.function.norm.weight",
+      "offset": 485648464,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer16.function.norm.bias",
+      "offset": 485651536,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 7077888,
+      "name": "layer16.function.input.weight",
+      "offset": 485654608,
+      "shape": [
+        2304,
+        768
+      ]
+    },
+    {
+      "bytes": 9216,
+      "name": "layer16.function.input.bias",
+      "offset": 492732496,
+      "shape": [
+        2304
+      ]
+    },
+    {
+      "bytes": 3538944,
+      "name": "layer16.function.output.weight",
+      "offset": 492741712,
+      "shape": [
+        768,
+        1152
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer16.function.output.bias",
+      "offset": 496280656,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 128,
+      "name": "layer16.attention.rotary_frequencies",
+      "offset": 496283728,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer17.attention.norm.weight",
+      "offset": 496283856,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer17.attention.norm.bias",
+      "offset": 496286928,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 7077888,
+      "name": "layer17.attention.qkv.weight",
+      "offset": 496290000,
+      "shape": [
+        2304,
+        768
+      ]
+    },
+    {
+      "bytes": 9216,
+      "name": "layer17.attention.qkv.bias",
+      "offset": 503367888,
+      "shape": [
+        2304
+      ]
+    },
+    {
+      "bytes": 2359296,
+      "name": "layer17.attention.output.weight",
+      "offset": 503377104,
+      "shape": [
+        768,
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer17.attention.output.bias",
+      "offset": 505736400,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer17.function.norm.weight",
+      "offset": 505739472,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer17.function.norm.bias",
+      "offset": 505742544,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 7077888,
+      "name": "layer17.function.input.weight",
+      "offset": 505745616,
+      "shape": [
+        2304,
+        768
+      ]
+    },
+    {
+      "bytes": 9216,
+      "name": "layer17.function.input.bias",
+      "offset": 512823504,
+      "shape": [
+        2304
+      ]
+    },
+    {
+      "bytes": 3538944,
+      "name": "layer17.function.output.weight",
+      "offset": 512832720,
+      "shape": [
+        768,
+        1152
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer17.function.output.bias",
+      "offset": 516371664,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 128,
+      "name": "layer17.attention.rotary_frequencies",
+      "offset": 516374736,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer18.attention.norm.weight",
+      "offset": 516374864,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer18.attention.norm.bias",
+      "offset": 516377936,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 7077888,
+      "name": "layer18.attention.qkv.weight",
+      "offset": 516381008,
+      "shape": [
+        2304,
+        768
+      ]
+    },
+    {
+      "bytes": 9216,
+      "name": "layer18.attention.qkv.bias",
+      "offset": 523458896,
+      "shape": [
+        2304
+      ]
+    },
+    {
+      "bytes": 2359296,
+      "name": "layer18.attention.output.weight",
+      "offset": 523468112,
+      "shape": [
+        768,
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer18.attention.output.bias",
+      "offset": 525827408,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer18.function.norm.weight",
+      "offset": 525830480,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer18.function.norm.bias",
+      "offset": 525833552,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 7077888,
+      "name": "layer18.function.input.weight",
+      "offset": 525836624,
+      "shape": [
+        2304,
+        768
+      ]
+    },
+    {
+      "bytes": 9216,
+      "name": "layer18.function.input.bias",
+      "offset": 532914512,
+      "shape": [
+        2304
+      ]
+    },
+    {
+      "bytes": 3538944,
+      "name": "layer18.function.output.weight",
+      "offset": 532923728,
+      "shape": [
+        768,
+        1152
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer18.function.output.bias",
+      "offset": 536462672,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 128,
+      "name": "layer18.attention.rotary_frequencies",
+      "offset": 536465744,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer19.attention.norm.weight",
+      "offset": 536465872,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer19.attention.norm.bias",
+      "offset": 536468944,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 7077888,
+      "name": "layer19.attention.qkv.weight",
+      "offset": 536472016,
+      "shape": [
+        2304,
+        768
+      ]
+    },
+    {
+      "bytes": 9216,
+      "name": "layer19.attention.qkv.bias",
+      "offset": 543549904,
+      "shape": [
+        2304
+      ]
+    },
+    {
+      "bytes": 2359296,
+      "name": "layer19.attention.output.weight",
+      "offset": 543559120,
+      "shape": [
+        768,
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer19.attention.output.bias",
+      "offset": 545918416,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer19.function.norm.weight",
+      "offset": 545921488,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer19.function.norm.bias",
+      "offset": 545924560,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 7077888,
+      "name": "layer19.function.input.weight",
+      "offset": 545927632,
+      "shape": [
+        2304,
+        768
+      ]
+    },
+    {
+      "bytes": 9216,
+      "name": "layer19.function.input.bias",
+      "offset": 553005520,
+      "shape": [
+        2304
+      ]
+    },
+    {
+      "bytes": 3538944,
+      "name": "layer19.function.output.weight",
+      "offset": 553014736,
+      "shape": [
+        768,
+        1152
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer19.function.output.bias",
+      "offset": 556553680,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 128,
+      "name": "layer19.attention.rotary_frequencies",
+      "offset": 556556752,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer20.attention.norm.weight",
+      "offset": 556556880,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer20.attention.norm.bias",
+      "offset": 556559952,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 7077888,
+      "name": "layer20.attention.qkv.weight",
+      "offset": 556563024,
+      "shape": [
+        2304,
+        768
+      ]
+    },
+    {
+      "bytes": 9216,
+      "name": "layer20.attention.qkv.bias",
+      "offset": 563640912,
+      "shape": [
+        2304
+      ]
+    },
+    {
+      "bytes": 2359296,
+      "name": "layer20.attention.output.weight",
+      "offset": 563650128,
+      "shape": [
+        768,
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer20.attention.output.bias",
+      "offset": 566009424,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer20.function.norm.weight",
+      "offset": 566012496,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer20.function.norm.bias",
+      "offset": 566015568,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 7077888,
+      "name": "layer20.function.input.weight",
+      "offset": 566018640,
+      "shape": [
+        2304,
+        768
+      ]
+    },
+    {
+      "bytes": 9216,
+      "name": "layer20.function.input.bias",
+      "offset": 573096528,
+      "shape": [
+        2304
+      ]
+    },
+    {
+      "bytes": 3538944,
+      "name": "layer20.function.output.weight",
+      "offset": 573105744,
+      "shape": [
+        768,
+        1152
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer20.function.output.bias",
+      "offset": 576644688,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 128,
+      "name": "layer20.attention.rotary_frequencies",
+      "offset": 576647760,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer21.attention.norm.weight",
+      "offset": 576647888,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer21.attention.norm.bias",
+      "offset": 576650960,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 7077888,
+      "name": "layer21.attention.qkv.weight",
+      "offset": 576654032,
+      "shape": [
+        2304,
+        768
+      ]
+    },
+    {
+      "bytes": 9216,
+      "name": "layer21.attention.qkv.bias",
+      "offset": 583731920,
+      "shape": [
+        2304
+      ]
+    },
+    {
+      "bytes": 2359296,
+      "name": "layer21.attention.output.weight",
+      "offset": 583741136,
+      "shape": [
+        768,
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer21.attention.output.bias",
+      "offset": 586100432,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer21.function.norm.weight",
+      "offset": 586103504,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer21.function.norm.bias",
+      "offset": 586106576,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 7077888,
+      "name": "layer21.function.input.weight",
+      "offset": 586109648,
+      "shape": [
+        2304,
+        768
+      ]
+    },
+    {
+      "bytes": 9216,
+      "name": "layer21.function.input.bias",
+      "offset": 593187536,
+      "shape": [
+        2304
+      ]
+    },
+    {
+      "bytes": 3538944,
+      "name": "layer21.function.output.weight",
+      "offset": 593196752,
+      "shape": [
+        768,
+        1152
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "layer21.function.output.bias",
+      "offset": 596735696,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 128,
+      "name": "layer21.attention.rotary_frequencies",
+      "offset": 596738768,
+      "shape": [
+        32
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "final.norm.weight",
+      "offset": 596738896,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "final.norm.bias",
+      "offset": 596741968,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 2359296,
+      "name": "prediction.dense.weight",
+      "offset": 596745040,
+      "shape": [
+        768,
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "prediction.dense.bias",
+      "offset": 599104336,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "prediction.norm.weight",
+      "offset": 599107408,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 3072,
+      "name": "prediction.norm.bias",
+      "offset": 599110480,
+      "shape": [
+        768
+      ]
+    },
+    {
+      "bytes": 201472,
+      "name": "decoder.bias",
+      "offset": 599113552,
+      "shape": [
+        50368
+      ]
+    }
+  ],
+  "program": [
+    {
+      "id": "embedding",
+      "inputs": [
+        "input_ids"
+      ],
+      "op": "embedding_lookup_layer_norm",
+      "output": "state"
+    },
+    {
+      "attention": "global",
+      "id": "layer0.attention",
+      "inputs": [
+        "state",
+        "attention_mask",
+        "position_ids"
+      ],
+      "normalize_input": false,
+      "op": "rotary_attention_residual",
+      "output": "state"
+    },
+    {
+      "id": "layer0.function",
+      "inputs": [
+        "state"
+      ],
+      "op": "normalized_gelu_gated_function_residual",
+      "output": "state"
+    },
+    {
+      "attention": "local",
+      "id": "layer1.attention",
+      "inputs": [
+        "state",
+        "attention_mask",
+        "position_ids"
+      ],
+      "normalize_input": true,
+      "op": "rotary_attention_residual",
+      "output": "state"
+    },
+    {
+      "id": "layer1.function",
+      "inputs": [
+        "state"
+      ],
+      "op": "normalized_gelu_gated_function_residual",
+      "output": "state"
+    },
+    {
+      "attention": "local",
+      "id": "layer2.attention",
+      "inputs": [
+        "state",
+        "attention_mask",
+        "position_ids"
+      ],
+      "normalize_input": true,
+      "op": "rotary_attention_residual",
+      "output": "state"
+    },
+    {
+      "id": "layer2.function",
+      "inputs": [
+        "state"
+      ],
+      "op": "normalized_gelu_gated_function_residual",
+      "output": "state"
+    },
+    {
+      "attention": "global",
+      "id": "layer3.attention",
+      "inputs": [
+        "state",
+        "attention_mask",
+        "position_ids"
+      ],
+      "normalize_input": true,
+      "op": "rotary_attention_residual",
+      "output": "state"
+    },
+    {
+      "id": "layer3.function",
+      "inputs": [
+        "state"
+      ],
+      "op": "normalized_gelu_gated_function_residual",
+      "output": "state"
+    },
+    {
+      "attention": "local",
+      "id": "layer4.attention",
+      "inputs": [
+        "state",
+        "attention_mask",
+        "position_ids"
+      ],
+      "normalize_input": true,
+      "op": "rotary_attention_residual",
+      "output": "state"
+    },
+    {
+      "id": "layer4.function",
+      "inputs": [
+        "state"
+      ],
+      "op": "normalized_gelu_gated_function_residual",
+      "output": "state"
+    },
+    {
+      "attention": "local",
+      "id": "layer5.attention",
+      "inputs": [
+        "state",
+        "attention_mask",
+        "position_ids"
+      ],
+      "normalize_input": true,
+      "op": "rotary_attention_residual",
+      "output": "state"
+    },
+    {
+      "id": "layer5.function",
+      "inputs": [
+        "state"
+      ],
+      "op": "normalized_gelu_gated_function_residual",
+      "output": "state"
+    },
+    {
+      "attention": "global",
+      "id": "layer6.attention",
+      "inputs": [
+        "state",
+        "attention_mask",
+        "position_ids"
+      ],
+      "normalize_input": true,
+      "op": "rotary_attention_residual",
+      "output": "state"
+    },
+    {
+      "id": "layer6.function",
+      "inputs": [
+        "state"
+      ],
+      "op": "normalized_gelu_gated_function_residual",
+      "output": "state"
+    },
+    {
+      "attention": "local",
+      "id": "layer7.attention",
+      "inputs": [
+        "state",
+        "attention_mask",
+        "position_ids"
+      ],
+      "normalize_input": true,
+      "op": "rotary_attention_residual",
+      "output": "state"
+    },
+    {
+      "id": "layer7.function",
+      "inputs": [
+        "state"
+      ],
+      "op": "normalized_gelu_gated_function_residual",
+      "output": "state"
+    },
+    {
+      "attention": "local",
+      "id": "layer8.attention",
+      "inputs": [
+        "state",
+        "attention_mask",
+        "position_ids"
+      ],
+      "normalize_input": true,
+      "op": "rotary_attention_residual",
+      "output": "state"
+    },
+    {
+      "id": "layer8.function",
+      "inputs": [
+        "state"
+      ],
+      "op": "normalized_gelu_gated_function_residual",
+      "output": "state"
+    },
+    {
+      "attention": "global",
+      "id": "layer9.attention",
+      "inputs": [
+        "state",
+        "attention_mask",
+        "position_ids"
+      ],
+      "normalize_input": true,
+      "op": "rotary_attention_residual",
+      "output": "state"
+    },
+    {
+      "id": "layer9.function",
+      "inputs": [
+        "state"
+      ],
+      "op": "normalized_gelu_gated_function_residual",
+      "output": "state"
+    },
+    {
+      "attention": "local",
+      "id": "layer10.attention",
+      "inputs": [
+        "state",
+        "attention_mask",
+        "position_ids"
+      ],
+      "normalize_input": true,
+      "op": "rotary_attention_residual",
+      "output": "state"
+    },
+    {
+      "id": "layer10.function",
+      "inputs": [
+        "state"
+      ],
+      "op": "normalized_gelu_gated_function_residual",
+      "output": "state"
+    },
+    {
+      "attention": "local",
+      "id": "layer11.attention",
+      "inputs": [
+        "state",
+        "attention_mask",
+        "position_ids"
+      ],
+      "normalize_input": true,
+      "op": "rotary_attention_residual",
+      "output": "state"
+    },
+    {
+      "id": "layer11.function",
+      "inputs": [
+        "state"
+      ],
+      "op": "normalized_gelu_gated_function_residual",
+      "output": "state"
+    },
+    {
+      "attention": "global",
+      "id": "layer12.attention",
+      "inputs": [
+        "state",
+        "attention_mask",
+        "position_ids"
+      ],
+      "normalize_input": true,
+      "op": "rotary_attention_residual",
+      "output": "state"
+    },
+    {
+      "id": "layer12.function",
+      "inputs": [
+        "state"
+      ],
+      "op": "normalized_gelu_gated_function_residual",
+      "output": "state"
+    },
+    {
+      "attention": "local",
+      "id": "layer13.attention",
+      "inputs": [
+        "state",
+        "attention_mask",
+        "position_ids"
+      ],
+      "normalize_input": true,
+      "op": "rotary_attention_residual",
+      "output": "state"
+    },
+    {
+      "id": "layer13.function",
+      "inputs": [
+        "state"
+      ],
+      "op": "normalized_gelu_gated_function_residual",
+      "output": "state"
+    },
+    {
+      "attention": "local",
+      "id": "layer14.attention",
+      "inputs": [
+        "state",
+        "attention_mask",
+        "position_ids"
+      ],
+      "normalize_input": true,
+      "op": "rotary_attention_residual",
+      "output": "state"
+    },
+    {
+      "id": "layer14.function",
+      "inputs": [
+        "state"
+      ],
+      "op": "normalized_gelu_gated_function_residual",
+      "output": "state"
+    },
+    {
+      "attention": "global",
+      "id": "layer15.attention",
+      "inputs": [
+        "state",
+        "attention_mask",
+        "position_ids"
+      ],
+      "normalize_input": true,
+      "op": "rotary_attention_residual",
+      "output": "state"
+    },
+    {
+      "id": "layer15.function",
+      "inputs": [
+        "state"
+      ],
+      "op": "normalized_gelu_gated_function_residual",
+      "output": "state"
+    },
+    {
+      "attention": "local",
+      "id": "layer16.attention",
+      "inputs": [
+        "state",
+        "attention_mask",
+        "position_ids"
+      ],
+      "normalize_input": true,
+      "op": "rotary_attention_residual",
+      "output": "state"
+    },
+    {
+      "id": "layer16.function",
+      "inputs": [
+        "state"
+      ],
+      "op": "normalized_gelu_gated_function_residual",
+      "output": "state"
+    },
+    {
+      "attention": "local",
+      "id": "layer17.attention",
+      "inputs": [
+        "state",
+        "attention_mask",
+        "position_ids"
+      ],
+      "normalize_input": true,
+      "op": "rotary_attention_residual",
+      "output": "state"
+    },
+    {
+      "id": "layer17.function",
+      "inputs": [
+        "state"
+      ],
+      "op": "normalized_gelu_gated_function_residual",
+      "output": "state"
+    },
+    {
+      "attention": "global",
+      "id": "layer18.attention",
+      "inputs": [
+        "state",
+        "attention_mask",
+        "position_ids"
+      ],
+      "normalize_input": true,
+      "op": "rotary_attention_residual",
+      "output": "state"
+    },
+    {
+      "id": "layer18.function",
+      "inputs": [
+        "state"
+      ],
+      "op": "normalized_gelu_gated_function_residual",
+      "output": "state"
+    },
+    {
+      "attention": "local",
+      "id": "layer19.attention",
+      "inputs": [
+        "state",
+        "attention_mask",
+        "position_ids"
+      ],
+      "normalize_input": true,
+      "op": "rotary_attention_residual",
+      "output": "state"
+    },
+    {
+      "id": "layer19.function",
+      "inputs": [
+        "state"
+      ],
+      "op": "normalized_gelu_gated_function_residual",
+      "output": "state"
+    },
+    {
+      "attention": "local",
+      "id": "layer20.attention",
+      "inputs": [
+        "state",
+        "attention_mask",
+        "position_ids"
+      ],
+      "normalize_input": true,
+      "op": "rotary_attention_residual",
+      "output": "state"
+    },
+    {
+      "id": "layer20.function",
+      "inputs": [
+        "state"
+      ],
+      "op": "normalized_gelu_gated_function_residual",
+      "output": "state"
+    },
+    {
+      "attention": "global",
+      "id": "layer21.attention",
+      "inputs": [
+        "state",
+        "attention_mask",
+        "position_ids"
+      ],
+      "normalize_input": true,
+      "op": "rotary_attention_residual",
+      "output": "state"
+    },
+    {
+      "id": "layer21.function",
+      "inputs": [
+        "state"
+      ],
+      "op": "normalized_gelu_gated_function_residual",
+      "output": "state"
+    },
+    {
+      "id": "final_norm",
+      "inputs": [
+        "state"
+      ],
+      "op": "layer_norm",
+      "output": "encoded"
+    },
+    {
+      "id": "prediction",
+      "inputs": [
+        "encoded",
+        "query_positions"
+      ],
+      "op": "dense_gelu_layer_norm",
+      "output": "prediction"
+    },
+    {
+      "id": "decoder",
+      "inputs": [
+        "prediction"
+      ],
+      "op": "dense_vocabulary_projection",
+      "output": "logits",
+      "weight": "embedding.weight"
+    }
+  ],
+  "representation": "explicit typed function composition; original Transformer dimensions and float32 coefficient values retained",
+  "source": {
+    "checkpoint": "answerdotai/ModernBERT-base",
+    "pretrained": true,
+    "revision": "8949b909ec900327062f0ebf497f51aef5e6f0c8"
+  },
+  "tokenizer_sha256": "6c8aaa9a542084f2457eab775d4eeb51f92a70c0fd9de28d5edb0ddec3c08d30",
+  "weights_sha256": "e0cbebaee6c6acf3f9538f7533a5e3b2f9b11d9177a80d4fe5f7c698abaaecb5"
+}
