@@ -1,0 +1,67 @@
+name: SPARK M21 joint address/write and online neural value function
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'spark/joint_plastic_memory.py'
+      - 'tools/joint_plastic_experiment.py'
+      - 'tests/test_joint_plastic_memory.py'
+      - 'docs/M21_JOINT_PLASTIC_MEMORY.md'
+      - '.github/workflows/joint-plastic-memory-m21.yml'
+  push:
+    paths:
+      - 'spark/joint_plastic_memory.py'
+      - 'tools/joint_plastic_experiment.py'
+      - 'tests/test_joint_plastic_memory.py'
+      - 'docs/M21_JOINT_PLASTIC_MEMORY.md'
+      - '.github/workflows/joint-plastic-memory-m21.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  joint-structure-and-native-plasticity:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test delayed supervision, search, serialization and native online updates
+        run: python -m unittest discover -s tests -p 'test_joint_plastic_memory.py' -v
+      - name: Learn the joint program and live neural value function
+        run: python tools/joint_plastic_experiment.py --output artifacts/m21
+      - name: Check held-out generalization, drift adaptation and native consistency
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          r=json.loads(Path('artifacts/m21/report.json').read_text())
+          assert r['calibration_episodes']==0,r
+          assert r['joint_search']['calibration_episodes']==0,r
+          assert r['joint_search']['selected_address']=={'cu':1,'cv':-1},r
+          h=r['heldout_neuro_symbolic'];b=r['heldout_no_neural'];c=r['heldout_two_atom_no_neural']
+          assert h['reads']==108,h
+          assert h['mse']<b['mse'],(h,b)
+          assert c['mse']>h['mse'],(c,h)
+          assert r['native']['reads']==108 and r['native']['operations']>100000,r
+          assert r['native']['max_python_native_prediction_delta']<1e-10,r
+          assert r['native']['max_python_native_updated_parameter_delta']<1e-10,r
+          assert r['drift_native_online']['max_python_native_updated_parameter_delta']<1e-10,r
+          assert r['drift_live']['last_200_mse']<r['drift_frozen']['last_200_mse']*.25,r
+          with open(os.environ['GITHUB_STEP_SUMMARY'],'a') as f:
+              f.write('## SPARK M21 — joint memory/program learning + live neural function\n\n')
+              f.write(f"- No all-write calibration: {r['calibration_episodes']} episodes\n")
+              f.write(f"- OOD hybrid MSE: {h['mse']:.6g}; no-neural MSE: {b['mse']:.6g}\n")
+              f.write(f"- Native operations: {r['native']['operations']}; parity error: {r['native']['max_python_native_prediction_delta']:.3g}\n")
+              f.write(f"- Shifted live last-200 MSE: {r['drift_live']['last_200_mse']:.6g}; frozen: {r['drift_frozen']['last_200_mse']:.6g}\n\n")
+              f.write('**Constrained synthetic program grammar; no Transformer superiority claim.**\n')
+          PY
+      - name: Archive learned program, native code and benchmark
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: spark-m21-joint-plastic-memory
+          path: artifacts/m21/
+          retention-days: 14
+          if-no-files-found: warn
