@@ -1,0 +1,553 @@
+{
+  "status": "failed",
+  "stage": "complete",
+  "workflow_url": "https://github.com/drietsch/spark/actions/runs/41346353608",
+  "checkpoint": "answerdotai/ModernBERT-base",
+  "revision": "8949b909ec900327062f0ebf497f51aef5e6f0c8",
+  "parameter_count": 149655232,
+  "layers": 22,
+  "program_nodes": 48,
+  "payload_bytes": 599315012,
+  "weights_sha256": "1f3f36efc98ae0817679e4c09662c483c5dcd69c5c8e0a3180a04212801e5ece",
+  "test_cases": 26,
+  "masked_queries": 27,
+  "logit_values_checked": 1359936,
+  "top1_agreement": 27,
+  "top5_set_agreement": 27,
+  "allclose": false,
+  "max_logit_error": 9.298324584960938e-05,
+  "max_hidden_error": 0.016953110694885254,
+  "absolute_tolerance": 0.002,
+  "relative_tolerance": 0.0001,
+  "padded_batch_max_logit_error": 2.86102294921875e-05,
+  "live_function_checks": {
+    "width_changed_output": true,
+    "width_restore_exact": true,
+    "coefficient_changed_output": true,
+    "coefficient_restore_exact": true,
+    "checkpoint_unchanged": true
+  },
+  "independent_inference": {
+    "backend": "spark-native-mathematical-program",
+    "predictions": [
+      {
+        "position": 6,
+        "topk": [
+          {
+            "token": 7785,
+            "text": " Paris",
+            "logit": 22.131601333618164,
+            "prob": 0.9233349790331558
+          },
+          {
+            "token": 42268,
+            "text": " Lyon",
+            "logit": 18.88566017150879,
+            "prob": 0.03594719049439739
+          },
+          {
+            "token": 23397,
+            "text": " Nancy",
+            "logit": 18.441312789916992,
+            "prob": 0.023050870838863032
+          },
+          {
+            "token": 29902,
+            "text": " Nice",
+            "logit": 17.123096466064453,
+            "prob": 0.006168694488314382
+          },
+          {
+            "token": 20159,
+            "text": " Orleans",
+            "logit": 16.253063201904297,
+            "prob": 0.0025842981467774514
+          }
+        ]
+      }
+    ],
+    "framework_imports": {
+      "torch": false,
+      "transformers": false,
+      "numpy": false
+    }
+  },
+  "comparisons": [
+    {
+      "case": "prompt0",
+      "sequence_length": 9,
+      "queries": 1,
+      "max_logit_error": 2.574920654296875e-05,
+      "max_hidden_error": 6.198883056640625e-06,
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 88.4338970000016,
+      "native_ms": 61.24907199999541,
+      "predictions": [
+        {
+          "position": 6,
+          "token": 7785,
+          "text": " Paris"
+        }
+      ]
+    },
+    {
+      "case": "prompt1",
+      "sequence_length": 9,
+      "queries": 1,
+      "max_logit_error": 2.5272369384765625e-05,
+      "max_hidden_error": 1.33514404296875e-05,
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 89.69039999999495,
+      "native_ms": 61.28973799999926,
+      "predictions": [
+        {
+          "position": 6,
+          "token": 12911,
+          "text": " Berlin"
+        }
+      ]
+    },
+    {
+      "case": "prompt2",
+      "sequence_length": 9,
+      "queries": 1,
+      "max_logit_error": 9.298324584960938e-05,
+      "max_hidden_error": 0.0001659393310546875,
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 87.43928799999878,
+      "native_ms": 60.416412000009245,
+      "predictions": [
+        {
+          "position": 6,
+          "token": 12300,
+          "text": " Rome"
+        }
+      ]
+    },
+    {
+      "case": "prompt3",
+      "sequence_length": 10,
+      "queries": 1,
+      "max_logit_error": 2.2411346435546875e-05,
+      "max_hidden_error": 1.33514404296875e-05,
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 90.0919170000094,
+      "native_ms": 69.69126899998912,
+      "predictions": [
+        {
+          "position": 7,
+          "token": 5893,
+          "text": " animal"
+        }
+      ]
+    },
+    {
+      "case": "prompt4",
+      "sequence_length": 9,
+      "queries": 1,
+      "max_logit_error": 1.9073486328125e-05,
+      "max_hidden_error": 1.52587890625e-05,
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 102.6921939999994,
+      "native_ms": 60.00947500000109,
+      "predictions": [
+        {
+          "position": 6,
+          "token": 5893,
+          "text": " animal"
+        }
+      ]
+    },
+    {
+      "case": "prompt5",
+      "sequence_length": 10,
+      "queries": 1,
+      "max_logit_error": 2.6702880859375e-05,
+      "max_hidden_error": 1.71661376953125e-05,
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 102.10818599999527,
+      "native_ms": 68.87162299999261,
+      "predictions": [
+        {
+          "position": 7,
+          "token": 330,
+          "text": " C"
+        }
+      ]
+    },
+    {
+      "case": "prompt6",
+      "sequence_length": 10,
+      "queries": 1,
+      "max_logit_error": 2.574920654296875e-05,
+      "max_hidden_error": 7.62939453125e-06,
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 114.01615500000162,
+      "native_ms": 69.1034540000004,
+      "predictions": [
+        {
+          "position": 7,
+          "token": 4146,
+          "text": " Sun"
+        }
+      ]
+    },
+    {
+      "case": "prompt7",
+      "sequence_length": 9,
+      "queries": 1,
+      "max_logit_error": 2.0503997802734375e-05,
+      "max_hidden_error": 1.049041748046875e-05,
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 101.37209600000574,
+      "native_ms": 60.77440900000397,
+      "predictions": [
+        {
+          "position": 6,
+          "token": 1071,
+          "text": " test"
+        }
+      ]
+    },
+    {
+      "case": "prompt8",
+      "sequence_length": 8,
+      "queries": 1,
+      "max_logit_error": 2.0742416381835938e-05,
+      "max_hidden_error": 1.1444091796875e-05,
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 112.12451400000134,
+      "native_ms": 52.28802999999971,
+      "predictions": [
+        {
+          "position": 5,
+          "token": 2127,
+          "text": " code"
+        }
+      ]
+    },
+    {
+      "case": "prompt9",
+      "sequence_length": 13,
+      "queries": 1,
+      "max_logit_error": 2.193450927734375e-05,
+      "max_hidden_error": 1.1444091796875e-05,
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 130.3048079999911,
+      "native_ms": 83.48745199999996,
+      "predictions": [
+        {
+          "position": 10,
+          "token": 1273,
+          "text": " second"
+        }
+      ]
+    },
+    {
+      "case": "prompt10",
+      "sequence_length": 13,
+      "queries": 1,
+      "max_logit_error": 2.7418136596679688e-05,
+      "max_hidden_error": 1.52587890625e-05,
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 100.89754300000209,
+      "native_ms": 80.57952800000123,
+      "predictions": [
+        {
+          "position": 9,
+          "token": 1318,
+          "text": " value"
+        }
+      ]
+    },
+    {
+      "case": "prompt11",
+      "sequence_length": 8,
+      "queries": 1,
+      "max_logit_error": 2.47955322265625e-05,
+      "max_hidden_error": 1.71661376953125e-05,
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 73.83851899999172,
+      "native_ms": 50.52749600000084,
+      "predictions": [
+        {
+          "position": 5,
+          "token": 2127,
+          "text": " code"
+        }
+      ]
+    },
+    {
+      "case": "prompt12",
+      "sequence_length": 9,
+      "queries": 1,
+      "max_logit_error": 2.765655517578125e-05,
+      "max_hidden_error": 1.71661376953125e-05,
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 86.77466199999628,
+      "native_ms": 59.85713100000112,
+      "predictions": [
+        {
+          "position": 6,
+          "token": 26229,
+          "text": " Vienna"
+        }
+      ]
+    },
+    {
+      "case": "prompt13",
+      "sequence_length": 9,
+      "queries": 1,
+      "max_logit_error": 2.47955322265625e-05,
+      "max_hidden_error": 7.62939453125e-06,
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 88.48880200000053,
+      "native_ms": 60.161336999996706,
+      "predictions": [
+        {
+          "position": 6,
+          "token": 6150,
+          "text": " sea"
+        }
+      ]
+    },
+    {
+      "case": "prompt14",
+      "sequence_length": 9,
+      "queries": 1,
+      "max_logit_error": 1.621246337890625e-05,
+      "max_hidden_error": 1.1444091796875e-05,
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 86.3900149999921,
+      "native_ms": 60.00942500000406,
+      "predictions": [
+        {
+          "position": 6,
+          "token": 1895,
+          "text": " problem"
+        }
+      ]
+    },
+    {
+      "case": "prompt15",
+      "sequence_length": 9,
+      "queries": 1,
+      "max_logit_error": 1.609325408935547e-05,
+      "max_hidden_error": 2.002716064453125e-05,
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 87.43182499999591,
+      "native_ms": 60.246065999990606,
+      "predictions": [
+        {
+          "position": 6,
+          "token": 3120,
+          "text": " card"
+        }
+      ]
+    },
+    {
+      "case": "prompt16",
+      "sequence_length": 9,
+      "queries": 1,
+      "max_logit_error": 1.7642974853515625e-05,
+      "max_hidden_error": 1.1444091796875e-05,
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 90.04680299999279,
+      "native_ms": 60.342855000001805,
+      "predictions": [
+        {
+          "position": 6,
+          "token": 26654,
+          "text": " Wikipedia"
+        }
+      ]
+    },
+    {
+      "case": "prompt17",
+      "sequence_length": 9,
+      "queries": 1,
+      "max_logit_error": 1.4781951904296875e-05,
+      "max_hidden_error": 7.62939453125e-06,
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 87.0721549999871,
+      "native_ms": 60.149344999999244,
+      "predictions": [
+        {
+          "position": 6,
+          "token": 2854,
+          "text": " drug"
+        }
+      ]
+    },
+    {
+      "case": "prompt18",
+      "sequence_length": 10,
+      "queries": 1,
+      "max_logit_error": 1.8596649169921875e-05,
+      "max_hidden_error": 1.33514404296875e-05,
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 88.74022000000537,
+      "native_ms": 69.4596479999916,
+      "predictions": [
+        {
+          "position": 7,
+          "token": 2829,
+          "text": " table"
+        }
+      ]
+    },
+    {
+      "case": "prompt19",
+      "sequence_length": 9,
+      "queries": 1,
+      "max_logit_error": 2.47955322265625e-05,
+      "max_hidden_error": 1.1444091796875e-05,
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 87.62705800000958,
+      "native_ms": 60.09511400000633,
+      "predictions": [
+        {
+          "position": 6,
+          "token": 4131,
+          "text": " morning"
+        }
+      ]
+    },
+    {
+      "case": "multiple_masks",
+      "sequence_length": 9,
+      "queries": 2,
+      "max_logit_error": 3.0040740966796875e-05,
+      "max_hidden_error": 1.52587890625e-05,
+      "allclose": true,
+      "top1_correct": 2,
+      "teacher_ms": 90.85819300000253,
+      "native_ms": 62.76032600000292,
+      "predictions": [
+        {
+          "position": 2,
+          "token": 7908,
+          "text": " flag"
+        },
+        {
+          "position": 6,
+          "token": 5112,
+          "text": " French"
+        }
+      ]
+    },
+    {
+      "case": "left_padding",
+      "sequence_length": 14,
+      "queries": 1,
+      "max_logit_error": 3.0517578125e-05,
+      "max_hidden_error": 2.86102294921875e-05,
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 95.58316900000818,
+      "native_ms": 87.60228199999176,
+      "predictions": [
+        {
+          "position": 11,
+          "token": 7785,
+          "text": " Paris"
+        }
+      ]
+    },
+    {
+      "case": "right_padding",
+      "sequence_length": 14,
+      "queries": 1,
+      "max_logit_error": 2.574920654296875e-05,
+      "max_hidden_error": 1.71661376953125e-05,
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 88.45802500000843,
+      "native_ms": 86.41159599999071,
+      "predictions": [
+        {
+          "position": 6,
+          "token": 7785,
+          "text": " Paris"
+        }
+      ]
+    },
+    {
+      "case": "local_global_window_131",
+      "sequence_length": 131,
+      "queries": 1,
+      "max_logit_error": 5.078315734863281e-05,
+      "max_hidden_error": 0.016953110694885254,
+      "allclose": false,
+      "top1_correct": 1,
+      "teacher_ms": 333.6913960000061,
+      "native_ms": 316.9446499999964,
+      "predictions": [
+        {
+          "position": 65,
+          "token": 9826,
+          "text": " ordinary"
+        }
+      ]
+    },
+    {
+      "case": "local_global_window_259",
+      "sequence_length": 259,
+      "queries": 1,
+      "max_logit_error": 2.288818359375e-05,
+      "max_hidden_error": 0.0026340484619140625,
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 589.7894830000041,
+      "native_ms": 643.7099629999921,
+      "predictions": [
+        {
+          "position": 129,
+          "token": 50282,
+          "text": "[SEP]"
+        }
+      ]
+    },
+    {
+      "case": "maximum_rotary_position",
+      "sequence_length": 259,
+      "queries": 1,
+      "max_logit_error": 4.1961669921875e-05,
+      "max_hidden_error": 0.0010945796966552734,
+      "allclose": true,
+      "top1_correct": 1,
+      "teacher_ms": 597.7795360000044,
+      "native_ms": 658.1732629999948,
+      "predictions": [
+        {
+          "position": 129,
+          "token": 50282,
+          "text": "[SEP]"
+        }
+      ]
+    }
+  ],
+  "elapsed_seconds": 19.68972586400001,
+  "scope": "Complete ModernBERT-base MLM inference lowering; original dimensions, attention and dense arithmetic retained.",
+  "unsupported": "Training/autograd, custom RoPE scaling, arbitrary architectures, compact full-model replacement."
+}
