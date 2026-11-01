@@ -1,0 +1,65 @@
+name: SPARK M10 vector symbolic state programs
+on:
+  push:
+    paths:
+      - 'spark/vector_program.py'
+      - 'tools/vector_experiment.py'
+      - 'tests/test_vector_program.py'
+      - '.github/workflows/symbolic-vector.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'spark/vector_program.py'
+      - 'tools/vector_experiment.py'
+      - 'tests/test_vector_program.py'
+      - '.github/workflows/symbolic-vector.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  discover-compile-and-test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install training-only dependency
+        run: python -m pip install numpy
+      - name: Run native and synthesis unit tests
+        run: python -m unittest discover -s tests -p 'test_vector_program.py' -v
+      - name: Discover two vector recurrence rules and compile them into C++
+        run: python tools/vector_experiment.py --output artifacts/symbolic-m10
+      - name: Verify independent OOD and native rollout metrics
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          r=json.loads(Path('artifacts/symbolic-m10/report.json').read_text())
+          lines=['## SPARK M10 four-register symbolic program synthesis']
+          for name,guard in [('coupled',None),('reset_coupled',-2)]:
+              x=r[name]
+              assert x['learned_guard']==guard, x
+              assert x['held_out_transitions']==350, x
+              assert x['ood']['exact_fraction']==1.0, x
+              assert x['native_ood']['exact_fraction']==1.0, x
+              assert x['native_rollouts_exact']==48, x
+              assert x['python_rollouts_exact']==48, x
+              assert x['longest_rollout_steps']==4096, x
+              assert x['native_max_difference']<1e-10, x
+              assert x['affine_ood']['mse']>1e-4, x
+              lines.append(f"- {name}: OOD {x['ood']['exact_fraction']:.0%}; affine MSE {x['affine_ood']['mse']:.3g}; native rollouts 48/48; {x['distinct_shared_basis_expressions']} shared expressions")
+          lines.append('**Synthetic constrained grammar only. Not Transformer quality or speed evidence.**')
+          with open(os.environ['GITHUB_STEP_SUMMARY'],'a') as f:f.write('\n\n'.join(lines)+'\n')
+          PY
+      - name: Upload source-level learned programs and generated native code
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: spark-m10-vector-symbolic
+          path: artifacts/symbolic-m10/
+          retention-days: 14
+          if-no-files-found: warn
