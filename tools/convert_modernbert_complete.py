@@ -2,6 +2,7 @@
 """Convert and validate the complete pinned ModernBERT-base checkpoint on a runner."""
 from __future__ import annotations
 import argparse
+import copy
 import json
 import os
 import re
@@ -85,9 +86,34 @@ def convert(args,report):
             hits=int(np.sum(native_ids==teacher_ids));top1+=hits;top5+=sum(set(np.argsort(a)[-5:])==set(np.argsort(b)[-5:]) for a,b in zip(values,expected))
             logit_values+=values.size;max_logit=max(max_logit,le);max_hidden=max(max_hidden,he);allclose=allclose and close
             predictions=[{'position':position,'token':int(tok),'text':tokenizer.decode([int(tok)])} for position,tok in zip(case['queries'],native_ids)]
+            difference=np.abs(hidden-expected_hidden);worst=np.unravel_index(np.argmax(np.where(valid[:,None],difference,-1)),difference.shape)
             comparisons.append({'case':case['name'],'sequence_length':len(ids),'queries':len(case['queries']),'max_logit_error':le,'max_hidden_error':he,
+                'hidden_relative_l2':float(np.linalg.norm((hidden-expected_hidden)[valid])/max(np.linalg.norm(expected_hidden[valid]),1e-20)),
+                'worst_hidden':{'position':int(worst[0]),'channel':int(worst[1]),'native':float(hidden[worst]),'reference':float(expected_hidden[worst])},
                 'allclose':bool(close),'top1_correct':hits,'teacher_ms':teacher_ms,'native_ms':native_ms,'predictions':predictions})
             print(json.dumps(comparisons[-1]),flush=True)
+        failed=next((c for c,r in zip(cases,comparisons) if not r['allclose']),None)
+        if failed is not None:
+            ids=failed['ids'];mask=failed.get('mask',[1]*len(ids));positions=failed.get('positions',list(range(len(ids))))
+            with torch.inference_mode():ref=teacher(input_ids=torch.tensor([ids]),attention_mask=torch.tensor([mask]),position_ids=torch.tensor([positions]),output_hidden_states=True)
+            result=native.run(ids,attention_mask=mask,position_ids=positions,query_positions=failed['queries'],return_hidden=True,trace=True)
+            states=np.ctypeslib.as_array(result['trace']).reshape(2*native.layers+2,len(ids),native.hidden)
+            layer_errors=[]
+            for index,expected_state in enumerate(ref.hidden_states):
+                actual_state=states[0 if index==0 else 2*index]
+                wanted=expected_state[0].numpy()
+                layer_errors.append({'layer':index,'max_abs':float(np.max(np.abs(actual_state-wanted))),
+                    'relative_l2':float(np.linalg.norm(actual_state-wanted)/max(np.linalg.norm(wanted),1e-20))})
+            with torch.inference_mode():
+                higher=copy.deepcopy(teacher.model).double()
+                reference64=higher(input_ids=torch.tensor([ids]),attention_mask=torch.tensor([mask]),position_ids=torch.tensor([positions])).last_hidden_state[0].numpy()
+                reference32=teacher.model.final_norm(ref.hidden_states[-1])[0].numpy()
+            del higher
+            actual_hidden=np.ctypeslib.as_array(result['hidden']).reshape(len(ids),native.hidden)
+            report['hidden_diagnostics']={'case':failed['name'],'stages':layer_errors,
+                'torch32_vs_torch64_max_abs':float(np.max(np.abs(reference32-reference64))),
+                'native32_vs_torch64_max_abs':float(np.max(np.abs(actual_hidden-reference64))),
+                'torch32_vs_torch64_relative_l2':float(np.linalg.norm(reference32-reference64)/max(np.linalg.norm(reference64),1e-20))}
         # Batch masking is checked against a padded two-sequence teacher batch;
         # the mathematical runtime executes independent batch rows explicitly.
         pair=[cases[0],cases[-2]];length=max(len(c['ids']) for c in pair)

@@ -46,12 +46,22 @@ jobs:
           sudo apt-get install -y libopenblas-dev
           python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.6.0
           python -m pip install numpy==2.2.6 transformers==4.51.3 safetensors==0.5.3
+      - uses: actions/cache/restore@v4
+        id: checkpoint-cache
+        with:
+          path: ${{ runner.temp }}/modernbert-hub
+          key: modernbert-source-8949b909ec900327062f0ebf497f51aef5e6f0c8-v1
       - name: Export all weights and validate native inference
         id: convert
         continue-on-error: true
         env:
           HF_HOME: ${{ runner.temp }}/modernbert-hub
         run: python tools/convert_modernbert_complete.py --output artifacts/modernbert-complete
+      - uses: actions/cache/save@v4
+        if: always() && steps.checkpoint-cache.outputs.cache-hit != 'true'
+        with:
+          path: ${{ runner.temp }}/modernbert-hub
+          key: modernbert-source-8949b909ec900327062f0ebf497f51aef5e6f0c8-v1
       - name: Upload the complete runnable converted model
         id: package
         if: steps.convert.outcome == 'success'

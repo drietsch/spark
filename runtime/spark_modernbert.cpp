@@ -74,24 +74,25 @@ void attention(Model&m,Layer&a,int layer,const std::vector<float>&x,const int32_
  }
  linear(ctx,t,h,h,a.aw,a.awb,out);
 }
-void run(Model&m,const int32_t*ids,const int32_t*mask,const int32_t*pos,int t,const int32_t*queries,int n,float*logits,float*hidden){
+void run(Model&m,const int32_t*ids,const int32_t*mask,const int32_t*pos,int t,const int32_t*queries,int n,float*logits,float*hidden,float*trace=nullptr){
  require(ids&&mask&&pos&&queries&&logits&&t>=1&&t<=m.maxseq&&n>=1&&n<=t,"invalid input pointers/sequence budget");
  int present=0;for(int r=0;r<t;++r){require(ids[r]>=0&&ids[r]<m.vocab&&mask[r]>=0&&mask[r]<=1&&pos[r]>=0&&pos[r]<m.maxseq,"invalid token/mask/position");present+=mask[r];}require(present>0,"empty attention context");
  for(int q=0;q<n;++q)require(queries[q]>=0&&queries[q]<t&&mask[queries[q]],"invalid prediction position");
  std::vector<float>x(size_t(t)*m.h),temp,delta,projection,product;
  for(int r=0;r<t;++r)std::copy(m.embedding.p+size_t(ids[r])*m.h,m.embedding.p+size_t(ids[r]+1)*m.h,x.data()+size_t(r)*m.h);
  norm(x,t,m.h,m.en,m.eb,m.eps,temp);x.swap(temp);
+ if(trace)std::copy(x.begin(),x.end(),trace);
  for(int layer=0;layer<m.l;++layer){auto&a=m.layers[layer];if(layer==0)temp=x;else norm(x,t,m.h,a.an,a.ab,m.eps,temp);
-  attention(m,a,layer,temp,mask,pos,t,delta);residual(x,delta);norm(x,t,m.h,a.mn,a.mb,m.eps,temp);
+  attention(m,a,layer,temp,mask,pos,t,delta);residual(x,delta);if(trace)std::copy(x.begin(),x.end(),trace+size_t(1+2*layer)*t*m.h);norm(x,t,m.h,a.mn,a.mb,m.eps,temp);
   int active=a.active;product.resize(size_t(t)*active);
   if(active==m.i){linear(temp,t,m.h,2*m.i,a.wi,a.bi,projection);
    for(int r=0;r<t;++r)for(int j=0;j<active;++j)product[size_t(r)*active+j]=gelu(projection[size_t(r)*2*m.i+j],m.act)*projection[size_t(r)*2*m.i+m.i+j];}
   else {std::vector<float>gate;linear(temp,t,m.h,active,a.wi,a.bi,projection);
    Span gw{a.wi.p+size_t(m.i)*m.h,size_t(m.i)*m.h},gb{a.bi.p+m.i,size_t(m.i)};linear(temp,t,m.h,active,gw,gb,gate);
    for(size_t j=0;j<product.size();++j)product[j]=gelu(projection[j],m.act)*gate[j];}
-  linear(product,t,active,m.h,a.wo,a.bo,delta,m.i);residual(x,delta);
+  linear(product,t,active,m.h,a.wo,a.bo,delta,m.i);residual(x,delta);if(trace)std::copy(x.begin(),x.end(),trace+size_t(2+2*layer)*t*m.h);
  }
- norm(x,t,m.h,m.fn,m.fb,m.eps,temp);x.swap(temp);if(hidden)std::copy(x.begin(),x.end(),hidden);
+ norm(x,t,m.h,m.fn,m.fb,m.eps,temp);x.swap(temp);if(hidden)std::copy(x.begin(),x.end(),hidden);if(trace)std::copy(x.begin(),x.end(),trace+size_t(2*m.l+1)*t*m.h);
  std::vector<float>selected(size_t(n)*m.h);for(int q=0;q<n;++q)std::copy(x.data()+size_t(queries[q])*m.h,x.data()+size_t(queries[q]+1)*m.h,selected.data()+size_t(q)*m.h);
  linear(selected,n,m.h,m.h,m.hd,m.hb,temp);for(float&v:temp)v=gelu(v,m.headact);norm(temp,n,m.h,m.hn,m.hnb,m.eps,selected);
  linear(selected,n,m.h,m.vocab,m.decoder,m.db,temp);for(float value:temp)require(std::isfinite(value),"nonfinite decoder output");std::copy(temp.begin(),temp.end(),logits);
@@ -102,5 +103,6 @@ extern "C" void* spark_mb_load(const char*path){try{error.clear();return load(pa
 extern "C" void spark_mb_destroy(void*p){delete static_cast<Model*>(p);}
 extern "C" int spark_mb_meta(void*p,int32_t*out){if(!p||!out)return 0;auto&m=*static_cast<Model*>(p);int values[]={m.h,m.i,m.l,m.heads,m.vocab,m.maxseq};std::copy(values,values+6,out);return 1;}
 extern "C" int spark_mb_run(void*p,const int32_t*ids,const int32_t*mask,const int32_t*pos,int t,const int32_t*q,int n,float*out,float*hidden){try{require(p,"model closed");run(*static_cast<Model*>(p),ids,mask,pos,t,q,n,out,hidden);return 1;}catch(const std::exception&e){error=e.what();return 0;}}
+extern "C" int spark_mb_run_trace(void*p,const int32_t*ids,const int32_t*mask,const int32_t*pos,int t,const int32_t*q,int n,float*out,float*hidden,float*trace){try{require(p&&trace,"model/trace closed");run(*static_cast<Model*>(p),ids,mask,pos,t,q,n,out,hidden,trace);return 1;}catch(const std::exception&e){error=e.what();return 0;}}
 extern "C" int spark_mb_set_width(void*p,int layer,int width){try{require(p,"model closed");auto&m=*static_cast<Model*>(p);require(layer>=0&&layer<m.l&&width>=1&&width<=m.i,"invalid active function width");m.layers[layer].active=width;return 1;}catch(const std::exception&e){error=e.what();return 0;}}
 extern "C" int spark_mb_set_coefficient(void*p,int layer,int tensor,uint64_t index,float value){try{require(p,"model closed");auto&m=*static_cast<Model*>(p);require(layer>=0&&layer<m.l&&tensor>=0&&tensor<4&&std::isfinite(value)&&std::abs(value)<=1e4,"invalid live function coefficient");auto&a=m.layers[layer];Span spans[]={a.wi,a.bi,a.wo,a.bo};require(index<spans[tensor].size,"coefficient index out of range");spans[tensor].p[index]=value;return 1;}catch(const std::exception&e){error=e.what();return 0;}}

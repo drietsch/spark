@@ -154,6 +154,7 @@ class NativeModernBert:
         L.spark_mb_error.restype=ctypes.c_char_p;L.spark_mb_destroy.argtypes=[P]
         L.spark_mb_meta.argtypes=[P,I]
         L.spark_mb_run.argtypes=[P,I,I,I,ctypes.c_int,I,ctypes.c_int,F,F]
+        L.spark_mb_run_trace.argtypes=[P,I,I,I,ctypes.c_int,I,ctypes.c_int,F,F,F]
         L.spark_mb_set_width.argtypes=[P,ctypes.c_int,ctypes.c_int]
         L.spark_mb_set_coefficient.argtypes=[P,ctypes.c_int,ctypes.c_int,ctypes.c_uint64,ctypes.c_float]
         self.handle=L.spark_mb_load(os.fsencode(self.directory/'weights.sparkmb'))
@@ -166,19 +167,23 @@ class NativeModernBert:
 
     def _error(self):return (self.lib.spark_mb_error() or b'native execution rejected').decode(errors='replace')
 
-    def run(self,input_ids,*,attention_mask=None,position_ids=None,query_positions=None,return_hidden=False):
+    def run(self,input_ids,*,attention_mask=None,position_ids=None,query_positions=None,return_hidden=False,trace=False):
         n=len(input_ids)
         if not 1<=n<=self.max_sequence or any(type(v) is not int or not 0<=v<self.vocab for v in input_ids):raise ValueError('invalid input token IDs/sequence budget')
         mask=[1]*n if attention_mask is None else list(attention_mask);positions=list(range(n)) if position_ids is None else list(position_ids)
         query=list(range(n)) if query_positions is None else list(query_positions)
         if len(mask)!=n or any(type(v) is not int or v not in (0,1) for v in mask) or not any(mask):raise ValueError('invalid attention mask')
         if len(positions)!=n or any(type(v) is not int or not 0<=v<self.max_sequence for v in positions):raise ValueError('invalid rotary positions')
-        if not query or any(type(v) is not int or not 0<=v<n or not mask[v] for v in query):raise ValueError('invalid prediction query positions')
+        if not 1<=len(query)<=n or len(set(query))!=len(query) or any(type(v) is not int or not 0<=v<n or not mask[v] for v in query):raise ValueError('invalid prediction query positions')
         ids=(ctypes.c_int32*n)(*input_ids);m=(ctypes.c_int32*n)(*mask);p=(ctypes.c_int32*n)(*positions);q=(ctypes.c_int32*len(query))(*query)
         output=(ctypes.c_float*(len(query)*self.vocab))();hidden=(ctypes.c_float*(n*self.hidden))() if return_hidden else None
-        if not self.lib.spark_mb_run(self.handle,ids,m,p,n,q,len(query),output,hidden):raise RuntimeError(self._error())
+        traces=(ctypes.c_float*((2*self.layers+2)*n*self.hidden))() if trace else None
+        ok=(self.lib.spark_mb_run_trace(self.handle,ids,m,p,n,q,len(query),output,hidden,traces) if trace else
+            self.lib.spark_mb_run(self.handle,ids,m,p,n,q,len(query),output,hidden))
+        if not ok:raise RuntimeError(self._error())
         result={'logits':output,'shape':(len(query),self.vocab),'query_positions':query}
         if return_hidden:result.update(hidden=hidden,hidden_shape=(n,self.hidden))
+        if trace:result.update(trace=traces,trace_shape=(2*self.layers+2,n,self.hidden))
         return result
 
     def set_active_width(self,layer,width):
