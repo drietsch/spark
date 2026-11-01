@@ -7,9 +7,10 @@ import unittest
 from pathlib import Path
 
 from spark.neural_primitive import (HybridProgram,validate,fit_neural,build_hybrid,
-                                  cpp_source,save,load,neural_scalar)
+                                  cpp_source,save,load,neural_scalar,np)
 
 
+@unittest.skipIf(np is None, 'NumPy required for training-only tests')
 class NeuralPrimitiveTests(unittest.TestCase):
     def setUp(self):
         import numpy as np
