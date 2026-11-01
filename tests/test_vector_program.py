@@ -1,5 +1,6 @@
 """M10 multi-register symbolic discovery, safe load and compiled native parity."""
 import ctypes
+import importlib.util
 import random
 import shutil
 import tempfile
@@ -34,6 +35,7 @@ class VectorProgramTests(unittest.TestCase):
             copy=__import__('copy').deepcopy(p);copy[key]=value
             with self.assertRaises(ValueError):validate(copy)
 
+    @unittest.skipUnless(importlib.util.find_spec('numpy'), 'offline program synthesis requires numpy')
     def test_discovers_coupled_recurrence(self):
         model=synthesize(observations(False))
         self.assertIsNone(model.payload['guard'])
@@ -44,6 +46,7 @@ class VectorProgramTests(unittest.TestCase):
         self.assertIn('const double t',cpp)
         self.assertNotIn('std::vector',cpp)
 
+    @unittest.skipUnless(importlib.util.find_spec('numpy'), 'offline program synthesis requires numpy')
     def test_discovers_guard_not_supplied(self):
         model=synthesize(observations(True))
         self.assertEqual(model.payload['guard'],-2)
@@ -51,6 +54,7 @@ class VectorProgramTests(unittest.TestCase):
             s=(2.,-1.,3.,-2.)
             self.assertEqual(model.step(s,x),coupled(s,x,True))
 
+    @unittest.skipUnless(importlib.util.find_spec('numpy'), 'offline program synthesis requires numpy')
     def test_json_roundtrip_without_training_dependency(self):
         model=synthesize(observations(True))
         with tempfile.TemporaryDirectory() as tmp:
@@ -60,6 +64,7 @@ class VectorProgramTests(unittest.TestCase):
             self.assertEqual(loaded.payload,model.payload)
             self.assertEqual(loaded.step((1.,2.,3.,4.),2.),model.step((1.,2.,3.,4.),2.))
 
+    @unittest.skipUnless(importlib.util.find_spec('numpy'), 'offline program synthesis requires numpy')
     @unittest.skipUnless(shutil.which('c++') or shutil.which('g++'),'no C++ compiler')
     def test_native_parity_on_new_vectors_and_long_sequences(self):
         import sys
