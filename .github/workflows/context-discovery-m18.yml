@@ -1,0 +1,66 @@
+name: SPARK M18 cue-free contextual relevance discovery
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'spark/context_memory.py'
+      - 'tools/context_experiment.py'
+      - 'tests/test_context_memory.py'
+      - '.github/workflows/context-discovery-m18.yml'
+  push:
+    paths:
+      - 'spark/context_memory.py'
+      - 'tools/context_experiment.py'
+      - 'tests/test_context_memory.py'
+      - '.github/workflows/context-discovery-m18.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  discover-context-rule:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test cue-free routing, delayed credit and compiled parity
+        run: python -m unittest discover -s tests -p 'test_context_memory.py' -v
+      - name: Learn contextual memory equations and evaluate on unseen long streams
+        run: python tools/context_experiment.py --output artifacts/m18
+      - name: Validate genuine held-out controls and prequential adaptation
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          r=json.loads(Path('artifacts/m18/report.json').read_text())
+          assert r['training_keys']==4 and r['test_keys']==8, r
+          assert r['candidate_fit']['candidates']==36, r
+          assert r['long']['reads']==144 and r['long']['correct']==144, r
+          assert r['linear_only_long']['correct']<r['long']['correct'], r
+          assert r['always_write_long']['correct']<r['long']['correct'], r
+          assert r['native']['python_native_mismatches']==0, r
+          assert r['native']['operations']>=100000, r
+          assert r['adaptation'][1]['first_12_mse']>0.1, r
+          assert r['adaptation'][1]['last_24_accuracy']>.95, r
+          assert r['adaptation'][2]['last_24_accuracy']>.95, r
+          lines=['## SPARK M18: contextual memory routing without relevance cue',
+           f"Learned equation: {r['learned_equation']}",
+           f"Held-out read accuracy: {r['long']['correct']}/{r['long']['reads']}",
+           f"Linear-feature control: {r['linear_only_long']['correct']}/{r['linear_only_long']['reads']}",
+           f"Always-write: {r['always_write_long']['correct']}/{r['always_write_long']['reads']}",
+           f"Native/Python mismatches: {r['native']['python_native_mismatches']} / {r['native']['operations']}",
+           f"Reversed-regime final 24 accuracy: {r['adaptation'][1]['last_24_accuracy']:.0%}",
+           f"Returned-regime final 24 accuracy: {r['adaptation'][2]['last_24_accuracy']:.0%}",
+           '**A restricted synthetic equation-search task. Not a general reasoning or Transformer result.**']
+          with open(os.environ['GITHUB_STEP_SUMMARY'],'a') as f:f.write('\n\n'.join(lines)+'\n')
+          PY
+      - name: Archive learned program, generated C++ and measured report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: spark-m18-context-discovery
+          path: artifacts/m18/
+          retention-days: 14
+          if-no-files-found: warn
