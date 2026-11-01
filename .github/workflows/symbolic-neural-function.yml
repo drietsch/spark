@@ -1,0 +1,63 @@
+name: SPARK M12 symbolic program with neural function
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'spark/neural_primitive.py'
+      - 'tools/neural_function_experiment.py'
+      - 'tests/test_neural_primitive.py'
+      - '.github/workflows/symbolic-neural-function.yml'
+  push:
+    paths:
+      - 'spark/neural_primitive.py'
+      - 'tools/neural_function_experiment.py'
+      - 'tests/test_neural_primitive.py'
+      - '.github/workflows/symbolic-neural-function.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  compile-neural-function:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install training-only dependency
+        run: python -m pip install numpy
+      - name: Run AST safety, training and native parity tests
+        run: python -m unittest discover -s tests -p 'test_neural_primitive.py' -v
+      - name: Train adaptive neural primitive, compile program and evaluate OOD
+        run: python tools/neural_function_experiment.py --output artifacts/m12
+      - name: Verify genuine improvement, native execution and generalization
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          r=json.loads(Path('artifacts/m12/report.json').read_text())
+          assert r['training_examples']==3000 and r['held_out_examples']==600, r
+          assert r['neural_parameter_count']==109, r
+          assert r['native_max_step_disagreement']<1e-10, r
+          assert r['native_long_rollouts_matching_python']==32, r
+          assert r['neural_and_symbolic']['mse']<r['symbolic_quadratic_baseline']['mse'],r
+          assert r['neural_and_symbolic']['mse']<r['affine_baseline']['mse'],r
+          assert r['neural_and_symbolic']['mse']<r['dense_only_baseline']['mse'],r
+          with open(os.environ['GITHUB_STEP_SUMMARY'],'a') as f:
+              f.write('## SPARK M12: compiled learned neural mathematical function\n\n')
+              for label,key in (('Hybrid','neural_and_symbolic'),('Quadratic symbolic','symbolic_quadratic_baseline'),('Dense-only','dense_only_baseline'),('Affine','affine_baseline')):
+                  f.write(f"- {label} OOD MSE: {r[key]['mse']:.6g}\n")
+              f.write(f"\n- Native 4-register steps/s: {r['native_steps_per_second']}\n")
+              f.write('**Synthetic supervised primitive and provided scaffold; not a general-purpose LLM.**\n')
+          PY
+      - name: Upload trained expression, literal-code C++ and report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: spark-m12-neural-symbolic
+          path: artifacts/m12/
+          retention-days: 14
+          if-no-files-found: warn
