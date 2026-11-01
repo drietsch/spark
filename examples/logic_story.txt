@@ -1,0 +1,8 @@
+All cats are mammals.
+All mammals are animals.
+No cats are reptiles.
+Milo is a cat.
+Alice is a parent of Bob.
+Bob is a parent of Cara.
+If X is a parent of Y then X is an ancestor of Y.
+If X is a parent of Y and Y is an ancestor of Z then X is an ancestor of Z.
