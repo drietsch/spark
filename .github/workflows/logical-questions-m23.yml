@@ -1,0 +1,59 @@
+name: SPARK M23 logical question answering
+on:
+  push:
+    paths:
+      - 'spark/logic_program.py'
+      - 'spark/logic_native.py'
+      - 'tools/logic_qa.py'
+      - 'tools/logic_experiment.py'
+      - 'tests/test_logic_program.py'
+      - '.github/workflows/logical-questions-m23.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'spark/logic_program.py'
+      - 'spark/logic_native.py'
+      - 'tools/logic_qa.py'
+      - 'tools/logic_experiment.py'
+      - 'tests/test_logic_program.py'
+      - '.github/workflows/logical-questions-m23.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  learn-reason-compile:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run symbolic inference, training and native parity tests
+        run: python -m unittest discover -s tests -p 'test_logic_program.py' -v
+      - name: Answer independently generated logical questions and compile native inference
+        run: python tools/logic_experiment.py --output artifacts/m23
+      - name: Gate real deduction, contradiction handling, and native agreement
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          r=json.loads(Path('artifacts/m23/report.json').read_text())
+          assert r['benchmark_questions']==600 and r['correct']==600, r
+          assert r['direct_fact_baseline_correct']<r['correct'],r
+          assert r['native_python_agreement']==r['native_questions']==100,r
+          assert all(r['answer_distribution'][s]>0 for s in ('yes','no','unknown','inconsistent')),r
+          with open(os.environ['GITHUB_STEP_SUMMARY'],'a') as f:
+              f.write('## SPARK M23: simple logical questions\n\n')
+              f.write(f"Controlled-English reasoning: {r['correct']}/{r['benchmark_questions']} questions correct.\n\n")
+              f.write(f"Direct-fact baseline: {r['direct_fact_baseline_correct']}/{r['benchmark_questions']}.\n\n")
+              f.write(f"Native C++ vs Python: {r['native_python_agreement']}/{r['native_questions']} agree.\n\n")
+              f.write('**Synthetic constrained language/rules; not general language understanding or Transformer comparison.**\n')
+          PY
+      - name: Save generated C++ proof runtime and report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: spark-m23-logical-qa
+          path: artifacts/m23/
+          retention-days: 14
