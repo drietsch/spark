@@ -1,0 +1,65 @@
+name: SPARK M11 structural program evolution
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'spark/evolved_program.py'
+      - 'tools/evolution_experiment.py'
+      - 'tests/test_evolved_program.py'
+      - 'docs/M11_WEIGHT_AGNOSTIC_EVOLUTION.md'
+      - '.github/workflows/symbolic-evolution.yml'
+  push:
+    paths:
+      - 'spark/evolved_program.py'
+      - 'tools/evolution_experiment.py'
+      - 'tests/test_evolved_program.py'
+      - '.github/workflows/symbolic-evolution.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  structural-search-and-native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install training-only dependency
+        run: python -m pip install numpy
+      - name: Run M11 architecture evolution tests
+        run: python -m unittest discover -s tests -p 'test_evolved_program.py' -v
+      - name: Search architectures, compile programs and test unseen gains
+        run: python tools/evolution_experiment.py --output artifacts/symbolic-m11
+      - name: Require independent OOD, native parity and baseline wins
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          r=json.loads(Path('artifacts/symbolic-m11/report.json').read_text())
+          lines=['## SPARK M11 — shared-gain symbolic topology evolution']
+          for name,guard in [('coupled',None),('reset',-2.0)]:
+              x=r[name]
+              assert x['training']==1050 and x['validation']==390, x
+              assert x['learned_guard']==guard, x
+              assert x['topology_generations']==3, x
+              assert x['held_out']['mse']<1e-18, x
+              assert x['native_held_out']['mse']<1e-18, x
+              assert x['native_held_out']['exact_fraction']==1.0, x
+              assert x['affine_held_out']['mse']>1e-2, x
+              assert x['native_long_rollouts_exact']==32, x
+              assert x['longest_rollout']==4096, x
+              lines.append(f"**{name}**: MSE={x['native_held_out']['mse']:.3g}, affine MSE={x['affine_held_out']['mse']:.3g}, 32/32 native rollouts")
+          lines.append('**Synthetic grammar-constrained tasks only; not evidence of Transformer superiority.**')
+          with open(os.environ['GITHUB_STEP_SUMMARY'],'a') as f:f.write('\n\n'.join(lines)+'\n')
+          PY
+      - name: Archive learned mathematical programs and generated native libraries
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: spark-m11-evolved-programs
+          path: artifacts/symbolic-m11/
+          retention-days: 14
