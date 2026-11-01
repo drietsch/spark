@@ -1,0 +1,53 @@
+name: SPARK M19 compositional learned memory
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'spark/composed_memory.py'
+      - 'tools/composition_experiment.py'
+      - 'tests/test_composed_memory.py'
+      - '.github/workflows/composed-memory-m19.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  compose-and-compile:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test AST validation, search and native parity
+        run: python -m unittest discover -s tests -p 'test_composed_memory.py' -v
+      - name: Learn a composed relevance rule and evaluate unseen long streams
+        run: python tools/composition_experiment.py --output artifacts/m19
+      - name: Check held-out learning, baselines and native agreement
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          r=json.loads(Path('artifacts/m19/report.json').read_text())
+          assert r['search']['candidates']==1296,r
+          assert r['search']['program']['op'] in ('and','or'),r
+          assert r['composed']['correct']==r['composed']['reads']==126,r
+          assert r['single_predicate']['correct']<r['composed']['correct'],r
+          assert r['always_write']['correct']<r['composed']['correct'],r
+          assert r['native']['python_native_mismatches']==0,r
+          assert r['native']['operations']>100000,r
+          lines=['## SPARK M19 discovered compositional memory rule',
+            f"- Learned AST: {r['search']['program']}",
+            f"- Held-out: {r['composed']['correct']}/{r['composed']['reads']} correct",
+            f"- Atomic-only: {r['single_predicate']['correct']}/{r['single_predicate']['reads']} correct",
+            f"- Native/Python mismatches: {r['native']['python_native_mismatches']}",
+            '**Synthetic, grammar-contained experiment. Not evidence of general reasoning or Transformer superiority.**']
+          with open(os.environ['GITHUB_STEP_SUMMARY'],'a') as f:f.write('\n\n'.join(lines)+'\n')
+          PY
+      - name: Archive discovered AST, C++ and report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: spark-m19-compositional-memory
+          path: artifacts/m19/
+          retention-days: 14
