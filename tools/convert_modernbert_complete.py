@@ -17,14 +17,19 @@ ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT))
 
 
 def precision_reference(model):
-    """Same equations/parameters, evaluating RoPE and softmax in float64 too."""
+    """Same source rotary constants, with stable float64 operator arithmetic."""
+    import torch
     high=copy.deepcopy(model).double()
     def rotary(self,x,position_ids):
-        import torch
-        phase=position_ids.to(torch.float64)[...,None]*self.inv_freq.to(torch.float64)[None,None,:]
-        phase=torch.cat((phase,phase),dim=-1)
-        return phase.cos()*self.attention_scaling,phase.sin()*self.attention_scaling
-    for layer in high.model.layers:layer.attn.rotary_emb.forward=types.MethodType(rotary,layer.attn.rotary_emb)
+        return self._source_cosine[position_ids].to(x.dtype),self._source_sine[position_ids].to(x.dtype)
+    cache={};positions=torch.arange(model.config.max_position_embeddings)[None]
+    for original,layer in zip(model.model.layers,high.model.layers):
+        source=original.attn.rotary_emb;key=tuple(source.inv_freq.tolist())
+        if key not in cache:
+            with torch.inference_mode():c,s=source(torch.empty(1,dtype=torch.float32),position_ids=positions)
+            cache[key]=(c[0],s[0])
+        layer.attn.rotary_emb._source_cosine,layer.attn.rotary_emb._source_sine=cache[key]
+        layer.attn.rotary_emb.forward=types.MethodType(rotary,layer.attn.rotary_emb)
     return high
 
 
@@ -180,7 +185,7 @@ def convert(args,report):
         weights_sha256=manifest['weights_sha256'],test_cases=len(cases),masked_queries=queries,logit_values_checked=logit_values,
         top1_agreement=top1,top5_set_agreement=int(top5),allclose=bool(allclose),max_logit_error=max_logit,max_hidden_error=max_hidden,
         max_high_precision_logit_error=max_precision_logit,arithmetic_precision='float64; original float32 coefficient values preserved',
-        mathematical_reference='PyTorch float64 with RoPE and attention softmax also evaluated in float64; equations and weights unchanged',
+        mathematical_reference='PyTorch float64 arithmetic and softmax with original float32 rotary constants; equations and weights unchanged',
         mathematical_absolute_tolerance=1e-7,mathematical_relative_tolerance=1e-7,
         absolute_tolerance=absolute_tolerance,relative_tolerance=relative_tolerance,padded_batch_max_logit_error=batch_error,
         live_function_checks=live,independent_inference=isolated,comparisons=comparisons,elapsed_seconds=time.perf_counter()-started,

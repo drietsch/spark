@@ -11,11 +11,12 @@ import math
 import os
 import struct
 import subprocess
+import threading
 from pathlib import Path
 
 FORMAT='spark-modernbert-mathematical-model-v1'
 HEADER=struct.Struct('<8s12I3d')
-MAGIC=b'SPRKMB02'
+MAGIC=b'SPRKMB03'
 ACTIVATIONS={'gelu':0,'gelu_pytorch_tanh':1,'gelu_new':1}
 
 
@@ -59,7 +60,7 @@ def export_model(model,directory,*,source):
         if not np.isfinite(a).all():raise ValueError('nonfinite source weights')
         return np.asarray(a,dtype='<f4',order='C')
     with tmp.open('wb') as f:
-        f.write(HEADER.pack(MAGIC,2,h,i,l,heads,vocab,c.max_position_embeddings,c.local_attention,c.global_attn_every_n_layers,
+        f.write(HEADER.pack(MAGIC,3,h,i,l,heads,vocab,c.max_position_embeddings,c.local_attention,c.global_attn_every_n_layers,
                 int(tied),ACTIVATIONS[c.hidden_activation],ACTIVATIONS[c.classifier_activation],c.norm_eps,c.global_rope_theta,c.local_rope_theta or c.global_rope_theta))
         def write(name,value,shape=None):
             a=array(value) if value is not None else np.zeros(shape,dtype='<f4')
@@ -85,12 +86,22 @@ def export_model(model,directory,*,source):
         norm('final.norm',model.model.final_norm);dense('prediction.dense',model.head.dense,h,h);norm('prediction.norm',model.head.norm)
         if not tied:write('decoder.weight',model.decoder.weight,(vocab,h))
         write('decoder.bias',model.decoder.bias,(vocab,))
+        # Preserve the source's float32 phase/cosine rounding at every supported
+        # position, while the surrounding arithmetic executes in float64.
+        import torch
+        global_rope=model.model.layers[0].attn.rotary_emb
+        local_rope=next((layer.attn.rotary_emb for n,layer in enumerate(model.model.layers) if n%c.global_attn_every_n_layers),global_rope)
+        positions=torch.arange(c.max_position_embeddings)[None]
+        for name,rope in (('global',global_rope),('local',local_rope)):
+            with torch.inference_mode():cosine,sine=rope(torch.empty(1,dtype=torch.float32),position_ids=positions)
+            write(f'rotary.{name}.cosine',cosine[0,:,:h//heads//2],(c.max_position_embeddings,h//heads//2))
+            write(f'rotary.{name}.sine',sine[0,:,:h//heads//2],(c.max_position_embeddings,h//heads//2))
     if tmp.stat().st_size>2*2**30:tmp.unlink();raise ValueError('export exceeds model payload budget')
     tmp.replace(directory/'weights.sparkmb')
     manifest={'format':FORMAT,'source':dict(source),'geometry':{'hidden':h,'intermediate':i,'layers':l,'heads':heads,'vocab':vocab,
         'max_sequence':c.max_position_embeddings,'local_window':c.local_attention,'global_every':c.global_attn_every_n_layers,'tied_decoder':tied},
         'constants':{'norm_epsilon':c.norm_eps,'global_rope_theta':c.global_rope_theta,'local_rope_theta':c.local_rope_theta or c.global_rope_theta,
-            'mlp_activation':c.hidden_activation,'prediction_activation':c.classifier_activation},
+            'mlp_activation':c.hidden_activation,'prediction_activation':c.classifier_activation,'rotary_evaluation':'preserved-source-float32-tables'},
         'program':expected_program(l,c.global_attn_every_n_layers,tied),'parameters':weights,'parameter_payload_bytes':(directory/'weights.sparkmb').stat().st_size,
         'weights_sha256':sha256_file(directory/'weights.sparkmb'),'inference':'masked-language-model evaluation; no training/autograd',
         'representation':'explicit typed function composition; original Transformer dimensions and float32 coefficient values retained',
@@ -126,7 +137,7 @@ def validate_manifest(directory,*,verify=True):
     path=directory/'weights.sparkmb'
     if not HEADER.size<=path.stat().st_size<=2*2**30 or path.stat().st_size!=d['parameter_payload_bytes']:raise ValueError('invalid parameter payload size')
     with path.open('rb') as f:header=HEADER.unpack(f.read(HEADER.size))
-    if header[:2]!=(MAGIC,2) or d.get('arithmetic_precision')!='float64':raise ValueError('invalid parameter binary format/precision')
+    if header[:2]!=(MAGIC,3) or d.get('arithmetic_precision')!='float64':raise ValueError('invalid parameter binary format/precision')
     if header[2:11]!=(g['hidden'],g['intermediate'],g['layers'],g['heads'],g['vocab'],g['max_sequence'],g['local_window'],g['global_every'],int(g['tied_decoder'])):
         raise ValueError('parameter header and program geometry disagree')
     constants=d['constants']
@@ -140,12 +151,30 @@ def validate_manifest(directory,*,verify=True):
         if type(tensor['offset']) is not int or type(tensor['bytes']) is not int or tensor['offset']!=offset or tensor['bytes']!=math.prod(tensor['shape'])*4:raise ValueError('invalid tensor bounds')
         offset+=tensor['bytes'];names.add(tensor['name'])
     if offset!=path.stat().st_size:raise ValueError('parameter layout does not cover payload')
+    expected=[];h=g['hidden'];i=g['intermediate'];v=g['vocab']
+    def add(name,shape):expected.append((name,list(shape)))
+    add('embedding.weight',(v,h))
+    for name in ('embedding.norm.weight','embedding.norm.bias'):add(name,(h,))
+    for layer in range(g['layers']):
+        prefix=f'layer{layer}'
+        for name,shape in [('attention.norm.weight',(h,)),('attention.norm.bias',(h,)),('attention.qkv.weight',(3*h,h)),('attention.qkv.bias',(3*h,)),
+            ('attention.output.weight',(h,h)),('attention.output.bias',(h,)),('function.norm.weight',(h,)),('function.norm.bias',(h,)),
+            ('function.input.weight',(2*i,h)),('function.input.bias',(2*i,)),('function.output.weight',(h,i)),('function.output.bias',(h,)),
+            ('attention.rotary_frequencies',(h//g['heads']//2,))]:add(prefix+'.'+name,shape)
+    for name,shape in [('final.norm.weight',(h,)),('final.norm.bias',(h,)),('prediction.dense.weight',(h,h)),('prediction.dense.bias',(h,)),
+        ('prediction.norm.weight',(h,)),('prediction.norm.bias',(h,))]:add(name,shape)
+    if not g['tied_decoder']:add('decoder.weight',(v,h))
+    add('decoder.bias',(v,))
+    for kind in ('global','local'):
+        for trig in ('cosine','sine'):add(f'rotary.{kind}.{trig}',(g['max_sequence'],h//g['heads']//2))
+    if [(t['name'],t['shape']) for t in d['parameters']]!=expected:raise ValueError('tensor bindings do not implement the declared program')
     if verify and sha256_file(path)!=d['weights_sha256']:raise ValueError('parameter checksum mismatch')
     return d
 
 
 class NativeModernBert:
     def __init__(self,directory,*,verify=True):
+        self._lock=threading.RLock()
         self.directory=Path(directory);self.manifest=validate_manifest(directory,verify=verify)
         path=compile_runtime(directory)
         try:self.lib=ctypes.CDLL(str(path.resolve()))
@@ -176,11 +205,14 @@ class NativeModernBert:
         if len(mask)!=n or any(type(v) is not int or v not in (0,1) for v in mask) or not any(mask):raise ValueError('invalid attention mask')
         if len(positions)!=n or any(type(v) is not int or not 0<=v<self.max_sequence for v in positions):raise ValueError('invalid rotary positions')
         if not 1<=len(query)<=n or len(set(query))!=len(query) or any(type(v) is not int or not 0<=v<n or not mask[v] for v in query):raise ValueError('invalid prediction query positions')
+        if len(query)*self.vocab>64*2**20 or (trace and (2*self.layers+2)*n*self.hidden>64*2**20):
+            raise ValueError('query/trace allocation budget exceeded; select fewer positions')
         ids=(ctypes.c_int32*n)(*input_ids);m=(ctypes.c_int32*n)(*mask);p=(ctypes.c_int32*n)(*positions);q=(ctypes.c_int32*len(query))(*query)
         output=(ctypes.c_double*(len(query)*self.vocab))();hidden=(ctypes.c_double*(n*self.hidden))() if return_hidden else None
         traces=(ctypes.c_double*((2*self.layers+2)*n*self.hidden))() if trace else None
-        ok=(self.lib.spark_mb_run_trace(self.handle,ids,m,p,n,q,len(query),output,hidden,traces) if trace else
-            self.lib.spark_mb_run(self.handle,ids,m,p,n,q,len(query),output,hidden))
+        with self._lock:
+            ok=(self.lib.spark_mb_run_trace(self.handle,ids,m,p,n,q,len(query),output,hidden,traces) if trace else
+                self.lib.spark_mb_run(self.handle,ids,m,p,n,q,len(query),output,hidden))
         if not ok:raise RuntimeError(self._error())
         result={'logits':output,'shape':(len(query),self.vocab),'query_positions':query}
         if return_hidden:result.update(hidden=hidden,hidden_shape=(n,self.hidden))
@@ -188,14 +220,17 @@ class NativeModernBert:
         return result
 
     def set_active_width(self,layer,width):
-        if type(layer) is not int or type(width) is not int or not self.lib.spark_mb_set_width(self.handle,layer,width):raise ValueError(self._error())
+        with self._lock:
+            if type(layer) is not int or type(width) is not int or not self.lib.spark_mb_set_width(self.handle,layer,width):raise ValueError(self._error())
 
     def set_function_coefficient(self,layer,tensor,index,value):
         names={'input_weight':0,'input_bias':1,'output_weight':2,'output_bias':3}
         if tensor not in names or type(layer) is not int or type(index) is not int or index<0 or type(value) not in (int,float) or not math.isfinite(value) or abs(value)>1e4:raise ValueError('invalid live coefficient update')
-        if not self.lib.spark_mb_set_coefficient(self.handle,layer,names[tensor],index,value):raise ValueError(self._error())
+        with self._lock:
+            if not self.lib.spark_mb_set_coefficient(self.handle,layer,names[tensor],index,value):raise ValueError(self._error())
 
     def close(self):
-        if getattr(self,'handle',None):self.lib.spark_mb_destroy(self.handle);self.handle=None
+        with self._lock:
+            if getattr(self,'handle',None):self.lib.spark_mb_destroy(self.handle);self.handle=None
     def __enter__(self):return self
     def __exit__(self,*_):self.close()

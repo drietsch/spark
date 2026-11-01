@@ -22,7 +22,7 @@ struct Span {float*p=nullptr;size_t size=0;};
 struct Layer {Span an,ab,qkv,qb,aw,awb,mn,mb,wi,bi,wo,bo,rope;int active=0;};
 struct Model {
  void*map=MAP_FAILED;size_t bytes=0;int h=0,i=0,l=0,heads=0,vocab=0,maxseq=0,window=0,every=0,tied=0,act=0,headact=0;double eps=0;
- Span embedding,en,eb,fn,fb,hd,hb,hn,hnb,decoder,db;std::vector<Layer>layers;std::unordered_map<const float*,std::vector<double>> cache;
+ Span embedding,en,eb,fn,fb,hd,hb,hn,hnb,decoder,db,global_cos,global_sin,local_cos,local_sin;std::vector<Layer>layers;std::unordered_map<const float*,std::vector<double>> cache;
  ~Model(){if(map!=MAP_FAILED)munmap(map,bytes);}
 };
 void require(bool ok,const char*message){if(!ok)throw std::runtime_error(message);}
@@ -34,7 +34,7 @@ std::unique_ptr<Model> load(const char*path){
  if(fstat(fd,&st)!=0||st.st_size<80||st.st_size>2LL*1024*1024*1024){close(fd);throw std::runtime_error("invalid model allocation budget");}
  auto m=std::make_unique<Model>();m->bytes=st.st_size;m->map=mmap(nullptr,m->bytes,PROT_READ|PROT_WRITE,MAP_PRIVATE,fd,0);close(fd);
  require(m->map!=MAP_FAILED,"cannot map converted weights");auto*p=static_cast<unsigned char*>(m->map);
- require(std::memcmp(p,"SPRKMB02",8)==0&&u32(p+8)==2,"unsupported model binary");
+ require(std::memcmp(p,"SPRKMB03",8)==0&&u32(p+8)==3,"unsupported model binary");
  m->h=u32(p+12);m->i=u32(p+16);m->l=u32(p+20);m->heads=u32(p+24);m->vocab=u32(p+28);m->maxseq=u32(p+32);m->window=u32(p+36);m->every=u32(p+40);m->tied=u32(p+44);m->act=u32(p+48);m->headact=u32(p+52);m->eps=f64(p+56);
  require(m->h>=1&&m->h<=2048&&m->i>=1&&m->i<=8192&&m->l>=1&&m->l<=64&&m->heads>=1&&m->heads<=64&&m->h%m->heads==0&&(m->h/m->heads)%2==0&&m->vocab>=1&&m->vocab<=131072,"invalid model geometry");
  require(m->maxseq>=1&&m->maxseq<=8192&&m->window>=1&&m->window<=8192&&m->every>=1&&m->every<=64&&m->tied>=0&&m->tied<=1&&m->act>=0&&m->act<=1&&m->headact>=0&&m->headact<=1&&std::isfinite(m->eps)&&m->eps>0&&m->eps<1&&std::isfinite(f64(p+64))&&f64(p+64)>0&&std::isfinite(f64(p+72))&&f64(p+72)>0,"invalid execution constants");
@@ -42,6 +42,7 @@ std::unique_ptr<Model> load(const char*path){
  size_t h=m->h,i=m->i,v=m->vocab;m->embedding=span(v*h);m->en=span(h);m->eb=span(h);
  for(int n=0;n<m->l;++n){Layer a;a.an=span(h);a.ab=span(h);a.qkv=span(3*h*h);a.qb=span(3*h);a.aw=span(h*h);a.awb=span(h);a.mn=span(h);a.mb=span(h);a.wi=span(2*i*h);a.bi=span(2*i);a.wo=span(h*i);a.bo=span(h);a.rope=span(h/m->heads/2);a.active=m->i;m->layers.push_back(a);}
  m->fn=span(h);m->fb=span(h);m->hd=span(h*h);m->hb=span(h);m->hn=span(h);m->hnb=span(h);m->decoder=m->tied?m->embedding:span(v*h);m->db=span(v);
+ size_t rotary=size_t(m->maxseq)*h/m->heads/2;m->global_cos=span(rotary);m->global_sin=span(rotary);m->local_cos=span(rotary);m->local_sin=span(rotary);
  require(cursor==m->bytes,"unexpected model trailing data");return m;
 }
 void linear(Model&m,const std::vector<double>&x,int rows,int ins,int outs,Span w,Span b,std::vector<double>&y,int stride=0){
@@ -58,11 +59,12 @@ double gelu(double x,int mode){return mode==0?0.5*x*(1.0+std::erf(x*0.7071067811
 void residual(std::vector<double>&x,const std::vector<double>&delta){for(size_t j=0;j<x.size();++j){x[j]+=delta[j];require(std::isfinite(x[j]),"nonfinite mathematical state");}}
 void attention(Model&m,Layer&a,int layer,const std::vector<double>&x,const int32_t*mask,const int32_t*pos,int t,std::vector<double>&out){
  int h=m.h,d=h/m.heads,half=d/2;std::vector<double>qkv;linear(m,x,t,h,3*h,a.qkv,a.qb,qkv);
+ bool local=layer%m.every!=0;Span cosine=local?m.local_cos:m.global_cos,sine=local?m.local_sin:m.global_sin;
  for(int r=0;r<t;++r)for(int head=0;head<m.heads;++head)for(int k=0;k<half;++k){
-  double angle=double(pos[r])*a.rope.p[k];double c=std::cos(angle),s=std::sin(angle);
+  double c=cosine.p[size_t(pos[r])*half+k],s=sine.p[size_t(pos[r])*half+k];
   for(int group=0;group<2;++group){size_t base=size_t(r)*3*h+group*h+head*d;double first=qkv[base+k],second=qkv[base+half+k];qkv[base+k]=first*c-second*s;qkv[base+half+k]=second*c+first*s;}}
  std::vector<double>ctx(size_t(t)*h),q(size_t(t)*d),k(q.size()),v(q.size()),weights(size_t(t)*t),headout(size_t(t)*d);
- bool local=layer%m.every!=0;double scale=1.0/std::sqrt(double(d));
+ double scale=1.0/std::sqrt(double(d));
  for(int head=0;head<m.heads;++head){
   for(int r=0;r<t;++r)for(int j=0;j<d;++j){q[size_t(r)*d+j]=qkv[size_t(r)*3*h+head*d+j];k[size_t(r)*d+j]=qkv[size_t(r)*3*h+h+head*d+j];v[size_t(r)*d+j]=qkv[size_t(r)*3*h+2*h+head*d+j];}
   cblas_dgemm(101,111,112,t,t,d,1.0,q.data(),d,k.data(),d,0.0,weights.data(),t);
