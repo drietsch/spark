@@ -9,7 +9,10 @@ from dataclasses import dataclass
 from fractions import Fraction
 from itertools import combinations_with_replacement
 import math
-import numpy as np
+try:
+    import numpy as np
+except ImportError:
+    np = None
 
 
 def features(z,degree=3):
@@ -26,6 +29,7 @@ def evaluate(terms,z):
 
 
 def synthesize(observations,*,degree=3,denominator=256,max_terms=12):
+    if np is None:raise ImportError('NumPy required for polynomial search only')
     if len(observations)<50 or not 1<=degree<=3 or len(observations[0][0])>4:
         raise ValueError('invalid synthesis observations')
     powers=[p for p,_ in features(observations[0][0],degree)]
