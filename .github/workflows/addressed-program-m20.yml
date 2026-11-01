@@ -1,0 +1,61 @@
+name: SPARK M20 learned mathematical addressing and nested programs
+on:
+  push:
+    paths:
+      - 'spark/addressed_program.py'
+      - 'tools/addressed_experiment.py'
+      - 'tests/test_addressed_program.py'
+      - '.github/workflows/addressed-program-m20.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'spark/addressed_program.py'
+      - 'tools/addressed_experiment.py'
+      - 'tests/test_addressed_program.py'
+      - '.github/workflows/addressed-program-m20.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  learn-address-and-program:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run program safety, delayed learning, and native parity tests
+        run: python -m unittest discover -s tests -p 'test_addressed_program.py' -v
+      - name: Discover address and nested mathematical program from delayed queries
+        run: python tools/addressed_experiment.py --output artifacts/m20
+      - name: Assert OOD memory inference, baselines, and parity
+        run: |
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          r=json.loads(Path('artifacts/m20/report.json').read_text())
+          assert r['learned_address']=={'cu':1,'cv':-1},r
+          assert r['address_search']['train_mse']==0.0,r
+          assert r['program_search']['train_mse']==0.0,r
+          assert r['program_search']['complexity']>=7,r
+          assert r['heldout']['reads']==144 and r['heldout']['correct']==144,r
+          assert r['two_atom_baseline']['correct']<r['heldout']['correct'],r
+          assert r['raw_first_feature_address_baseline']['correct']<r['heldout']['correct'],r
+          assert r['always_write_baseline']['correct']<r['heldout']['correct'],r
+          assert r['native']['operations']>300000,r
+          assert r['native']['python_native_disagreements']==0,r
+          with open(os.environ['GITHUB_STEP_SUMMARY'],'a') as f:
+              f.write('## SPARK M20 learned address + nested write program\n\n')
+              for k in ('heldout','two_atom_baseline','raw_first_feature_address_baseline','always_write_baseline'):
+                  x=r[k];f.write(f"- {k}: {x['correct']}/{x['reads']} correct\n")
+              f.write(f"- Native/Python mismatches: {r['native']['python_native_disagreements']}\n\n")
+              f.write('**Synthetic finite grammar; address calibration is separately supplied. Not a Transformer benchmark.**\n')
+          PY
+      - name: Archive programs, native code and benchmark report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: spark-m20-addressed-programs
+          path: artifacts/m20/
+          retention-days: 14
