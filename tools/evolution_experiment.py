@@ -13,7 +13,6 @@ from time import perf_counter
 ROOT=Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT))
 from spark.evolved_program import evolve, cpp_source, save
-import numpy as np
 
 
 def transition(s,x,w,reset=False):
@@ -46,6 +45,7 @@ def measure(rows,predict):
 
 
 def affine_baseline(train):
+    import numpy as np  # training-only; native/test imports need no NumPy
     X=np.asarray([[*s,x,gain,1.] for s,x,gain,_ in train])
     Y=np.asarray([y for _,_,_,y in train]); coefs=np.linalg.lstsq(X,Y,rcond=None)[0]
     return lambda s,x,w:tuple(np.asarray([*s,x,w,1.])@coefs)
