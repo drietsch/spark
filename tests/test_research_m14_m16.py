@@ -1,10 +1,14 @@
 import math,random,shutil,tempfile,unittest
 from pathlib import Path
-import numpy as np
+try:
+ import numpy as np
+except ImportError:
+ np=None
 from spark.predictive_state import PredictiveState,fit
 from spark.consolidation import ConsolidatedFunction,ConsolidationManager,evaluate,synthesize
 from spark.algorithmic_memory import AlgorithmicMemory,WRITE,READ,ADD,ERASE,NOOP
 
+@unittest.skipIf(np is None,'offline fitting requires NumPy')
 class M14Tests(unittest.TestCase):
  def test_predictive_model_training_from_observations_only(self):
   import sys
@@ -23,6 +27,7 @@ class M14Tests(unittest.TestCase):
   self.assertEqual(m.online([2.],.5,2.,lr=.1),2.)
   with self.assertRaises(ValueError):m.online([1.],.2,3.,lr=20.)
 
+@unittest.skipIf(np is None,'symbolic fitting requires NumPy')
 class M15Tests(unittest.TestCase):
  def test_consolidate_and_rollback(self):
   fn=lambda z:.25*z[0]*z[1]-.125*z[0]
