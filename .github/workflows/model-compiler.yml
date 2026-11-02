@@ -1,0 +1,132 @@
+name: Compile existing model into SPARK functions
+on:
+  push:
+    branches:
+      - 'codex/model-compiler-*'
+    paths:
+      - '.github/workflows/model-compiler.yml'
+      - 'spark/function_ir.py'
+      - 'spark/function_runtime.py'
+      - 'spark/model_compiler.py'
+      - 'runtime/function_ir_runtime.hpp'
+      - 'tools/compile_model.py'
+      - 'tools/run_function_program.py'
+      - 'tools/validate_model_compiler.py'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+jobs:
+  compile-and-validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      HF_HUB_DISABLE_XET: '1'
+      OPENBLAS_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Record compiler startup on an isolated results branch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git switch -c "${GITHUB_REF_NAME}-results-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          root = Path('artifacts/model-compiler'); root.mkdir(parents=True, exist_ok=True)
+          (root / 'runner-report.json').write_text(json.dumps({'status': 'running', 'stage': 'download-source-export',
+              'workflow_url': f"https://github.com/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}"}, indent=2) + '\n')
+          PY
+          git add -f artifacts/model-compiler/runner-report.json
+          git commit -m 'Record source-to-function compiler startup'
+          git push origin "HEAD:refs/heads/${GITHUB_REF_NAME}-results-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+      - uses: actions/download-artifact@v4
+        with:
+          name: spark-modernbert-base-complete
+          run-id: 41348755846
+          github-token: ${{ github.token }}
+          path: ${{ runner.temp }}/source-export
+      - name: Compile and test without source inference frameworks
+        id: compile
+        continue-on-error: true
+        env:
+          SOURCE_DIRECTORY: ${{ runner.temp }}/source-export
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y libopenblas-dev
+          python -m venv "${RUNNER_TEMP}/compiler-runtime-only"
+          "${RUNNER_TEMP}/compiler-runtime-only/bin/python" -m pip install tokenizers==0.21.4
+          "${RUNNER_TEMP}/compiler-runtime-only/bin/python" tools/validate_model_compiler.py --phase compile --source-export "$SOURCE_DIRECTORY"
+      - name: Install pinned original-model reference dependencies
+        if: steps.compile.outcome == 'success'
+        run: |
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.6.0
+          python -m pip install numpy==2.2.6 transformers==4.51.3 safetensors==0.5.3
+      - uses: actions/cache/restore@v4
+        if: steps.compile.outcome == 'success'
+        with:
+          path: ${{ runner.temp }}/modernbert-hub
+          key: modernbert-source-8949b909ec900327062f0ebf497f51aef5e6f0c8-v1
+      - name: Compare generated functions against the pinned source model
+        id: parity
+        if: steps.compile.outcome == 'success'
+        continue-on-error: true
+        env:
+          HF_HOME: ${{ runner.temp }}/modernbert-hub
+        run: python tools/validate_model_compiler.py --phase parity
+      - name: Upload compiled SPARK function program
+        id: package
+        if: steps.compile.outcome == 'success' && steps.parity.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: spark-function-program-modernbert-base
+          path: artifacts/model-compiler/package/
+          retention-days: 7
+          compression-level: 6
+      - name: Upload compiler reports
+        id: reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: spark-function-compiler-reports
+          path: |
+            artifacts/model-compiler/*-tests.json
+            artifacts/model-compiler/runner-report.json
+          retention-days: 7
+      - name: Return compiler receipts through Git
+        if: always()
+        env:
+          COMPILE_OUTCOME: ${{ steps.compile.outcome }}
+          PARITY_OUTCOME: ${{ steps.parity.outcome }}
+          PACKAGE_URL: ${{ steps.package.outputs.artifact-url }}
+          REPORT_URL: ${{ steps.reports.outputs.artifact-url }}
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          root = Path('artifacts/model-compiler'); root.mkdir(parents=True, exist_ok=True)
+          path = root / 'runner-report.json'
+          r = json.loads(path.read_text()) if path.exists() else {}
+          success = all(os.environ.get(k) == 'success' for k in ('COMPILE_OUTCOME', 'PARITY_OUTCOME')) and bool(os.environ.get('PACKAGE_URL'))
+          r.update(status='completed' if success else 'failed', stage='complete', compile_outcome=os.environ['COMPILE_OUTCOME'],
+              parity_outcome=os.environ['PARITY_OUTCOME'], artifact_url=os.environ['PACKAGE_URL'], report_artifact_url=os.environ['REPORT_URL'])
+          path.write_text(json.dumps(r, indent=2) + '\n')
+          PY
+          git add -f artifacts/model-compiler/runner-report.json
+          for phase in compile parity; do
+            if test -f "artifacts/model-compiler/${phase}-tests.json"; then git add -f "artifacts/model-compiler/${phase}-tests.json"; fi
+          done
+          if test -f artifacts/model-compiler/package/program.json; then
+            cp artifacts/model-compiler/package/program.json artifacts/model-compiler/program.json
+            git add -f artifacts/model-compiler/program.json
+          fi
+          git commit -m 'Return model compiler validation and target program'
+          git push origin "HEAD:refs/heads/${GITHUB_REF_NAME}-results-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+      - name: Preserve compiler validation failures
+        if: steps.compile.outcome != 'success' || steps.parity.outcome != 'success'
+        run: exit 1
