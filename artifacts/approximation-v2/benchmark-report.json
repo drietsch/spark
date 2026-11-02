@@ -1,0 +1,498 @@
+{
+  "status": "completed",
+  "phase": "benchmark",
+  "protocol_sha256": "67aabe9746cf1d4fef7a0c474b0530fe44dbd88f0af06d546663fbd0db66c9ae",
+  "results": {
+    "function": {
+      "median_paired_speedup": 1.1095352635788363,
+      "confidence_interval_95": [
+        1.1072960134053362,
+        1.1232572297834231
+      ],
+      "speedup_demonstrated": true,
+      "paired_rounds": 3,
+      "baseline_median_ms": 9.3755595,
+      "candidate_median_ms": 8.3614365,
+      "observations": {
+        "baseline": [
+          {
+            "native_milliseconds": [
+              9.317256,
+              9.424087,
+              9.360001,
+              9.447842,
+              9.490197,
+              9.764189,
+              9.345289,
+              9.228373,
+              9.307271,
+              9.79127,
+              9.466721,
+              9.434273,
+              9.464548,
+              9.351368,
+              9.241973,
+              9.565059,
+              9.288343,
+              9.282944,
+              9.254833,
+              9.517598
+            ],
+            "median_native_milliseconds": 9.392044,
+            "peak_rss_bytes": 95277056,
+            "input_shapes": {
+              "x": [
+                128,
+                768
+              ]
+            },
+            "output_shapes": {
+              "value": [
+                128,
+                768
+              ]
+            },
+            "abi_public_parity_exact": true,
+            "status": "completed",
+            "elapsed_seconds": 0.3790123719999201
+          },
+          {
+            "native_milliseconds": [
+              9.318458,
+              9.316144,
+              9.216124,
+              9.308133,
+              9.29342,
+              9.528795,
+              9.410357,
+              9.340762,
+              9.571029,
+              9.700875,
+              9.702507,
+              9.573151,
+              9.52587,
+              9.543256,
+              9.769357,
+              9.632812,
+              9.311528,
+              9.298328,
+              9.181682,
+              9.254402
+            ],
+            "median_native_milliseconds": 9.3755595,
+            "peak_rss_bytes": 95277056,
+            "input_shapes": {
+              "x": [
+                128,
+                768
+              ]
+            },
+            "output_shapes": {
+              "value": [
+                128,
+                768
+              ]
+            },
+            "abi_public_parity_exact": true,
+            "status": "completed",
+            "elapsed_seconds": 0.375543637000078
+          },
+          {
+            "native_milliseconds": [
+              9.312989,
+              9.460622,
+              9.466131,
+              9.440401,
+              9.398308,
+              9.460792,
+              9.405859,
+              9.366611,
+              9.374192,
+              9.340761,
+              9.228072,
+              9.161291,
+              9.089894,
+              9.067,
+              8.991135,
+              8.927468,
+              8.861389,
+              8.844404,
+              8.792005,
+              8.78224
+            ],
+            "median_native_milliseconds": 9.2705305,
+            "peak_rss_bytes": 95256576,
+            "input_shapes": {
+              "x": [
+                128,
+                768
+              ]
+            },
+            "output_shapes": {
+              "value": [
+                128,
+                768
+              ]
+            },
+            "abi_public_parity_exact": true,
+            "status": "completed",
+            "elapsed_seconds": 0.37123371400002725
+          }
+        ],
+        "candidate": [
+          {
+            "native_milliseconds": [
+              8.363159,
+              8.256439,
+              8.359714,
+              8.29065,
+              8.254615,
+              8.223298,
+              8.260875,
+              8.453735,
+              8.413605,
+              8.364752,
+              8.424371,
+              8.381947,
+              8.393735,
+              8.31762,
+              8.27094,
+              8.268397,
+              8.315447,
+              8.434346,
+              8.623321,
+              8.78212
+            ],
+            "median_native_milliseconds": 8.3614365,
+            "peak_rss_bytes": 91471872,
+            "input_shapes": {
+              "x": [
+                128,
+                768
+              ]
+            },
+            "output_shapes": {
+              "value": [
+                128,
+                768
+              ]
+            },
+            "abi_public_parity_exact": true,
+            "status": "completed",
+            "elapsed_seconds": 0.3517608280000104
+          },
+          {
+            "native_milliseconds": [
+              8.612024,
+              8.591953,
+              8.56333,
+              8.55009,
+              8.548317,
+              8.525073,
+              8.471112,
+              8.41728,
+              8.354776,
+              8.34356,
+              8.456069,
+              8.406013,
+              8.352843,
+              8.379474,
+              8.421597,
+              8.46304,
+              8.504161,
+              8.474697,
+              8.455999,
+              8.485253
+            ],
+            "median_native_milliseconds": 8.467075999999999,
+            "peak_rss_bytes": 91627520,
+            "input_shapes": {
+              "x": [
+                128,
+                768
+              ]
+            },
+            "output_shapes": {
+              "value": [
+                128,
+                768
+              ]
+            },
+            "abi_public_parity_exact": true,
+            "status": "completed",
+            "elapsed_seconds": 0.35456650499997977
+          },
+          {
+            "native_milliseconds": [
+              8.163759,
+              8.313734,
+              8.258491,
+              8.162427,
+              8.15102,
+              8.27085,
+              8.308777,
+              8.341917,
+              8.326113,
+              8.368738,
+              8.4108,
+              8.425513,
+              8.309048,
+              8.420155,
+              8.406635,
+              8.412714,
+              8.41677,
+              8.403019,
+              8.405282,
+              8.449649
+            ],
+            "median_native_milliseconds": 8.355327500000001,
+            "peak_rss_bytes": 91607040,
+            "input_shapes": {
+              "x": [
+                128,
+                768
+              ]
+            },
+            "output_shapes": {
+              "value": [
+                128,
+                768
+              ]
+            },
+            "abi_public_parity_exact": true,
+            "status": "completed",
+            "elapsed_seconds": 0.348001775000057
+          }
+        ]
+      }
+    },
+    "model": {
+      "median_paired_speedup": 0.9947832524409262,
+      "confidence_interval_95": [
+        0.9928891913171647,
+        0.9994846621541412
+      ],
+      "speedup_demonstrated": false,
+      "paired_rounds": 3,
+      "baseline_median_ms": 930.105106,
+      "candidate_median_ms": 932.196786,
+      "observations": {
+        "baseline": [
+          {
+            "native_milliseconds": [
+              935.919628,
+              931.873924
+            ],
+            "median_native_milliseconds": 933.896776,
+            "peak_rss_bytes": 1900085248,
+            "input_shapes": {
+              "tokens": [
+                128
+              ],
+              "mask": [
+                128
+              ],
+              "positions": [
+                128
+              ],
+              "queries": [
+                8
+              ]
+            },
+            "output_shapes": {
+              "encoded": [
+                128,
+                768
+              ],
+              "logits": [
+                8,
+                50368
+              ]
+            },
+            "abi_public_parity_exact": true,
+            "status": "completed",
+            "elapsed_seconds": 5.130488230999958
+          },
+          {
+            "native_milliseconds": [
+              925.680656,
+              934.529556
+            ],
+            "median_native_milliseconds": 930.105106,
+            "peak_rss_bytes": 1900072960,
+            "input_shapes": {
+              "tokens": [
+                128
+              ],
+              "mask": [
+                128
+              ],
+              "positions": [
+                128
+              ],
+              "queries": [
+                8
+              ]
+            },
+            "output_shapes": {
+              "encoded": [
+                128,
+                768
+              ],
+              "logits": [
+                8,
+                50368
+              ]
+            },
+            "abi_public_parity_exact": true,
+            "status": "completed",
+            "elapsed_seconds": 5.112457324000047
+          },
+          {
+            "native_milliseconds": [
+              919.263403,
+              931.872823
+            ],
+            "median_native_milliseconds": 925.568113,
+            "peak_rss_bytes": 1900097536,
+            "input_shapes": {
+              "tokens": [
+                128
+              ],
+              "mask": [
+                128
+              ],
+              "positions": [
+                128
+              ],
+              "queries": [
+                8
+              ]
+            },
+            "output_shapes": {
+              "encoded": [
+                128,
+                768
+              ],
+              "logits": [
+                8,
+                50368
+              ]
+            },
+            "abi_public_parity_exact": true,
+            "status": "completed",
+            "elapsed_seconds": 5.078658601000029
+          }
+        ],
+        "candidate": [
+          {
+            "native_milliseconds": [
+              947.767516,
+              929.820941
+            ],
+            "median_native_milliseconds": 938.7942284999999,
+            "peak_rss_bytes": 1896210432,
+            "input_shapes": {
+              "tokens": [
+                128
+              ],
+              "mask": [
+                128
+              ],
+              "positions": [
+                128
+              ],
+              "queries": [
+                8
+              ]
+            },
+            "output_shapes": {
+              "encoded": [
+                128,
+                768
+              ],
+              "logits": [
+                8,
+                50368
+              ]
+            },
+            "abi_public_parity_exact": true,
+            "status": "completed",
+            "elapsed_seconds": 5.184831623000036
+          },
+          {
+            "native_milliseconds": [
+              931.372688,
+              929.796655
+            ],
+            "median_native_milliseconds": 930.5846715,
+            "peak_rss_bytes": 1896099840,
+            "input_shapes": {
+              "tokens": [
+                128
+              ],
+              "mask": [
+                128
+              ],
+              "positions": [
+                128
+              ],
+              "queries": [
+                8
+              ]
+            },
+            "output_shapes": {
+              "encoded": [
+                128,
+                768
+              ],
+              "logits": [
+                8,
+                50368
+              ]
+            },
+            "abi_public_parity_exact": true,
+            "status": "completed",
+            "elapsed_seconds": 5.152072517000079
+          },
+          {
+            "native_milliseconds": [
+              937.555173,
+              926.838399
+            ],
+            "median_native_milliseconds": 932.196786,
+            "peak_rss_bytes": 1896099840,
+            "input_shapes": {
+              "tokens": [
+                128
+              ],
+              "mask": [
+                128
+              ],
+              "positions": [
+                128
+              ],
+              "queries": [
+                8
+              ]
+            },
+            "output_shapes": {
+              "encoded": [
+                128,
+                768
+              ],
+              "logits": [
+                8,
+                50368
+              ]
+            },
+            "abi_public_parity_exact": true,
+            "status": "completed",
+            "elapsed_seconds": 5.1170255770000495
+          }
+        ]
+      }
+    }
+  },
+  "elapsed_seconds": 36.18184200899998
+}
