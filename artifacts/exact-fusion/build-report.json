@@ -1,0 +1,23 @@
+{
+  "status": "completed",
+  "phase": "build",
+  "protocol_sha256": "b97286f4b624116f2f42757dbfa9b68059b3aa19f1fb919fe16790085f415a49",
+  "rewrites": 113,
+  "rule_counts": {
+    "single-use-map-map": 67,
+    "single-use-map-reduce": 46
+  },
+  "audit": {
+    "verified": true,
+    "rewrites": 113,
+    "source_sha256": "97714089f683a6aee5dea95eba04fbfdd7ce5746e59df4250de7242bba0bd5e2",
+    "target_sha256": "77198d7ce33581db6261d41fa20cf1dcc71bd915c08231e4b93803508ea9f724"
+  },
+  "baseline_operations": 1547,
+  "candidate_operations": 1434,
+  "coefficients_unchanged": true,
+  "coefficient_bytes": 603500288,
+  "regression_cases": 70,
+  "kernel_sha256": "f6e81c7e3ee53064d64165f881a48a6c58893783e99c6cb4a7ebc5f621fb568b",
+  "elapsed_seconds": 55.950325809999995
+}
