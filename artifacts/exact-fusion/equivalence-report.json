@@ -1,0 +1,622 @@
+{
+  "status": "completed",
+  "phase": "equivalence",
+  "protocol_sha256": "b97286f4b624116f2f42757dbfa9b68059b3aa19f1fb919fe16790085f415a49",
+  "bitwise_equivalent": true,
+  "comparisons": [
+    {
+      "case": "regression-0",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-1",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-2",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-3",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-4",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-5",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-6",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-7",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-8",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-9",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-10",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-11",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-12",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-13",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-14",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-15",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-16",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-17",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-18",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-19",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-20",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-21",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-22",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-23",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-24",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-25",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-26",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-27",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-28",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-29",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-30",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-31",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-32",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-33",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-34",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-35",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-36",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-37",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-38",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-39",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-40",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-41",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-42",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-43",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-44",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-45",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-46",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-47",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-48",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-49",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-50",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-51",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-52",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-53",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-54",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-55",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-56",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-57",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-58",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-59",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-60",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-61",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-62",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "regression-63",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "length-512",
+      "sequence_length": 512,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 796160
+    },
+    {
+      "case": "length-2048",
+      "sequence_length": 2048,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 1975808
+    },
+    {
+      "case": "rotary-edge",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "attention-holes",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "left-padding",
+      "sequence_length": 137,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 508160
+    },
+    {
+      "case": "right-padding",
+      "sequence_length": 137,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 508160
+    },
+    {
+      "case": "function0-width-1",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "function0-width-576",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "function0-width-1152",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "function11-width-1",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "function11-width-576",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "function11-width-1152",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "function21-width-1",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "function21-width-576",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "function21-width-1152",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "updated-input_weight",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "restored-input_weight",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "updated-input_bias",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "restored-input_bias",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "updated-output_weight",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "restored-output_weight",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "updated-output_bias",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    },
+    {
+      "case": "restored-output_bias",
+      "sequence_length": 128,
+      "bitwise_equal": true,
+      "max_abs_error": 0.0,
+      "values": 501248
+    }
+  ],
+  "values_checked": 45391872,
+  "max_abs_error": 0.0,
+  "original_coefficient_file_unchanged": true,
+  "candidate_coefficient_file_unchanged": true,
+  "elapsed_seconds": 298.439707748
+}
