@@ -1,0 +1,6 @@
+{
+  "status": "running",
+  "stage": "download-delivered-package",
+  "source_artifact_run": 41348755846,
+  "workflow_url": "https://github.com/drietsch/spark/actions/runs/41403944071"
+}
