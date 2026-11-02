@@ -1,0 +1,19 @@
+{
+  "version": "exact-fusion-v1",
+  "source_run": 41413943645,
+  "source_coefficients_sha256": "91b42bc6cba4c997f17e219f700c3087ee0c277b84680625e78f2bac28ad3e9a",
+  "regression_run": 41422975606,
+  "regression_windows": 64,
+  "long_context_lengths": [512, 2048],
+  "required_bitwise_equivalence": true,
+  "performance": {
+    "128": {"paired_rounds": 5, "repetitions": 3, "warmup": 1},
+    "512": {"paired_rounds": 3, "repetitions": 1, "warmup": 0},
+    "2048": {"paired_rounds": 3, "repetitions": 1, "warmup": 0}
+  },
+  "threads": 2,
+  "seed": 20261103,
+  "bootstrap_samples": 2000,
+  "adoption_rule": "all regression/live-update outputs bitwise equal, audit replay verified, and at least one whole-model paired speedup CI lower bound exceeds one",
+  "scope": "generic exact operation fusion; no coefficient fitting, pruning, or parameter changes"
+}

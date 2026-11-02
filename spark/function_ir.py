@@ -161,6 +161,12 @@ def validate(program):
             elif op == 'map':
                 require(operands and set(attrs) == {'expression'}, 'invalid indexed scalar map')
                 shape = _broadcast(shapes); _expression(attrs['expression'], len(operands), len(shape))
+            elif op == 'map_reduce':
+                require(operands and set(attrs) == {'expression', 'axis', 'kind'}, 'invalid fused map reduction')
+                shape = _broadcast(shapes)
+                require(type(attrs['axis']) is int and 0 <= attrs['axis'] < len(shape) and attrs['kind'] in ('sum', 'max'), 'invalid fused reduction axis/kind')
+                _expression(attrs['expression'], len(operands), len(shape))
+                shape[attrs['axis']] = 1
             elif op == 'reduce':
                 require(len(operands) == 1 and set(attrs) == {'axis', 'kind'} and type(attrs['axis']) is int and
                         0 <= attrs['axis'] < len(shapes[0]) and attrs['kind'] in ('sum', 'max'), 'invalid reduction')
@@ -233,6 +239,7 @@ def validate(program):
     for function in functions:
         types[function['name']] = check_function(function)
         verified[function['name']] = function
+    types['$functions'] = dict(types)
     types['main'] = check_function(program.get('main'), main=True)
     return types
 
@@ -361,6 +368,8 @@ def emit_cpp(program):
             if op == 'parameter': expression = f'c.parameter({parameter_index[a["binding"]]})'
             elif op == 'map':
                 expression = 'mapped({' + ','.join(operands) + '},[](const double* a,const int64_t* index)->double{return ' + _cpp_expression(a['expression']) + ';})'
+            elif op == 'map_reduce':
+                expression = 'mapped_reduced({' + ','.join(operands) + '},' + str(a['axis']) + ',' + str(a['kind']=='max').lower() + ',[](const double* a,const int64_t* index)->double{return ' + _cpp_expression(a['expression']) + ';})'
             elif op == 'reduce': expression = f'reduced({operands[0]},{a["axis"]},{str(a["kind"] == "max").lower()})'
             elif op == 'transpose': expression = f'transposed({operands[0]},{dims(a["axes"])})'
             elif op == 'reshape': expression = f'reshaped({operands[0]},{dims(a["shape"])})'

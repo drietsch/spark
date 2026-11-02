@@ -84,6 +84,19 @@ inline Tensor reduced(const Tensor& x,int axis,bool maximum){
  for(int64_t i=0;i<out.size();++i){int64_t rest=i,base=x.offset;for(int a=int(shape.size())-1;a>=0;--a){base+=(rest%shape[a])*x.stride[a];rest/=shape[a];}
   double value=maximum?-std::numeric_limits<double>::infinity():0.;for(int64_t j=0;j<count;++j){double v=(*x.storage)[base+j*x.stride[axis]];value=maximum?std::max(value,v):value+v;}out.data()[i]=value;}return out;
 }
+template<class F> Tensor mapped_reduced(const std::vector<Tensor>& inputs,int axis,bool maximum,F function){
+ size_t rank=0;for(const auto& x:inputs)rank=std::max(rank,x.shape.size());std::vector<int64_t> shape(rank,1);
+ for(const auto& x:inputs)for(size_t i=0;i<x.shape.size();++i){size_t a=rank-x.shape.size()+i;ensure(shape[a]==1||x.shape[i]==1||shape[a]==x.shape[i],"incompatible fused broadcast");shape[a]=std::max(shape[a],x.shape[i]);}
+ int64_t count=shape[axis];shape[axis]=1;Tensor out(shape);std::vector<int64_t> index(rank),base(inputs.size());std::vector<double> args(inputs.size());
+ std::vector<std::vector<int64_t>> strides(inputs.size(),std::vector<int64_t>(rank));
+ for(size_t i=0;i<inputs.size();++i)for(size_t a=0;a<inputs[i].shape.size();++a)if(inputs[i].shape[a]!=1)strides[i][rank-inputs[i].shape.size()+a]=inputs[i].stride[a];
+ for(int64_t flat=0;flat<out.size();++flat){int64_t rest=flat;for(int a=int(rank)-1;a>=0;--a){index[a]=rest%shape[a];rest/=shape[a];}
+  for(size_t i=0;i<inputs.size();++i){base[i]=inputs[i].offset;for(size_t a=0;a<rank;++a)base[i]+=index[a]*strides[i][a];}
+  double total=maximum?-std::numeric_limits<double>::infinity():0.;
+  for(int64_t j=0;j<count;++j){index[axis]=j;for(size_t i=0;i<inputs.size();++i)args[i]=(*inputs[i].storage)[base[i]+j*strides[i][axis]];
+   double value=function(args.data(),index.data());total=maximum?std::max(total,value):total+value;}
+  out.data()[flat]=total;}return out;
+}
 inline Tensor transposed(Tensor x,const std::vector<int64_t>& axes){auto shape=x.shape,stride=x.stride;for(size_t i=0;i<axes.size();++i){x.shape[i]=shape[axes[i]];x.stride[i]=stride[axes[i]];}return x;}
 inline Tensor reshaped(const Tensor& value,const std::vector<int64_t>& shape){ensure(elements(shape)==value.size(),"reshape changes element count");Tensor x=packed(value);x.shape=shape;x.stride.resize(shape.size());int64_t step=1;for(int i=int(shape.size())-1;i>=0;--i){x.stride[i]=step;step*=shape[i];}return x;}
 inline Tensor sliced(Tensor x,int axis,int64_t start,int64_t size){ensure(start>=0&&size>=1&&start+size<=x.shape[axis],"slice outside tensor");x.offset+=start*x.stride[axis];x.shape[axis]=size;return x;}

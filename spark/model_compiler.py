@@ -7,6 +7,7 @@ also uses the same compiler, preserving its original float64 coefficients.
 from __future__ import annotations
 
 import json
+import copy
 import math
 from pathlib import Path
 import shutil
@@ -32,7 +33,7 @@ def gelu(x, activation):
     return expr('mul', half_x, expr('add', literal(1), inner))
 
 
-def write_package(program, readers, directory, *, tokenizer=None):
+def write_package(program, readers, directory, *, tokenizer=None, optimize_program=True):
     """Serialize reachable target captures and bundle only source-independent code."""
     directory = Path(directory)
     if directory.exists() and any(directory.iterdir()):
@@ -40,7 +41,8 @@ def write_package(program, readers, directory, *, tokenizer=None):
                 json.loads((directory / 'program.json').read_text()).get('format') == FORMAT,
                 'compiler output must be empty or an existing SPARK function package')
     directory.mkdir(parents=True, exist_ok=True)
-    target = optimize(program)
+    target = optimize(program) if optimize_program else copy.deepcopy(program)
+    validate(target)
     with (directory / 'coefficients.bin.tmp').open('wb') as output:
         for parameter in target['parameters']:
             data = readers[parameter['id']]

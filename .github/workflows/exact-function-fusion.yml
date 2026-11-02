@@ -1,0 +1,109 @@
+name: Audited exact fusion and whole-model performance
+on:
+  push:
+    branches: ['codex/exact-fusion-*']
+    paths:
+      - '.github/workflows/exact-function-fusion.yml'
+      - 'experiments/exact_fusion_v1.json'
+      - 'spark/function_fusion.py'
+      - 'spark/function_ir.py'
+      - 'runtime/function_ir_runtime.hpp'
+      - 'tools/exact_fusion_experiment.py'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+jobs:
+  exact:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      OPENBLAS_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - name: Lock the protocol
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git switch -c "${GITHUB_REF_NAME}-exact-results-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          mkdir -p artifacts/exact-fusion
+          cp experiments/exact_fusion_v1.json artifacts/exact-fusion/protocol.json
+          python tools/research_receipt.py --root artifacts/exact-fusion --slug exact --stage protocol-locked
+      - uses: actions/download-artifact@v4
+        with:
+          name: spark-function-program-modernbert-base
+          run-id: 41413943645
+          github-token: ${{ github.token }}
+          path: ${{ runner.temp }}/baseline-source
+      - uses: actions/download-artifact@v4
+        with:
+          name: function-simplification-reports
+          run-id: 41422975606
+          github-token: ${{ github.token }}
+          path: ${{ runner.temp }}/regressions
+      - name: Install numerical dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y libopenblas-dev
+          python -m pip install numpy==2.2.6
+      - name: Build and independently replay rewrite records
+        id: build
+        continue-on-error: true
+        env:
+          SOURCE: ${{ runner.temp }}/baseline-source
+          REGRESSIONS: ${{ runner.temp }}/regressions
+        run: python tools/exact_fusion_experiment.py --phase build --source "$SOURCE" --regressions "$REGRESSIONS"
+      - if: always()
+        run: python tools/research_receipt.py --root artifacts/exact-fusion --slug exact --stage built-and-audited
+      - name: Check all outputs and live updates bit for bit
+        id: equivalence
+        if: steps.build.outcome == 'success'
+        continue-on-error: true
+        env:
+          SOURCE: ${{ runner.temp }}/baseline-source
+          REGRESSIONS: ${{ runner.temp }}/regressions
+        run: python tools/exact_fusion_experiment.py --phase equivalence --source "$SOURCE" --regressions "$REGRESSIONS"
+      - if: always()
+        run: python tools/research_receipt.py --root artifacts/exact-fusion --slug exact --stage equivalence-checked
+      - name: Benchmark unchanged and optimized whole models
+        id: benchmark
+        if: steps.equivalence.outcome == 'success'
+        continue-on-error: true
+        env:
+          SOURCE: ${{ runner.temp }}/baseline-source
+          REGRESSIONS: ${{ runner.temp }}/regressions
+        run: python tools/exact_fusion_experiment.py --phase benchmark --source "$SOURCE" --regressions "$REGRESSIONS"
+      - name: Apply the declared adoption gates
+        id: summary
+        if: steps.benchmark.outcome == 'success'
+        continue-on-error: true
+        env:
+          SOURCE: ${{ runner.temp }}/baseline-source
+          REGRESSIONS: ${{ runner.temp }}/regressions
+        run: python tools/exact_fusion_experiment.py --phase summary --source "$SOURCE" --regressions "$REGRESSIONS"
+      - uses: actions/upload-artifact@v4
+        id: package
+        if: steps.summary.outcome == 'success'
+        with:
+          name: audited-exact-fused-modernbert
+          path: artifacts/exact-fusion/candidate/
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        id: reports
+        if: always()
+        with:
+          name: exact-fusion-reports
+          path: |
+            artifacts/exact-fusion/*.json
+            artifacts/exact-fusion/logs/
+          retention-days: 7
+      - if: always()
+        env:
+          ARTIFACT_URL: ${{ steps.package.outputs.artifact-url }}
+          REPORT_ARTIFACT_URL: ${{ steps.reports.outputs.artifact-url }}
+        run: python tools/research_receipt.py --root artifacts/exact-fusion --slug exact --stage complete --final
+      - if: steps.summary.outcome != 'success'
+        run: exit 1
