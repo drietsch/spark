@@ -71,7 +71,13 @@ def quality(args):
             reference=np.load(args.reference,mmap_mode='r')
             rows=evaluate(reference)
             report={'quality':summarize_quality(rows,samples=args.bootstrap),'rows':rows}
-            if args.solution:
+            if args.solutions_json:
+                report['before_recovery']=report.pop('quality');report['rows_before_recovery']=report.pop('rows');report['variants']=[]
+                for item in json.loads(args.solutions_json.read_text()):
+                    changed=apply_recovery(runtime,Path(item['path']));rows=evaluate(reference)
+                    report['variants'].append({'label':item['label'],'alpha':item['alpha'],'quality':summarize_quality(rows,samples=args.bootstrap),
+                                               'updates':changed})
+            elif args.solution:
                 report['before_recovery']=report.pop('quality');report['rows_before_recovery']=report.pop('rows')
                 report['live_update']=apply_recovery(runtime,args.solution)
                 rows=evaluate(reference)
@@ -128,6 +134,7 @@ def main():
     parser.add_argument('--program',type=Path,required=True);parser.add_argument('--inputs',type=Path,required=True)
     parser.add_argument('--output',type=Path,required=True);parser.add_argument('--reference',type=Path)
     parser.add_argument('--logits',type=Path);parser.add_argument('--solution',type=Path);parser.add_argument('--persisted',type=Path)
+    parser.add_argument('--solutions-json',type=Path)
     parser.add_argument('--repetitions',type=int,default=3);parser.add_argument('--warmup',type=int,default=2)
     parser.add_argument('--bootstrap',type=int,default=2000);parser.add_argument('--threads',type=int,default=2)
     args=parser.parse_args();os.environ['OPENBLAS_NUM_THREADS']=str(args.threads);os.environ['OMP_NUM_THREADS']=str(args.threads)

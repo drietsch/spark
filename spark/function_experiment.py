@@ -37,6 +37,30 @@ def fit_candidates(train_features, train_target, dev_features, dev_target, outpu
     return candidates
 
 
+def correlation_prune(features,target,output_weight,width,ridge_factor):
+    """Training-only conditional-covariance pruning with readout compensation."""
+    h=np.asarray(features,dtype=np.float64);y=np.asarray(target,dtype=np.float64);w=np.asarray(output_weight,dtype=np.float64).copy()
+    if h.ndim!=2 or w.shape!=(y.shape[1],h.shape[1]) or not 1<=width<h.shape[1] or ridge_factor<=0:
+        raise ValueError('invalid correlation-aware pruning inputs')
+    mean=h.mean(axis=0);target_mean=y.mean(axis=0);centered=h-mean
+    gram=(centered.T@centered)/len(h);scale=max(float(np.trace(gram)/len(gram)),1e-12)
+    precision=np.linalg.inv(gram+ridge_factor*scale*np.eye(len(gram)))
+    active=list(range(h.shape[1]));removed=[]
+    while len(active)>width:
+        diagonal=np.diag(precision)
+        if np.any(diagonal<=0) or not np.isfinite(precision).all():raise ValueError('unstable regularized covariance')
+        costs=np.sum(w*w,axis=0)/diagonal;j=int(np.argmin(costs))
+        mask=np.arange(len(active))!=j;remaining=np.flatnonzero(mask);row=precision[j,remaining]/precision[j,j]
+        w=w[:,remaining]-w[:,j,None]*row[None,:]
+        column=precision[remaining,j].copy();pjj=precision[j,j]
+        precision=precision[np.ix_(remaining,remaining)]-np.outer(column,column)/pjj
+        removed.append({'unit':active[j],'training_cost':float(costs[j])});active=[a for i,a in enumerate(active) if i!=j]
+    weight=w.astype(np.float32);bias=(target_mean-mean[active]@w.T).astype(np.float32)
+    if max(np.max(np.abs(weight)),np.max(np.abs(bias)))>1e4 or not np.isfinite(weight).all() or not np.isfinite(bias).all():
+        raise ValueError('compensated coefficients exceed runtime bounds')
+    return {'keep':active,'weight':weight,'bias':bias,'removed':removed,'ridge_factor':float(ridge_factor)}
+
+
 def log_probabilities(values):
     values = np.asarray(values, dtype=np.float64)
     maximum = np.max(values, axis=1, keepdims=True)

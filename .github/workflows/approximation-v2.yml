@@ -1,0 +1,112 @@
+name: Fresh-holdout correlation-aware approximation
+on:
+  push:
+    branches: ['codex/approximation-v2-*']
+    paths:
+      - '.github/workflows/approximation-v2.yml'
+      - 'experiments/approximation_v2.json'
+      - 'spark/function_experiment.py'
+      - 'tools/approximation_v2_experiment.py'
+      - 'tools/function_experiment_worker.py'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+jobs:
+  approximation:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      HF_HUB_DISABLE_XET: '1'
+      HF_HOME: /tmp/approximation-v2-hub
+      OPENBLAS_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - name: Lock revised method and fresh-holdout policy
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git switch -c "${GITHUB_REF_NAME}-approx-v2-results-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          mkdir -p artifacts/approximation-v2
+          cp experiments/approximation_v2.json artifacts/approximation-v2/protocol.json
+          python tools/research_receipt.py --root artifacts/approximation-v2 --slug approx-v2 --stage protocol-locked
+      - uses: actions/download-artifact@v4
+        with:
+          name: spark-function-program-modernbert-base
+          run-id: 41413943645
+          github-token: ${{ github.token }}
+          path: ${{ runner.temp }}/baseline-source
+      - uses: actions/download-artifact@v4
+        with:
+          name: function-simplification-reports
+          run-id: 41422975606
+          github-token: ${{ github.token }}
+          path: ${{ runner.temp }}/prior-study
+      - name: Install numerical and dataset dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y libopenblas-dev
+          python -m pip install numpy==2.2.6 tokenizers==0.21.4 huggingface_hub==0.36.2 pyarrow==19.0.1
+      - name: Compare calibration coverage and correlation-aware selection
+        id: prepare
+        continue-on-error: true
+        env:
+          SOURCE: ${{ runner.temp }}/baseline-source
+          PRIOR: ${{ runner.temp }}/prior-study
+        run: python tools/approximation_v2_experiment.py --phase prepare --source "$SOURCE" --prior "$PRIOR"
+      - if: always()
+        run: python tools/research_receipt.py --root artifacts/approximation-v2 --slug approx-v2 --stage development-locked
+      - name: Open previously unused held-out articles after selection
+        id: evaluate
+        if: steps.prepare.outcome == 'success'
+        continue-on-error: true
+        env:
+          SOURCE: ${{ runner.temp }}/baseline-source
+          PRIOR: ${{ runner.temp }}/prior-study
+        run: python tools/approximation_v2_experiment.py --phase evaluate --source "$SOURCE" --prior "$PRIOR"
+      - if: always()
+        run: python tools/research_receipt.py --root artifacts/approximation-v2 --slug approx-v2 --stage fresh-holdout-evaluated
+      - name: Measure the frozen candidate
+        id: benchmark
+        if: steps.evaluate.outcome == 'success'
+        continue-on-error: true
+        env:
+          SOURCE: ${{ runner.temp }}/baseline-source
+          PRIOR: ${{ runner.temp }}/prior-study
+        run: python tools/approximation_v2_experiment.py --phase benchmark --source "$SOURCE" --prior "$PRIOR"
+      - name: Summarize quality and update attribution
+        id: summary
+        if: steps.benchmark.outcome == 'success'
+        continue-on-error: true
+        env:
+          SOURCE: ${{ runner.temp }}/baseline-source
+          PRIOR: ${{ runner.temp }}/prior-study
+        run: python tools/approximation_v2_experiment.py --phase summary --source "$SOURCE" --prior "$PRIOR"
+      - uses: actions/upload-artifact@v4
+        id: package
+        if: steps.summary.outcome == 'success'
+        with:
+          name: experimental-correlation-pruned-modernbert
+          path: artifacts/approximation-v2/candidate/
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        id: reports
+        if: always()
+        with:
+          name: approximation-v2-reports
+          path: |
+            artifacts/approximation-v2/*.json
+            artifacts/approximation-v2/solution.npz
+            artifacts/approximation-v2/logs/
+          retention-days: 7
+      - if: always()
+        env:
+          ARTIFACT_URL: ${{ steps.package.outputs.artifact-url }}
+          REPORT_ARTIFACT_URL: ${{ steps.reports.outputs.artifact-url }}
+        run: python tools/research_receipt.py --root artifacts/approximation-v2 --slug approx-v2 --stage complete --final
+      - if: steps.summary.outcome != 'success'
+        run: exit 1

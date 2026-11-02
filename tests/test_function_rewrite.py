@@ -86,6 +86,17 @@ class FunctionRewriteTests(unittest.TestCase):
 
 @unittest.skipUnless(importlib.util.find_spec('numpy'),'Optional NumPy required')
 class ExperimentStatisticsTests(unittest.TestCase):
+    def test_conditional_covariance_retains_correlated_linear_information(self):
+        import numpy as np
+        from spark.function_experiment import correlation_prune
+        rng=np.random.default_rng(93);z=rng.normal(size=(400,3))
+        h=np.column_stack((z[:,0],z[:,1],z[:,0]+.001*rng.normal(size=400),z[:,2],z[:,1]+.001*rng.normal(size=400)))
+        w=rng.normal(size=(2,5));y=h@w.T+[.2,-.1]
+        fitted=correlation_prune(h,y,w,3,.01)
+        predicted=h[:,fitted['keep']]@fitted['weight'].T+fitted['bias']
+        self.assertEqual(len(fitted['keep']),3)
+        self.assertLess(float(np.sqrt(np.mean((predicted-y)**2))),.05)
+
     def test_reconstruction_recovers_a_known_readout_from_training_pairs(self):
         import numpy as np
         from spark.function_experiment import fit_candidates
