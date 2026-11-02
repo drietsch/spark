@@ -1,0 +1,477 @@
+{
+  "status": "completed",
+  "phase": "prepare",
+  "protocol_sha256": "67aabe9746cf1d4fef7a0c474b0530fe44dbd88f0af06d546663fbd0db66c9ae",
+  "selected_method": "marginal_contribution",
+  "selected_alpha": 0.5,
+  "selected_width": 1008,
+  "calibration_samples": 16128,
+  "development_samples": 4032,
+  "coverage_analysis": [
+    {
+      "samples": 4032,
+      "condition": "small",
+      "best_dev_nrmse": 0.194573935654283,
+      "ridge_factor": 0.1,
+      "trials": [
+        {
+          "ridge_factor": 0.01,
+          "dev_nrmse": 0.20435406581472246
+        },
+        {
+          "ridge_factor": 0.1,
+          "dev_nrmse": 0.194573935654283
+        },
+        {
+          "ridge_factor": 1.0,
+          "dev_nrmse": 0.22468887591832118
+        }
+      ]
+    },
+    {
+      "samples": 16128,
+      "condition": "full",
+      "best_dev_nrmse": 0.1762677814643392,
+      "ridge_factor": 0.1,
+      "trials": [
+        {
+          "ridge_factor": 0.01,
+          "dev_nrmse": 0.1774317431986359
+        },
+        {
+          "ridge_factor": 0.1,
+          "dev_nrmse": 0.1762677814643392
+        },
+        {
+          "ridge_factor": 1.0,
+          "dev_nrmse": 0.21781403750495357
+        }
+      ]
+    }
+  ],
+  "method_comparison": {
+    "prefix": {
+      "function_dev_nrmse": 0.2673891144703298,
+      "ridge_factor": 0.01,
+      "before_recovery": {
+        "teacher_top1_agreement": 0.953125,
+        "gold_accuracy": 0.65625,
+        "baseline_gold_accuracy": 0.65234375,
+        "gold_accuracy_delta": 0.00390625,
+        "mean_nll": 1.8216611513011653,
+        "mean_baseline_nll": 1.8129255912819664,
+        "mean_teacher_kl_nats": 0.010267726170514508,
+        "queries": 256,
+        "articles": 32,
+        "confidence_intervals_95": {
+          "teacher_top1_agreement": [
+            0.921875,
+            0.98046875
+          ],
+          "gold_accuracy_delta": [
+            -0.01171875,
+            0.0234375
+          ],
+          "mean_teacher_kl_nats": [
+            0.00856253221597829,
+            0.012073660477679379
+          ]
+        }
+      },
+      "variants": [
+        {
+          "label": "prefix",
+          "alpha": 0.0,
+          "quality": {
+            "teacher_top1_agreement": 0.953125,
+            "gold_accuracy": 0.65625,
+            "baseline_gold_accuracy": 0.65234375,
+            "gold_accuracy_delta": 0.00390625,
+            "mean_nll": 1.8216611513011653,
+            "mean_baseline_nll": 1.8129255912819664,
+            "mean_teacher_kl_nats": 0.010267726170514508,
+            "queries": 256,
+            "articles": 32,
+            "confidence_intervals_95": {
+              "teacher_top1_agreement": [
+                0.921875,
+                0.98046875
+              ],
+              "gold_accuracy_delta": [
+                -0.01171875,
+                0.0234375
+              ],
+              "mean_teacher_kl_nats": [
+                0.00856253221597829,
+                0.012073660477679379
+              ]
+            }
+          },
+          "updates": {
+            "coefficient_updates": 774912,
+            "elapsed_seconds": 0.9267840969999952
+          }
+        },
+        {
+          "label": "prefix",
+          "alpha": 0.5,
+          "quality": {
+            "teacher_top1_agreement": 0.9609375,
+            "gold_accuracy": 0.65625,
+            "baseline_gold_accuracy": 0.65234375,
+            "gold_accuracy_delta": 0.00390625,
+            "mean_nll": 1.8185923239749557,
+            "mean_baseline_nll": 1.8129255912819664,
+            "mean_teacher_kl_nats": 0.007118897776410575,
+            "queries": 256,
+            "articles": 32,
+            "confidence_intervals_95": {
+              "teacher_top1_agreement": [
+                0.9375,
+                0.984375
+              ],
+              "gold_accuracy_delta": [
+                -0.01171875,
+                0.0234375
+              ],
+              "mean_teacher_kl_nats": [
+                0.00581790804368873,
+                0.008421043784644578
+              ]
+            }
+          },
+          "updates": {
+            "coefficient_updates": 774912,
+            "elapsed_seconds": 0.893756719999999
+          }
+        },
+        {
+          "label": "prefix",
+          "alpha": 1.0,
+          "quality": {
+            "teacher_top1_agreement": 0.9609375,
+            "gold_accuracy": 0.65625,
+            "baseline_gold_accuracy": 0.65234375,
+            "gold_accuracy_delta": 0.00390625,
+            "mean_nll": 1.8171996023471064,
+            "mean_baseline_nll": 1.8129255912819664,
+            "mean_teacher_kl_nats": 0.009126430373025714,
+            "queries": 256,
+            "articles": 32,
+            "confidence_intervals_95": {
+              "teacher_top1_agreement": [
+                0.9375,
+                0.984375
+              ],
+              "gold_accuracy_delta": [
+                -0.0078125,
+                0.01953125
+              ],
+              "mean_teacher_kl_nats": [
+                0.007433231466153687,
+                0.010899075093393872
+              ]
+            }
+          },
+          "updates": {
+            "coefficient_updates": 774912,
+            "elapsed_seconds": 0.8748370900000282
+          }
+        }
+      ]
+    },
+    "marginal_contribution": {
+      "function_dev_nrmse": 0.1830442696325736,
+      "ridge_factor": 0.01,
+      "before_recovery": {
+        "teacher_top1_agreement": 0.9609375,
+        "gold_accuracy": 0.6484375,
+        "baseline_gold_accuracy": 0.65234375,
+        "gold_accuracy_delta": -0.00390625,
+        "mean_nll": 1.8206407464826335,
+        "mean_baseline_nll": 1.8129255912819664,
+        "mean_teacher_kl_nats": 0.006632465724638499,
+        "queries": 256,
+        "articles": 32,
+        "confidence_intervals_95": {
+          "teacher_top1_agreement": [
+            0.93740234375,
+            0.984375
+          ],
+          "gold_accuracy_delta": [
+            -0.01953125,
+            0.01171875
+          ],
+          "mean_teacher_kl_nats": [
+            0.003712882426031427,
+            0.011532364529748925
+          ]
+        }
+      },
+      "variants": [
+        {
+          "label": "marginal_contribution",
+          "alpha": 0.0,
+          "quality": {
+            "teacher_top1_agreement": 0.9609375,
+            "gold_accuracy": 0.6484375,
+            "baseline_gold_accuracy": 0.65234375,
+            "gold_accuracy_delta": -0.00390625,
+            "mean_nll": 1.8206407464826335,
+            "mean_baseline_nll": 1.8129255912819664,
+            "mean_teacher_kl_nats": 0.006632465724638499,
+            "queries": 256,
+            "articles": 32,
+            "confidence_intervals_95": {
+              "teacher_top1_agreement": [
+                0.93740234375,
+                0.984375
+              ],
+              "gold_accuracy_delta": [
+                -0.01953125,
+                0.01171875
+              ],
+              "mean_teacher_kl_nats": [
+                0.003712882426031427,
+                0.011532364529748925
+              ]
+            }
+          },
+          "updates": {
+            "coefficient_updates": 774912,
+            "elapsed_seconds": 0.9039921620000086
+          }
+        },
+        {
+          "label": "marginal_contribution",
+          "alpha": 0.5,
+          "quality": {
+            "teacher_top1_agreement": 0.96875,
+            "gold_accuracy": 0.65625,
+            "baseline_gold_accuracy": 0.65234375,
+            "gold_accuracy_delta": 0.00390625,
+            "mean_nll": 1.814553492248641,
+            "mean_baseline_nll": 1.8129255912819664,
+            "mean_teacher_kl_nats": 0.005362701194125908,
+            "queries": 256,
+            "articles": 32,
+            "confidence_intervals_95": {
+              "teacher_top1_agreement": [
+                0.94140625,
+                0.9921875
+              ],
+              "gold_accuracy_delta": [
+                -0.0078125,
+                0.01953125
+              ],
+              "mean_teacher_kl_nats": [
+                0.0029876173565320727,
+                0.009349559254249446
+              ]
+            }
+          },
+          "updates": {
+            "coefficient_updates": 774912,
+            "elapsed_seconds": 0.9150067939999644
+          }
+        },
+        {
+          "label": "marginal_contribution",
+          "alpha": 1.0,
+          "quality": {
+            "teacher_top1_agreement": 0.97265625,
+            "gold_accuracy": 0.6640625,
+            "baseline_gold_accuracy": 0.65234375,
+            "gold_accuracy_delta": 0.01171875,
+            "mean_nll": 1.8082583269464454,
+            "mean_baseline_nll": 1.8129255912819664,
+            "mean_teacher_kl_nats": 0.005958932765722437,
+            "queries": 256,
+            "articles": 32,
+            "confidence_intervals_95": {
+              "teacher_top1_agreement": [
+                0.94921875,
+                0.9921875
+              ],
+              "gold_accuracy_delta": [
+                0.0,
+                0.02734375
+              ],
+              "mean_teacher_kl_nats": [
+                0.003604487139001527,
+                0.009416995781449963
+              ]
+            }
+          },
+          "updates": {
+            "coefficient_updates": 774912,
+            "elapsed_seconds": 0.8962607260000368
+          }
+        }
+      ]
+    },
+    "conditional_covariance": {
+      "function_dev_nrmse": 0.1762677814643392,
+      "ridge_factor": 0.1,
+      "before_recovery": {
+        "teacher_top1_agreement": 0.953125,
+        "gold_accuracy": 0.65625,
+        "baseline_gold_accuracy": 0.65234375,
+        "gold_accuracy_delta": 0.00390625,
+        "mean_nll": 1.7746002226352748,
+        "mean_baseline_nll": 1.8129255912819664,
+        "mean_teacher_kl_nats": 0.009762480062801582,
+        "queries": 256,
+        "articles": 32,
+        "confidence_intervals_95": {
+          "teacher_top1_agreement": [
+            0.921875,
+            0.98046875
+          ],
+          "gold_accuracy_delta": [
+            -0.0078125,
+            0.01953125
+          ],
+          "mean_teacher_kl_nats": [
+            0.006296267359911353,
+            0.01450965563200921
+          ]
+        }
+      },
+      "variants": [
+        {
+          "label": "conditional_covariance",
+          "alpha": 0.0,
+          "quality": {
+            "teacher_top1_agreement": 0.953125,
+            "gold_accuracy": 0.65625,
+            "baseline_gold_accuracy": 0.65234375,
+            "gold_accuracy_delta": 0.00390625,
+            "mean_nll": 1.7746002226352748,
+            "mean_baseline_nll": 1.8129255912819664,
+            "mean_teacher_kl_nats": 0.009762480062801582,
+            "queries": 256,
+            "articles": 32,
+            "confidence_intervals_95": {
+              "teacher_top1_agreement": [
+                0.921875,
+                0.98046875
+              ],
+              "gold_accuracy_delta": [
+                -0.0078125,
+                0.01953125
+              ],
+              "mean_teacher_kl_nats": [
+                0.006296267359911353,
+                0.01450965563200921
+              ]
+            }
+          },
+          "updates": {
+            "coefficient_updates": 774912,
+            "elapsed_seconds": 0.8941835199999559
+          }
+        },
+        {
+          "label": "conditional_covariance",
+          "alpha": 0.5,
+          "quality": {
+            "teacher_top1_agreement": 0.96484375,
+            "gold_accuracy": 0.65234375,
+            "baseline_gold_accuracy": 0.65234375,
+            "gold_accuracy_delta": 0.0,
+            "mean_nll": 1.7797301234594816,
+            "mean_baseline_nll": 1.8129255912819664,
+            "mean_teacher_kl_nats": 0.0060379910883515825,
+            "queries": 256,
+            "articles": 32,
+            "confidence_intervals_95": {
+              "teacher_top1_agreement": [
+                0.94140625,
+                0.984375
+              ],
+              "gold_accuracy_delta": [
+                -0.01171875,
+                0.01171875
+              ],
+              "mean_teacher_kl_nats": [
+                0.003452328986799677,
+                0.010066444802373953
+              ]
+            }
+          },
+          "updates": {
+            "coefficient_updates": 774912,
+            "elapsed_seconds": 0.9242396250000411
+          }
+        },
+        {
+          "label": "conditional_covariance",
+          "alpha": 1.0,
+          "quality": {
+            "teacher_top1_agreement": 0.96484375,
+            "gold_accuracy": 0.64453125,
+            "baseline_gold_accuracy": 0.65234375,
+            "gold_accuracy_delta": -0.0078125,
+            "mean_nll": 1.7876577694078717,
+            "mean_baseline_nll": 1.8129255912819664,
+            "mean_teacher_kl_nats": 0.007884296626047099,
+            "queries": 256,
+            "articles": 32,
+            "confidence_intervals_95": {
+              "teacher_top1_agreement": [
+                0.9375,
+                0.98828125
+              ],
+              "gold_accuracy_delta": [
+                -0.01953125,
+                0.0
+              ],
+              "mean_teacher_kl_nats": [
+                0.005112680633601555,
+                0.0119367159359607
+              ]
+            }
+          },
+          "updates": {
+            "coefficient_updates": 774912,
+            "elapsed_seconds": 0.8952832590000526
+          }
+        }
+      ]
+    }
+  },
+  "development_quality": {
+    "teacher_top1_agreement": 0.96875,
+    "gold_accuracy": 0.65625,
+    "baseline_gold_accuracy": 0.65234375,
+    "gold_accuracy_delta": 0.00390625,
+    "mean_nll": 1.814553492248641,
+    "mean_baseline_nll": 1.8129255912819664,
+    "mean_teacher_kl_nats": 0.005362701194125908,
+    "queries": 256,
+    "articles": 32,
+    "confidence_intervals_95": {
+      "teacher_top1_agreement": [
+        0.94140625,
+        0.9921875
+      ],
+      "gold_accuracy_delta": [
+        -0.0078125,
+        0.01953125
+      ],
+      "mean_teacher_kl_nats": [
+        0.0029876173565320727,
+        0.009349559254249446
+      ]
+    }
+  },
+  "development_qualified": false,
+  "selection_sha256": "ad0fd3ad995b2c604e2752ff8800b80c6568b51cca04114da35feaf8485ba526",
+  "original_function_capacity": 1152,
+  "baseline_payload_bytes": 603500288,
+  "candidate_payload_bytes": 602172032,
+  "payload_saved_bytes": 1328256,
+  "test_data_accessed": false,
+  "elapsed_seconds": 573.315468322
+}
