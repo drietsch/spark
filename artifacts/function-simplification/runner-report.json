@@ -1,9 +1,23 @@
 {
-  "stage": "heldout-evaluated",
+  "stage": "complete",
   "workflow_url": "https://github.com/drietsch/spark/actions/runs/41422975606",
   "phase_statuses": {
     "prepare": "completed",
-    "evaluate": "completed"
+    "evaluate": "completed",
+    "benchmark": "completed",
+    "summarize": "completed"
   },
-  "status": "running"
+  "status": "completed",
+  "artifact_url": "https://github.com/drietsch/spark/actions/runs/41422975606/artifacts/13131427462",
+  "report_artifact_url": "https://github.com/drietsch/spark/actions/runs/41422975606/artifacts/13132265491",
+  "conclusion": {
+    "development_qualified": false,
+    "heldout_quality_gates_passed": false,
+    "learned_recovery_reduced_teacher_kl": false,
+    "function_latency_gain_demonstrated": true,
+    "whole_model_latency_gain_demonstrated": false,
+    "model_payload_reduction_bytes": 1328256,
+    "original_model_unchanged": true,
+    "local_advantage_demonstrated": false
+  }
 }
