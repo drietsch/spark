@@ -1,6 +1,9 @@
 {
-  "status": "running",
-  "stage": "reference-comparison",
+  "status": "completed",
+  "stage": "complete",
   "workflow_url": "https://github.com/drietsch/spark/actions/runs/41413943645",
-  "compile_outcome": "success"
+  "compile_outcome": "success",
+  "parity_outcome": "success",
+  "artifact_url": "https://github.com/drietsch/spark/actions/runs/41413943645/artifacts/13127002977",
+  "report_artifact_url": "https://github.com/drietsch/spark/actions/runs/41413943645/artifacts/13127785158"
 }
