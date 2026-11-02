@@ -232,7 +232,14 @@ def compile_modernbert_export(source_directory, directory):
 
 def compile_modernbert(model, directory, *, source):
     """Offline frontend for an HF eval-mode ModernBERT object; no fitting/training."""
+    from transformers import ModernBertForMaskedLM
     from spark.modernbert_model import export_model
+    require(type(model) is ModernBertForMaskedLM, 'unsupported source class: requires the standard ModernBertForMaskedLM architecture')
+    for module in model.modules():
+        require(type(module).__module__.startswith(('torch.nn.modules.', 'transformers.models.modernbert.', 'transformers.activations')),
+                'unsupported custom source module')
+        require('forward' not in vars(module) and not module._forward_hooks and not module._forward_pre_hooks,
+                'unsupported source forward override or hook')
     with tempfile.TemporaryDirectory(prefix='spark-source-frontend-') as temporary:
         export_model(model, temporary, source=source)
         return compile_modernbert_export(temporary, directory)

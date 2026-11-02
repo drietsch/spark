@@ -29,6 +29,22 @@ def simple_program(builder, output, *, functions=None, parameters=None, precondi
 
 @unittest.skipUnless(NATIVE, 'C++17 and BLAS required')
 class FunctionCompilerTests(unittest.TestCase):
+    def test_generated_source_is_stable_across_python_hash_seeds(self):
+        builder = Builder([typed('x', ['N', 2])])
+        a = builder.map(expr('add', arg(0), literal(1)), 'x')
+        b = builder.map(expr('mul', arg(0), literal(2)), 'x')
+        result = builder.map(expr('sub', arg(0), arg(1)), a, b)
+        program = simple_program(builder, result)
+        code = 'import hashlib,json,sys;from spark.function_ir import emit_cpp;print(hashlib.sha256(emit_cpp(json.load(sys.stdin)).encode()).hexdigest())'
+        hashes = []
+        for seed in ('1', '19', '42'):
+            environment = os.environ.copy(); environment['PYTHONHASHSEED'] = seed
+            process = subprocess.run([sys.executable, '-c', code], input=json.dumps(program), text=True,
+                                     capture_output=True, check=True, env=environment,
+                                     cwd=Path(__file__).resolve().parents[1])
+            hashes.append(process.stdout.strip())
+        self.assertEqual(len(set(hashes)), 1)
+
     def test_optimizer_and_program_semantics_control_native_execution(self):
         builder = Builder([typed('x', ['N', 2])])
         first = builder.map(expr('add', arg(0), arg(0)), 'x')
@@ -208,6 +224,11 @@ class ModernBertCompilerTests(unittest.TestCase):
         config._attn_implementation = 'eager'
         with tempfile.TemporaryDirectory() as folder, self.assertRaisesRegex(ValueError, 'activation'):
             compile_modernbert(ModernBertForMaskedLM(config).eval(), folder, source={'pretrained': False})
+        config.hidden_activation = 'gelu'
+        source = ModernBertForMaskedLM(config).eval()
+        source.forward = lambda *args, **kwargs: None
+        with tempfile.TemporaryDirectory() as folder, self.assertRaisesRegex(CompileError, 'override'):
+            compile_modernbert(source, folder, source={'pretrained': False})
 
 
 if __name__ == '__main__':

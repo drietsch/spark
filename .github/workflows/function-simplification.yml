@@ -1,0 +1,114 @@
+name: Evaluate function simplification and live recovery
+on:
+  push:
+    branches:
+      - 'codex/function-experiment-*'
+    paths:
+      - '.github/workflows/function-simplification.yml'
+      - 'experiments/function_simplification_v1.json'
+      - 'spark/function_ir.py'
+      - 'spark/function_rewrite.py'
+      - 'spark/function_experiment.py'
+      - 'tools/function_experiment_*.py'
+      - 'tools/function_simplification_experiment.py'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+jobs:
+  experiment:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      HF_HUB_DISABLE_XET: '1'
+      OPENBLAS_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+      HF_HOME: /tmp/function-experiment-hub
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Record the predeclared experiment before collecting data
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git switch -c "${GITHUB_REF_NAME}-results-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          mkdir -p artifacts/function-simplification
+          cp experiments/function_simplification_v1.json artifacts/function-simplification/protocol.json
+          python tools/function_experiment_receipt.py --stage protocol-locked
+      - name: Download the unchanged compiled model
+        uses: actions/download-artifact@v4
+        with:
+          name: spark-function-program-modernbert-base
+          run-id: 41413943645
+          github-token: ${{ github.token }}
+          path: ${{ runner.temp }}/compiled-baseline
+      - name: Install numerical and public dataset readers
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y libopenblas-dev
+          python -m pip install numpy==2.2.6 tokenizers==0.21.4 huggingface_hub==0.36.2 pyarrow==19.0.1
+      - name: Fit on training articles and select on validation articles
+        id: prepare
+        continue-on-error: true
+        env:
+          SOURCE_DIRECTORY: ${{ runner.temp }}/compiled-baseline
+        run: python tools/function_simplification_experiment.py --phase prepare --source "$SOURCE_DIRECTORY"
+      - name: Publish the fixed selection before accessing held-out test data
+        if: always()
+        run: python tools/function_experiment_receipt.py --stage development-locked
+      - name: Evaluate the sealed test split once
+        id: evaluate
+        if: steps.prepare.outcome == 'success'
+        continue-on-error: true
+        env:
+          SOURCE_DIRECTORY: ${{ runner.temp }}/compiled-baseline
+        run: python tools/function_simplification_experiment.py --phase evaluate --source "$SOURCE_DIRECTORY"
+      - name: Return held-out quality before performance measurement
+        if: always()
+        run: python tools/function_experiment_receipt.py --stage heldout-evaluated
+      - name: Measure matched native latency and independent-process peak memory
+        id: benchmark
+        if: steps.evaluate.outcome == 'success'
+        continue-on-error: true
+        env:
+          SOURCE_DIRECTORY: ${{ runner.temp }}/compiled-baseline
+        run: python tools/function_simplification_experiment.py --phase benchmark --source "$SOURCE_DIRECTORY"
+      - name: Combine scientific results without changing the declared gates
+        id: summarize
+        if: steps.benchmark.outcome == 'success'
+        continue-on-error: true
+        env:
+          SOURCE_DIRECTORY: ${{ runner.temp }}/compiled-baseline
+        run: python tools/function_simplification_experiment.py --phase summarize --source "$SOURCE_DIRECTORY"
+      - name: Upload the explicitly experimental approximate program
+        id: package
+        if: steps.summarize.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: experimental-function-rewrite-modernbert
+          path: artifacts/function-simplification/recovered-program/
+          retention-days: 7
+          compression-level: 6
+      - name: Upload experiment decisions and measurements
+        id: reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: function-simplification-reports
+          path: |
+            artifacts/function-simplification/*.json
+            artifacts/function-simplification/solution.npz
+            artifacts/function-simplification/logs/
+          retention-days: 7
+      - name: Return final receipts through Git
+        if: always()
+        env:
+          ARTIFACT_URL: ${{ steps.package.outputs.artifact-url }}
+          REPORT_ARTIFACT_URL: ${{ steps.reports.outputs.artifact-url }}
+        run: python tools/function_experiment_receipt.py --stage complete --final
+      - name: Preserve execution failures
+        if: steps.prepare.outcome != 'success' || steps.evaluate.outcome != 'success' || steps.benchmark.outcome != 'success' || steps.summarize.outcome != 'success'
+        run: exit 1

@@ -374,7 +374,7 @@ def emit_cpp(program):
                 expression = 'mapped_call({' + ','.join(operands) + '},' + axes + ',[&](const std::vector<Tensor>& args){return evaluate_function_' + a['function'] + '(c,args,symbols);})'
             lines.append(ref(node['id']) + '=' + expression + ';')
             if node['id'] not in last: lines.append(ref(node['id']) + '=Tensor();')
-            for v in set(node['inputs']):
+            for v in dict.fromkeys(node['inputs']):
                 if last[v] == i: lines.append(ref(v) + '=Tensor();')
         lines.append('return {' + ','.join(ref(v) for v in final) + '};' if main else 'return ' + ref(final[0]) + ';')
         lines.append('}')
