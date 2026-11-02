@@ -1,9 +1,20 @@
 {
-  "stage": "equivalence-checked",
+  "stage": "complete",
   "workflow_url": "https://github.com/drietsch/spark/actions/runs/41440899495",
-  "status": "running",
+  "status": "completed",
   "phase_statuses": {
     "build": "completed",
-    "equivalence": "completed"
+    "equivalence": "completed",
+    "benchmark": "completed",
+    "summary": "completed"
+  },
+  "artifact_url": "https://github.com/drietsch/spark/actions/runs/41440899495/artifacts/13141735109",
+  "report_artifact_url": "https://github.com/drietsch/spark/actions/runs/41440899495/artifacts/13139559933",
+  "conclusion": {
+    "bitwise_equivalent": true,
+    "audit_verified": true,
+    "coefficients_unchanged": true,
+    "whole_model_gain_demonstrated": true,
+    "adoption_gate_passed": true
   }
 }

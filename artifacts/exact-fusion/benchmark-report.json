@@ -1,0 +1,883 @@
+{
+  "status": "completed",
+  "phase": "benchmark",
+  "protocol_sha256": "b97286f4b624116f2f42757dbfa9b68059b3aa19f1fb919fe16790085f415a49",
+  "results": {
+    "128": {
+      "median_paired_speedup": 1.153934277644215,
+      "confidence_interval_95": [
+        1.1444049573347364,
+        1.1567633784166391
+      ],
+      "speedup_demonstrated": true,
+      "paired_rounds": 5,
+      "baseline_median_ms": 968.184386,
+      "candidate_median_ms": 839.737367,
+      "baseline_peak_rss_median_bytes": 1899970560.0,
+      "candidate_peak_rss_median_bytes": 1900572672.0,
+      "observations": {
+        "baseline": [
+          {
+            "native_milliseconds": [
+              966.658686,
+              969.001732,
+              971.376569
+            ],
+            "median_native_milliseconds": 969.001732,
+            "peak_rss_bytes": 1899929600,
+            "input_shapes": {
+              "tokens": [
+                128
+              ],
+              "mask": [
+                128
+              ],
+              "positions": [
+                128
+              ],
+              "queries": [
+                8
+              ]
+            },
+            "output_shapes": {
+              "encoded": [
+                128,
+                768
+              ],
+              "logits": [
+                8,
+                50368
+              ]
+            },
+            "abi_public_parity_exact": true,
+            "status": "completed",
+            "elapsed_seconds": 6.281933424000044
+          },
+          {
+            "native_milliseconds": [
+              961.235069,
+              962.849095,
+              961.381798
+            ],
+            "median_native_milliseconds": 961.381798,
+            "peak_rss_bytes": 1899970560,
+            "input_shapes": {
+              "tokens": [
+                128
+              ],
+              "mask": [
+                128
+              ],
+              "positions": [
+                128
+              ],
+              "queries": [
+                8
+              ]
+            },
+            "output_shapes": {
+              "encoded": [
+                128,
+                768
+              ],
+              "logits": [
+                8,
+                50368
+              ]
+            },
+            "abi_public_parity_exact": true,
+            "status": "completed",
+            "elapsed_seconds": 6.237939625000024
+          },
+          {
+            "native_milliseconds": [
+              963.317076,
+              966.40459,
+              974.20299
+            ],
+            "median_native_milliseconds": 966.40459,
+            "peak_rss_bytes": 1900036096,
+            "input_shapes": {
+              "tokens": [
+                128
+              ],
+              "mask": [
+                128
+              ],
+              "positions": [
+                128
+              ],
+              "queries": [
+                8
+              ]
+            },
+            "output_shapes": {
+              "encoded": [
+                128,
+                768
+              ],
+              "logits": [
+                8,
+                50368
+              ]
+            },
+            "abi_public_parity_exact": true,
+            "status": "completed",
+            "elapsed_seconds": 6.257200689000001
+          },
+          {
+            "native_milliseconds": [
+              965.69508,
+              973.23522,
+              968.184386
+            ],
+            "median_native_milliseconds": 968.184386,
+            "peak_rss_bytes": 1899954176,
+            "input_shapes": {
+              "tokens": [
+                128
+              ],
+              "mask": [
+                128
+              ],
+              "positions": [
+                128
+              ],
+              "queries": [
+                8
+              ]
+            },
+            "output_shapes": {
+              "encoded": [
+                128,
+                768
+              ],
+              "logits": [
+                8,
+                50368
+              ]
+            },
+            "abi_public_parity_exact": true,
+            "status": "completed",
+            "elapsed_seconds": 6.261024098000007
+          },
+          {
+            "native_milliseconds": [
+              970.511919,
+              970.446831,
+              971.858555
+            ],
+            "median_native_milliseconds": 970.511919,
+            "peak_rss_bytes": 1900105728,
+            "input_shapes": {
+              "tokens": [
+                128
+              ],
+              "mask": [
+                128
+              ],
+              "positions": [
+                128
+              ],
+              "queries": [
+                8
+              ]
+            },
+            "output_shapes": {
+              "encoded": [
+                128,
+                768
+              ],
+              "logits": [
+                8,
+                50368
+              ]
+            },
+            "abi_public_parity_exact": true,
+            "status": "completed",
+            "elapsed_seconds": 6.2734970590000785
+          }
+        ],
+        "candidate": [
+          {
+            "native_milliseconds": [
+              843.20201,
+              839.737367,
+              838.544475
+            ],
+            "median_native_milliseconds": 839.737367,
+            "peak_rss_bytes": 1900572672,
+            "input_shapes": {
+              "tokens": [
+                128
+              ],
+              "mask": [
+                128
+              ],
+              "positions": [
+                128
+              ],
+              "queries": [
+                8
+              ]
+            },
+            "output_shapes": {
+              "encoded": [
+                128,
+                768
+              ],
+              "logits": [
+                8,
+                50368
+              ]
+            },
+            "abi_public_parity_exact": true,
+            "status": "completed",
+            "elapsed_seconds": 5.634813104000045
+          },
+          {
+            "native_milliseconds": [
+              840.071333,
+              842.989221,
+              838.982578
+            ],
+            "median_native_milliseconds": 840.071333,
+            "peak_rss_bytes": 1900646400,
+            "input_shapes": {
+              "tokens": [
+                128
+              ],
+              "mask": [
+                128
+              ],
+              "positions": [
+                128
+              ],
+              "queries": [
+                8
+              ]
+            },
+            "output_shapes": {
+              "encoded": [
+                128,
+                768
+              ],
+              "logits": [
+                8,
+                50368
+              ]
+            },
+            "abi_public_parity_exact": true,
+            "status": "completed",
+            "elapsed_seconds": 5.630839484000035
+          },
+          {
+            "native_milliseconds": [
+              835.294021,
+              835.43856,
+              835.438438
+            ],
+            "median_native_milliseconds": 835.438438,
+            "peak_rss_bytes": 1900548096,
+            "input_shapes": {
+              "tokens": [
+                128
+              ],
+              "mask": [
+                128
+              ],
+              "positions": [
+                128
+              ],
+              "queries": [
+                8
+              ]
+            },
+            "output_shapes": {
+              "encoded": [
+                128,
+                768
+              ],
+              "logits": [
+                8,
+                50368
+              ]
+            },
+            "abi_public_parity_exact": true,
+            "status": "completed",
+            "elapsed_seconds": 5.580323489999955
+          },
+          {
+            "native_milliseconds": [
+              846.914566,
+              844.643886,
+              842.352805
+            ],
+            "median_native_milliseconds": 844.643886,
+            "peak_rss_bytes": 1900515328,
+            "input_shapes": {
+              "tokens": [
+                128
+              ],
+              "mask": [
+                128
+              ],
+              "positions": [
+                128
+              ],
+              "queries": [
+                8
+              ]
+            },
+            "output_shapes": {
+              "encoded": [
+                128,
+                768
+              ],
+              "logits": [
+                8,
+                50368
+              ]
+            },
+            "abi_public_parity_exact": true,
+            "status": "completed",
+            "elapsed_seconds": 5.62880213599999
+          },
+          {
+            "native_milliseconds": [
+              836.295527,
+              840.31556,
+              839.636724
+            ],
+            "median_native_milliseconds": 839.636724,
+            "peak_rss_bytes": 1900650496,
+            "input_shapes": {
+              "tokens": [
+                128
+              ],
+              "mask": [
+                128
+              ],
+              "positions": [
+                128
+              ],
+              "queries": [
+                8
+              ]
+            },
+            "output_shapes": {
+              "encoded": [
+                128,
+                768
+              ],
+              "logits": [
+                8,
+                50368
+              ]
+            },
+            "abi_public_parity_exact": true,
+            "status": "completed",
+            "elapsed_seconds": 5.61505494700009
+          }
+        ]
+      },
+      "orders": [
+        [
+          "baseline",
+          "candidate"
+        ],
+        [
+          "candidate",
+          "baseline"
+        ],
+        [
+          "candidate",
+          "baseline"
+        ],
+        [
+          "baseline",
+          "candidate"
+        ],
+        [
+          "baseline",
+          "candidate"
+        ]
+      ]
+    },
+    "512": {
+      "median_paired_speedup": 1.1267269935044633,
+      "confidence_interval_95": [
+        1.1194345209909176,
+        1.1324919269552767
+      ],
+      "speedup_demonstrated": true,
+      "paired_rounds": 3,
+      "baseline_median_ms": 5901.920294,
+      "candidate_median_ms": 5239.166926,
+      "baseline_peak_rss_median_bytes": 1910988800.0,
+      "candidate_peak_rss_median_bytes": 1914064896.0,
+      "observations": {
+        "baseline": [
+          {
+            "native_milliseconds": [
+              5903.110799
+            ],
+            "median_native_milliseconds": 5903.110799,
+            "peak_rss_bytes": 1911046144,
+            "input_shapes": {
+              "tokens": [
+                512
+              ],
+              "mask": [
+                512
+              ],
+              "positions": [
+                512
+              ],
+              "queries": [
+                8
+              ]
+            },
+            "output_shapes": {
+              "encoded": [
+                512,
+                768
+              ],
+              "logits": [
+                8,
+                50368
+              ]
+            },
+            "abi_public_parity_exact": true,
+            "status": "completed",
+            "elapsed_seconds": 13.03494956999998
+          },
+          {
+            "native_milliseconds": [
+              5887.194776
+            ],
+            "median_native_milliseconds": 5887.194776,
+            "peak_rss_bytes": 1910988800,
+            "input_shapes": {
+              "tokens": [
+                512
+              ],
+              "mask": [
+                512
+              ],
+              "positions": [
+                512
+              ],
+              "queries": [
+                8
+              ]
+            },
+            "output_shapes": {
+              "encoded": [
+                512,
+                768
+              ],
+              "logits": [
+                8,
+                50368
+              ]
+            },
+            "abi_public_parity_exact": true,
+            "status": "completed",
+            "elapsed_seconds": 13.021484488000056
+          },
+          {
+            "native_milliseconds": [
+              5901.920294
+            ],
+            "median_native_milliseconds": 5901.920294,
+            "peak_rss_bytes": 1910988800,
+            "input_shapes": {
+              "tokens": [
+                512
+              ],
+              "mask": [
+                512
+              ],
+              "positions": [
+                512
+              ],
+              "queries": [
+                8
+              ]
+            },
+            "output_shapes": {
+              "encoded": [
+                512,
+                768
+              ],
+              "logits": [
+                8,
+                50368
+              ]
+            },
+            "abi_public_parity_exact": true,
+            "status": "completed",
+            "elapsed_seconds": 13.064538814999992
+          }
+        ],
+        "candidate": [
+          {
+            "native_milliseconds": [
+              5239.166926
+            ],
+            "median_native_milliseconds": 5239.166926,
+            "peak_rss_bytes": 1914097664,
+            "input_shapes": {
+              "tokens": [
+                512
+              ],
+              "mask": [
+                512
+              ],
+              "positions": [
+                512
+              ],
+              "queries": [
+                8
+              ]
+            },
+            "output_shapes": {
+              "encoded": [
+                512,
+                768
+              ],
+              "logits": [
+                8,
+                50368
+              ]
+            },
+            "abi_public_parity_exact": true,
+            "status": "completed",
+            "elapsed_seconds": 11.891037245000007
+          },
+          {
+            "native_milliseconds": [
+              5259.079174
+            ],
+            "median_native_milliseconds": 5259.079174,
+            "peak_rss_bytes": 1914064896,
+            "input_shapes": {
+              "tokens": [
+                512
+              ],
+              "mask": [
+                512
+              ],
+              "positions": [
+                512
+              ],
+              "queries": [
+                8
+              ]
+            },
+            "output_shapes": {
+              "encoded": [
+                512,
+                768
+              ],
+              "logits": [
+                8,
+                50368
+              ]
+            },
+            "abi_public_parity_exact": true,
+            "status": "completed",
+            "elapsed_seconds": 11.914719184999967
+          },
+          {
+            "native_milliseconds": [
+              5211.445798
+            ],
+            "median_native_milliseconds": 5211.445798,
+            "peak_rss_bytes": 1913884672,
+            "input_shapes": {
+              "tokens": [
+                512
+              ],
+              "mask": [
+                512
+              ],
+              "positions": [
+                512
+              ],
+              "queries": [
+                8
+              ]
+            },
+            "output_shapes": {
+              "encoded": [
+                512,
+                768
+              ],
+              "logits": [
+                8,
+                50368
+              ]
+            },
+            "abi_public_parity_exact": true,
+            "status": "completed",
+            "elapsed_seconds": 11.864102639999942
+          }
+        ]
+      },
+      "orders": [
+        [
+          "baseline",
+          "candidate"
+        ],
+        [
+          "baseline",
+          "candidate"
+        ],
+        [
+          "baseline",
+          "candidate"
+        ]
+      ]
+    },
+    "2048": {
+      "median_paired_speedup": 1.0303492483130483,
+      "confidence_interval_95": [
+        1.028563435533894,
+        1.0312046447163832
+      ],
+      "speedup_demonstrated": true,
+      "paired_rounds": 3,
+      "baseline_median_ms": 66712.262252,
+      "candidate_median_ms": 64809.908493,
+      "baseline_peak_rss_median_bytes": 2056945664.0,
+      "candidate_peak_rss_median_bytes": 2054602752.0,
+      "observations": {
+        "baseline": [
+          {
+            "native_milliseconds": [
+              66776.840499
+            ],
+            "median_native_milliseconds": 66776.840499,
+            "peak_rss_bytes": 2057060352,
+            "input_shapes": {
+              "tokens": [
+                2048
+              ],
+              "mask": [
+                2048
+              ],
+              "positions": [
+                2048
+              ],
+              "queries": [
+                8
+              ]
+            },
+            "output_shapes": {
+              "encoded": [
+                2048,
+                768
+              ],
+              "logits": [
+                8,
+                50368
+              ]
+            },
+            "abi_public_parity_exact": true,
+            "status": "completed",
+            "elapsed_seconds": 134.81938167600003
+          },
+          {
+            "native_milliseconds": [
+              66712.262252
+            ],
+            "median_native_milliseconds": 66712.262252,
+            "peak_rss_bytes": 2056925184,
+            "input_shapes": {
+              "tokens": [
+                2048
+              ],
+              "mask": [
+                2048
+              ],
+              "positions": [
+                2048
+              ],
+              "queries": [
+                8
+              ]
+            },
+            "output_shapes": {
+              "encoded": [
+                2048,
+                768
+              ],
+              "logits": [
+                8,
+                50368
+              ]
+            },
+            "abi_public_parity_exact": true,
+            "status": "completed",
+            "elapsed_seconds": 132.65427125600013
+          },
+          {
+            "native_milliseconds": [
+              66672.96716
+            ],
+            "median_native_milliseconds": 66672.96716,
+            "peak_rss_bytes": 2056945664,
+            "input_shapes": {
+              "tokens": [
+                2048
+              ],
+              "mask": [
+                2048
+              ],
+              "positions": [
+                2048
+              ],
+              "queries": [
+                8
+              ]
+            },
+            "output_shapes": {
+              "encoded": [
+                2048,
+                768
+              ],
+              "logits": [
+                8,
+                50368
+              ]
+            },
+            "abi_public_parity_exact": true,
+            "status": "completed",
+            "elapsed_seconds": 134.49985479499992
+          }
+        ],
+        "candidate": [
+          {
+            "native_milliseconds": [
+              64809.908493
+            ],
+            "median_native_milliseconds": 64809.908493,
+            "peak_rss_bytes": 2054836224,
+            "input_shapes": {
+              "tokens": [
+                2048
+              ],
+              "mask": [
+                2048
+              ],
+              "positions": [
+                2048
+              ],
+              "queries": [
+                8
+              ]
+            },
+            "output_shapes": {
+              "encoded": [
+                2048,
+                768
+              ],
+              "logits": [
+                8,
+                50368
+              ]
+            },
+            "abi_public_parity_exact": true,
+            "status": "completed",
+            "elapsed_seconds": 131.13410221499998
+          },
+          {
+            "native_milliseconds": [
+              64859.647881
+            ],
+            "median_native_milliseconds": 64859.647881,
+            "peak_rss_bytes": 2054586368,
+            "input_shapes": {
+              "tokens": [
+                2048
+              ],
+              "mask": [
+                2048
+              ],
+              "positions": [
+                2048
+              ],
+              "queries": [
+                8
+              ]
+            },
+            "output_shapes": {
+              "encoded": [
+                2048,
+                768
+              ],
+              "logits": [
+                8,
+                50368
+              ]
+            },
+            "abi_public_parity_exact": true,
+            "status": "completed",
+            "elapsed_seconds": 130.90439883699992
+          },
+          {
+            "native_milliseconds": [
+              64655.417818
+            ],
+            "median_native_milliseconds": 64655.417818,
+            "peak_rss_bytes": 2054602752,
+            "input_shapes": {
+              "tokens": [
+                2048
+              ],
+              "mask": [
+                2048
+              ],
+              "positions": [
+                2048
+              ],
+              "queries": [
+                8
+              ]
+            },
+            "output_shapes": {
+              "encoded": [
+                2048,
+                768
+              ],
+              "logits": [
+                8,
+                50368
+              ]
+            },
+            "abi_public_parity_exact": true,
+            "status": "completed",
+            "elapsed_seconds": 130.20015169700014
+          }
+        ]
+      },
+      "orders": [
+        [
+          "baseline",
+          "candidate"
+        ],
+        [
+          "candidate",
+          "baseline"
+        ],
+        [
+          "candidate",
+          "baseline"
+        ]
+      ]
+    }
+  },
+  "elapsed_seconds": 929.6613504070001
+}
