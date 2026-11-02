@@ -1,6 +1,9 @@
 {
-  "status": "running",
-  "stage": "download-delivered-package",
+  "status": "completed",
+  "stage": "complete",
   "source_artifact_run": 41348755846,
-  "workflow_url": "https://github.com/drietsch/spark/actions/runs/41403944071"
+  "workflow_url": "https://github.com/drietsch/spark/actions/runs/41403944071",
+  "package_outcome": "success",
+  "parity_outcome": "success",
+  "report_artifact_url": "https://github.com/drietsch/spark/actions/runs/41403944071/artifacts/13123060498"
 }

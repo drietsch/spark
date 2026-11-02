@@ -1,0 +1,129 @@
+{
+  "status": "completed",
+  "stage": "complete",
+  "source_artifact_run": 41348755846,
+  "checkpoint": "answerdotai/ModernBERT-base",
+  "revision": "8949b909ec900327062f0ebf497f51aef5e6f0c8",
+  "weights_sha256": "c323c702d9ef69b8b6e62fa74075c26a0dcad49b38492270f1897eb35439996e",
+  "cli_text": {
+    "backend": "spark-native-mathematical-program",
+    "predictions": [
+      {
+        "position": 5,
+        "topk": [
+          {
+            "token": 470,
+            "text": " 0",
+            "logit": 20.67852218518732,
+            "prob": 0.1596377631494965
+          },
+          {
+            "token": 577,
+            "text": " 4",
+            "logit": 20.490276698580903,
+            "prob": 0.13224572983483704
+          },
+          {
+            "token": 1384,
+            "text": " 20",
+            "logit": 19.91563572568038,
+            "prob": 0.07444203796873099
+          },
+          {
+            "token": 2030,
+            "text": " 25",
+            "logit": 19.85628929449357,
+            "prob": 0.07015270580768215
+          },
+          {
+            "token": 4567,
+            "text": " 32",
+            "logit": 19.528729464540724,
+            "prob": 0.05055766406844967
+          }
+        ]
+      }
+    ],
+    "framework_imports": {
+      "torch": false,
+      "transformers": false,
+      "numpy": false
+    }
+  },
+  "cli_ids": {
+    "backend": "spark-native-mathematical-program",
+    "predictions": [
+      {
+        "position": 6,
+        "topk": [
+          {
+            "token": 12621,
+            "text": null,
+            "logit": 18.746920845779083,
+            "prob": 0.7936008937935298
+          },
+          {
+            "token": 25872,
+            "text": null,
+            "logit": 14.70745724782136,
+            "prob": 0.013972862899915029
+          },
+          {
+            "token": 42057,
+            "text": null,
+            "logit": 14.621008516675431,
+            "prob": 0.012815666311490306
+          },
+          {
+            "token": 5798,
+            "text": null,
+            "logit": 14.25293451468508,
+            "prob": 0.008869286479833365
+          },
+          {
+            "token": 30013,
+            "text": null,
+            "logit": 14.154748854221605,
+            "prob": 0.008039836045759495
+          }
+        ]
+      }
+    ],
+    "framework_imports": {
+      "torch": false,
+      "transformers": false,
+      "numpy": false
+    }
+  },
+  "checks": {
+    "runtime_only_environment": true,
+    "packaged_source_recompiled": true,
+    "artifact_checksum_matches_delivered_model": true,
+    "tokenizer_checksum_valid": true,
+    "layer0_width1_changes_output": true,
+    "layer0_width1_restores_exactly": true,
+    "layer0_width576_changes_output": true,
+    "layer0_width576_restores_exactly": true,
+    "layer11_width1_changes_output": true,
+    "layer11_width1_restores_exactly": true,
+    "layer11_width576_changes_output": true,
+    "layer11_width576_restores_exactly": true,
+    "layer21_width1_changes_output": true,
+    "layer21_width1_restores_exactly": true,
+    "layer21_width576_changes_output": true,
+    "layer21_width576_restores_exactly": true,
+    "input_weight_changes_output": true,
+    "input_weight_restores_exactly": true,
+    "input_bias_changes_output": true,
+    "input_bias_restores_exactly": true,
+    "output_weight_changes_output": true,
+    "output_weight_restores_exactly": true,
+    "output_bias_changes_output": true,
+    "output_bias_restores_exactly": true,
+    "invalid_requests_rejected": true,
+    "reload_preserves_original_output": true,
+    "checkpoint_file_unchanged": true,
+    "frameworks_still_not_imported": true
+  },
+  "elapsed_seconds": 13.173608822999995
+}
