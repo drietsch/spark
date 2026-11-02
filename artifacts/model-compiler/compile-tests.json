@@ -1,0 +1,97 @@
+{
+  "status": "completed",
+  "stage": "complete",
+  "checkpoint": "answerdotai/ModernBERT-base",
+  "revision": "8949b909ec900327062f0ebf497f51aef5e6f0c8",
+  "source_export_sha256": "c323c702d9ef69b8b6e62fa74075c26a0dcad49b38492270f1897eb35439996e",
+  "coefficient_bytes": 603500288,
+  "coefficients_sha256": "91b42bc6cba4c997f17e219f700c3087ee0c277b84680625e78f2bac28ad3e9a",
+  "functions": 24,
+  "main_operations": 1113,
+  "total_operations": 1547,
+  "optimizations": {
+    "common_and_dead_nodes_removed": 0,
+    "unused_parameters_removed": 0
+  },
+  "target_format": "spark-function-program-v1",
+  "standalone_cli": {
+    "backend": "compiled-spark-function-program",
+    "predictions": [
+      {
+        "position": 6,
+        "topk": [
+          {
+            "token": 7785,
+            "text": " Paris",
+            "logit": 22.131599715212268,
+            "prob": 0.9233348219277101
+          },
+          {
+            "token": 42268,
+            "text": " Lyon",
+            "logit": 18.88566275897245,
+            "prob": 0.03594733556746939
+          },
+          {
+            "token": 23397,
+            "text": " Nancy",
+            "logit": 18.441311146228642,
+            "prob": 0.02305086633397492
+          },
+          {
+            "token": 29902,
+            "text": " Nice",
+            "logit": 17.123097674250765,
+            "prob": 0.006168710875116474
+          },
+          {
+            "token": 20159,
+            "text": " Orleans",
+            "logit": 16.253063125524683,
+            "prob": 0.0025843016921171837
+          }
+        ]
+      }
+    ],
+    "framework_imports": {
+      "torch": false,
+      "transformers": false,
+      "numpy": false
+    }
+  },
+  "checks": {
+    "runtime_only_environment": true,
+    "standalone_cli": true,
+    "no_source_runtime_bundled": true,
+    "no_source_model_in_native_kernels": true,
+    "function0_width1_changes_output": true,
+    "function0_width1_restores_exactly": true,
+    "function0_width576_changes_output": true,
+    "function0_width576_restores_exactly": true,
+    "function11_width1_changes_output": true,
+    "function11_width1_restores_exactly": true,
+    "function11_width576_changes_output": true,
+    "function11_width576_restores_exactly": true,
+    "function21_width1_changes_output": true,
+    "function21_width1_restores_exactly": true,
+    "function21_width576_changes_output": true,
+    "function21_width576_restores_exactly": true,
+    "input_weight_changes_output": true,
+    "input_weight_restores_exactly": true,
+    "input_bias_changes_output": true,
+    "input_bias_restores_exactly": true,
+    "output_weight_changes_output": true,
+    "output_weight_restores_exactly": true,
+    "output_bias_changes_output": true,
+    "output_bias_restores_exactly": true,
+    "invalid_tokens_rejected": true,
+    "empty_attention_rejected": true,
+    "duplicate_queries_rejected": true,
+    "invalid_positions_rejected": true,
+    "fresh_reload_exact": true,
+    "runs_without_source_identity": true,
+    "coefficient_file_unchanged": true,
+    "live_updates_did_not_recompile": true
+  },
+  "elapsed_seconds": 90.21482716600002
+}
