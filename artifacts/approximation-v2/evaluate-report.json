@@ -1,0 +1,120 @@
+{
+  "status": "completed",
+  "phase": "evaluate",
+  "protocol_sha256": "67aabe9746cf1d4fef7a0c474b0530fe44dbd88f0af06d546663fbd0db66c9ae",
+  "selected_method": "marginal_contribution",
+  "selected_alpha": 0.5,
+  "baseline_quality": {
+    "teacher_top1_agreement": 1.0,
+    "gold_accuracy": 0.6640625,
+    "baseline_gold_accuracy": 0.6640625,
+    "gold_accuracy_delta": 0.0,
+    "mean_nll": 1.5420672584388946,
+    "mean_baseline_nll": 1.5420672584388946,
+    "mean_teacher_kl_nats": 0.0,
+    "queries": 512,
+    "articles": 44,
+    "confidence_intervals_95": {
+      "teacher_top1_agreement": [
+        1.0,
+        1.0
+      ],
+      "gold_accuracy_delta": [
+        0.0,
+        0.0
+      ],
+      "mean_teacher_kl_nats": [
+        0.0,
+        0.0
+      ]
+    }
+  },
+  "prefix_quality": {
+    "teacher_top1_agreement": 0.970703125,
+    "gold_accuracy": 0.66015625,
+    "baseline_gold_accuracy": 0.6640625,
+    "gold_accuracy_delta": -0.00390625,
+    "mean_nll": 1.5408779958794194,
+    "mean_baseline_nll": 1.5420672584388946,
+    "mean_teacher_kl_nats": 0.009256667664801134,
+    "queries": 512,
+    "articles": 44,
+    "confidence_intervals_95": {
+      "teacher_top1_agreement": [
+        0.9548532196969698,
+        0.984375
+      ],
+      "gold_accuracy_delta": [
+        -0.015157342657342643,
+        0.0059547811059908595
+      ],
+      "mean_teacher_kl_nats": [
+        0.008060340644516571,
+        0.010538612544551929
+      ]
+    }
+  },
+  "unrecovered_quality": {
+    "teacher_top1_agreement": 0.984375,
+    "gold_accuracy": 0.658203125,
+    "baseline_gold_accuracy": 0.6640625,
+    "gold_accuracy_delta": -0.005859375,
+    "mean_nll": 1.536542237466461,
+    "mean_baseline_nll": 1.5420672584388946,
+    "mean_teacher_kl_nats": 0.005597936176702817,
+    "queries": 512,
+    "articles": 44,
+    "confidence_intervals_95": {
+      "teacher_top1_agreement": [
+        0.9722222222222222,
+        0.9944029850746269
+      ],
+      "gold_accuracy_delta": [
+        -0.012872448419666437,
+        0.0
+      ],
+      "mean_teacher_kl_nats": [
+        0.004469797741968065,
+        0.006962100315054954
+      ]
+    }
+  },
+  "recovered_quality": {
+    "teacher_top1_agreement": 0.974609375,
+    "gold_accuracy": 0.66015625,
+    "baseline_gold_accuracy": 0.6640625,
+    "gold_accuracy_delta": -0.00390625,
+    "mean_nll": 1.5361410053208409,
+    "mean_baseline_nll": 1.5420672584388946,
+    "mean_teacher_kl_nats": 0.004918064006738186,
+    "queries": 512,
+    "articles": 44,
+    "confidence_intervals_95": {
+      "teacher_top1_agreement": [
+        0.9576612903225806,
+        0.9882857572115384
+      ],
+      "gold_accuracy_delta": [
+        -0.015151515151515138,
+        0.006048387096774135
+      ],
+      "mean_teacher_kl_nats": [
+        0.0038477144679108775,
+        0.006215659732183442
+      ]
+    }
+  },
+  "live_recovery": {
+    "coefficient_updates": 774912,
+    "elapsed_seconds": 0.8942790840000043,
+    "saved_coefficients_unchanged": true,
+    "native_library_unchanged": true,
+    "persisted_checkpoint_exact": true
+  },
+  "heldout_quality_gates_passed": false,
+  "fresh_articles": 44,
+  "test_queries": 512,
+  "prior_article_overlap": 0,
+  "selection_sha256": "ad0fd3ad995b2c604e2752ff8800b80c6568b51cca04114da35feaf8485ba526",
+  "elapsed_seconds": 253.60613238099995
+}
