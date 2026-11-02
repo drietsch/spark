@@ -1,0 +1,18 @@
+{"name":"agreement_singular","text":"The scientist who studies the samples [MASK] carefully."}
+{"name":"agreement_plural","text":"The scientists who study the samples [MASK] carefully."}
+{"name":"negation","text":"The instructions say not to enter because the bridge is [MASK]."}
+{"name":"pronoun_context","text":"Maria handed Elena the notebook because Elena needed to [MASK]."}
+{"name":"financial_bank","text":"After depositing the cheque, she left the [MASK]."}
+{"name":"river_bank","text":"The canoe was pulled onto the river [MASK]."}
+{"name":"punctuation","text":"\"Really?\" she asked. \"I thought the meeting was on [MASK]!\""}
+{"name":"unicode","text":"The café serves fresh croissants and hot [MASK]."}
+{"name":"french","text":"Le chat dort sur le [MASK]."}
+{"name":"japanese_context","text":"東京 is the capital of [MASK]."}
+{"name":"science","text":"Plants absorb carbon dioxide and release [MASK] during photosynthesis."}
+{"name":"number_context","text":"There are sixty seconds in one [MASK]."}
+{"name":"code_context","text":"In Python, a function definition begins with the keyword [MASK]."}
+{"name":"sql_context","text":"SELECT name FROM users WHERE id = [MASK];"}
+{"name":"logical_language","text":"Every raven is a bird. This animal is a raven, so it is a [MASK]."}
+{"name":"multisentence","text":"The tickets were sold out. We stayed home instead and watched a [MASK]."}
+{"name":"two_masks","text":"When water is heated, it changes from a [MASK] to a [MASK]."}
+{"name":"three_masks","text":"The [MASK] opened the [MASK] and walked into the [MASK]."}

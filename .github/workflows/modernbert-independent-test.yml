@@ -1,0 +1,114 @@
+name: Independently test delivered ModernBERT conversion
+on:
+  push:
+    branches:
+      - 'codex/modernbert-test-*'
+    paths:
+      - '.github/workflows/modernbert-independent-test.yml'
+      - 'tools/test_converted_modernbert.py'
+      - 'examples/modernbert_independent_masks.jsonl'
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+jobs:
+  test-delivered-package:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      HF_HUB_DISABLE_XET: '1'
+      OPENBLAS_NUM_THREADS: '2'
+      OMP_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Record startup on an isolated results branch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git switch -c "${GITHUB_REF_NAME}-results-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          root = Path('artifacts/modernbert-independent-test'); root.mkdir(parents=True, exist_ok=True)
+          report = {'status': 'running', 'stage': 'download-delivered-package', 'source_artifact_run': 41348755846,
+                    'workflow_url': f"https://github.com/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}"}
+          (root / 'runner-report.json').write_text(json.dumps(report, indent=2) + '\n')
+          PY
+          git add -f artifacts/modernbert-independent-test/runner-report.json
+          git commit -m 'Record independent ModernBERT artifact test startup'
+          git push origin "HEAD:refs/heads/${GITHUB_REF_NAME}-results-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+      - name: Download the previously delivered model, without reconverting
+        uses: actions/download-artifact@v4
+        with:
+          name: spark-modernbert-base-complete
+          run-id: 41348755846
+          github-token: ${{ github.token }}
+          path: ${{ runner.temp }}/converted-modernbert
+      - name: Test packaged CLI and live functions in a runtime-only environment
+        id: package
+        continue-on-error: true
+        env:
+          MODEL_DIRECTORY: ${{ runner.temp }}/converted-modernbert
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y libopenblas-dev
+          python -m venv "${RUNNER_TEMP}/modernbert-runtime-only"
+          "${RUNNER_TEMP}/modernbert-runtime-only/bin/python" -m pip install tokenizers==0.21.4
+          "${RUNNER_TEMP}/modernbert-runtime-only/bin/python" tools/test_converted_modernbert.py --phase package --model "$MODEL_DIRECTORY"
+      - name: Install pinned original-checkpoint reference dependencies
+        run: |
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.6.0
+          python -m pip install numpy==2.2.6 transformers==4.51.3 safetensors==0.5.3
+      - uses: actions/cache/restore@v4
+        with:
+          path: ${{ runner.temp }}/modernbert-hub
+          key: modernbert-source-8949b909ec900327062f0ebf497f51aef5e6f0c8-v1
+      - name: Compare new cases and longer contexts against the pinned source
+        id: parity
+        continue-on-error: true
+        env:
+          HF_HOME: ${{ runner.temp }}/modernbert-hub
+          MODEL_DIRECTORY: ${{ runner.temp }}/converted-modernbert
+        run: python tools/test_converted_modernbert.py --phase parity --model "$MODEL_DIRECTORY"
+      - name: Upload independent test reports
+        id: reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: modernbert-independent-test-reports
+          path: artifacts/modernbert-independent-test/
+          retention-days: 7
+      - name: Return test receipts through Git
+        if: always()
+        env:
+          PACKAGE_OUTCOME: ${{ steps.package.outcome }}
+          PARITY_OUTCOME: ${{ steps.parity.outcome }}
+          REPORT_ARTIFACT_URL: ${{ steps.reports.outputs.artifact-url }}
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          root = Path('artifacts/modernbert-independent-test'); root.mkdir(parents=True, exist_ok=True)
+          path = root / 'runner-report.json'
+          r = json.loads(path.read_text()) if path.exists() else {}
+          completed = all(os.environ.get(name) == 'success' for name in ('PACKAGE_OUTCOME', 'PARITY_OUTCOME'))
+          r.update(status='completed' if completed else 'failed', stage='complete',
+                   package_outcome=os.environ['PACKAGE_OUTCOME'], parity_outcome=os.environ['PARITY_OUTCOME'],
+                   report_artifact_url=os.environ.get('REPORT_ARTIFACT_URL'))
+          path.write_text(json.dumps(r, indent=2) + '\n')
+          PY
+          git add -f artifacts/modernbert-independent-test/runner-report.json
+          for phase in package parity; do
+            if test -f "artifacts/modernbert-independent-test/${phase}-tests.json"; then
+              git add -f "artifacts/modernbert-independent-test/${phase}-tests.json"
+            fi
+          done
+          git commit -m 'Return independent delivered-model test results'
+          git push origin "HEAD:refs/heads/${GITHUB_REF_NAME}-results-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+      - name: Preserve test failures
+        if: steps.package.outcome != 'success' || steps.parity.outcome != 'success'
+        run: exit 1
