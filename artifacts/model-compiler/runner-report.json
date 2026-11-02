@@ -1,5 +1,6 @@
 {
   "status": "running",
-  "stage": "download-source-export",
-  "workflow_url": "https://github.com/drietsch/spark/actions/runs/41413943645"
+  "stage": "reference-comparison",
+  "workflow_url": "https://github.com/drietsch/spark/actions/runs/41413943645",
+  "compile_outcome": "success"
 }
