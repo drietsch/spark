@@ -1,0 +1,100 @@
+{
+  "status": "completed",
+  "stage": "complete",
+  "phase": "prepare",
+  "protocol_sha256": "6be8af7bb45f318849cf1f6b05cbfa16f94b644b609e07c9ec6dd9f94d4300c6",
+  "selected_width": 1008,
+  "development_function_nrmse": 0.23142344051042962,
+  "development_qualified": false,
+  "development_quality": {
+    "teacher_top1_agreement": 0.859375,
+    "gold_accuracy": 0.7265625,
+    "baseline_gold_accuracy": 0.734375,
+    "gold_accuracy_delta": -0.0078125,
+    "mean_nll": 1.6941657922905948,
+    "mean_baseline_nll": 1.5411076168247921,
+    "mean_teacher_kl_nats": 0.18512801414169194,
+    "queries": 128,
+    "articles": 16,
+    "confidence_intervals_95": {
+      "teacher_top1_agreement": [
+        0.8046875,
+        0.9140625
+      ],
+      "gold_accuracy_delta": [
+        -0.0546875,
+        0.0546875
+      ],
+      "mean_teacher_kl_nats": [
+        0.1360998437919546,
+        0.24145368262314668
+      ]
+    }
+  },
+  "development_prefix_quality": {
+    "teacher_top1_agreement": 0.9453125,
+    "gold_accuracy": 0.7421875,
+    "baseline_gold_accuracy": 0.734375,
+    "gold_accuracy_delta": 0.0078125,
+    "mean_nll": 1.5543403111386334,
+    "mean_baseline_nll": 1.5411076168247921,
+    "mean_teacher_kl_nats": 0.010786935506592146,
+    "queries": 128,
+    "articles": 16,
+    "confidence_intervals_95": {
+      "teacher_top1_agreement": [
+        0.9140625,
+        0.9765625
+      ],
+      "gold_accuracy_delta": [
+        -0.015625,
+        0.0390625
+      ],
+      "mean_teacher_kl_nats": [
+        0.008510942594267592,
+        0.013035550938079168
+      ]
+    }
+  },
+  "development_unrecovered_quality": {
+    "teacher_top1_agreement": 0.875,
+    "gold_accuracy": 0.703125,
+    "baseline_gold_accuracy": 0.734375,
+    "gold_accuracy_delta": -0.03125,
+    "mean_nll": 1.6820041453359424,
+    "mean_baseline_nll": 1.5411076168247921,
+    "mean_teacher_kl_nats": 0.1654210654175028,
+    "queries": 128,
+    "articles": 16,
+    "confidence_intervals_95": {
+      "teacher_top1_agreement": [
+        0.828125,
+        0.9140625
+      ],
+      "gold_accuracy_delta": [
+        -0.0703125,
+        0.0078125
+      ],
+      "mean_teacher_kl_nats": [
+        0.12053845349364548,
+        0.21764041848870322
+      ]
+    }
+  },
+  "original_function_capacity": 1152,
+  "function": "function11",
+  "baseline_payload_bytes": 603500288,
+  "transformed_payload_bytes": 602172032,
+  "payload_saved_bytes": 1328256,
+  "selected_solution_sha256": "6fe3d239fb79f67eac4d1a147df89f197e2d6dc248e1ac3abb66e51d9f4de40e",
+  "selection_sha256": "a1545e51eedf5d549dd7178566210b3755910684318efa28f02a1feb56179c4a",
+  "test_data_accessed": false,
+  "development_live_recovery": {
+    "coefficient_updates": 774912,
+    "elapsed_seconds": 1.4205540850000489,
+    "saved_coefficients_unchanged": true,
+    "native_library_unchanged": true,
+    "persisted_checkpoint_exact": true
+  },
+  "elapsed_seconds": 296.081896925
+}
