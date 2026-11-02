@@ -55,7 +55,7 @@ class NativeFunctionProgram:
     def run(self, inputs):
         if type(inputs) is not dict or set(inputs) != {v['id'] for v in self.program['main']['inputs']}:
             raise ValueError('input names do not match function signature')
-        symbols = {}; arrays = []; counts = []
+        symbols = {}; arrays = []
         for spec in self.program['main']['inputs']:
             values, shape = _flatten(inputs[spec['id']])
             if len(values) > MAX_ELEMENTS or len(shape) != len(spec['shape']):
@@ -72,7 +72,7 @@ class NativeFunctionProgram:
                 raise ValueError('discrete inputs require integer indices')
             if spec['dtype'] == 'bool' and any(type(v) not in (int, bool) or v not in (0, 1) for v in values):
                 raise ValueError('Boolean inputs require zero/one values')
-            arrays.append((ctypes.c_double * len(values))(*values)); counts.append(len(values))
+            arrays.append((ctypes.c_double * len(values))(*values))
         if set(symbols) != set(self.program['symbols']):
             raise ValueError('shape symbols must be bound by inputs')
         dims = (ctypes.c_int64 * len(symbols))(*(symbols[s] for s in self.program['symbols']))
@@ -93,19 +93,24 @@ class NativeFunctionProgram:
                 zip(self.program['main']['outputs'], outputs, shapes)}
 
     def set_active_width(self, function, width):
-        if function not in self.functions or type(width) is not int:
+        if type(function) is not str or function not in self.functions or type(width) is not int:
             raise ValueError('unknown function/invalid width')
+        live = self.functions[function][1]['live']
+        if live is None or not 1 <= width <= live['capacity']:
+            raise ValueError('active width outside function capacity')
         with self._lock:
             if not self.lib.spark_fn_width(self.handle, self.functions[function][0], width):
                 raise ValueError(self._error())
 
     def set_function_coefficient(self, function, binding, index, value):
-        if function not in self.functions or type(index) is not int or index < 0 or type(value) not in (int, float) or not math.isfinite(value):
+        if type(function) is not str or function not in self.functions or type(binding) is not str or type(index) is not int or index < 0 or type(value) not in (int, float) or not math.isfinite(value):
             raise ValueError('invalid function coefficient update')
         live = self.functions[function][1]['live']
         if live is None or binding not in live['bindings']:
             raise ValueError('unknown mutable function binding')
-        parameter = self.parameters[live['bindings'][binding]][0]
+        parameter, spec = self.parameters[live['bindings'][binding]]
+        if index >= math.prod(spec['shape']):
+            raise ValueError('coefficient index outside function capture')
         with self._lock:
             if not self.lib.spark_fn_coefficient(self.handle, parameter, index, value):
                 raise ValueError(self._error())

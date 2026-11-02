@@ -49,6 +49,7 @@ def compile_and_test(args, report):
     from run_function_program import text_inputs
     inputs, _ = text_inputs(package, target, 'The capital of France is [MASK].')
     native_library = next((package / 'native').glob('*.so')); library_hash = digest(native_library)
+    library_mtime = native_library.stat().st_mtime_ns
     checks = {'runtime_only_environment': True, 'standalone_cli': True,
               'no_source_runtime_bundled': not any(package.rglob('*modernbert*')),
               'no_source_model_in_native_kernels': 'ModernBert' not in (package / 'program.cpp').read_text() and 'modernbert' not in (package / 'runtime/function_ir_runtime.hpp').read_text().lower()}
@@ -94,7 +95,7 @@ def compile_and_test(args, report):
     finally:
         path.write_text(original_program)
     checks['coefficient_file_unchanged'] = digest(package / 'coefficients.bin') == target['coefficients_sha256']
-    checks['live_updates_did_not_recompile'] = digest(native_library) == library_hash
+    checks['live_updates_did_not_recompile'] = digest(native_library) == library_hash and native_library.stat().st_mtime_ns == library_mtime
     report['checks'] = checks
     if not all(checks.values()): raise AssertionError('compiled program checks failed: ' + ', '.join(k for k, v in checks.items() if not v))
 
@@ -154,7 +155,6 @@ def parity(args, report):
         report[key] = max(r[key] for r in rows)
     if not all(r['allclose'] for r in rows) or report['top1_agreement'] != report['queries']:
         raise AssertionError('compiled target failed source parity gate')
-    (args.output / 'package/validation.json').write_text(json.dumps(report, indent=2) + '\n')
 
 
 def main():
@@ -174,6 +174,8 @@ def main():
         raise
     finally:
         report['elapsed_seconds'] = time.perf_counter() - start; save(args, report)
+        if args.phase == 'parity' and (args.output / 'package').is_dir():
+            (args.output / 'package/validation.json').write_text(json.dumps(report, indent=2) + '\n')
 
 
 if __name__ == '__main__':

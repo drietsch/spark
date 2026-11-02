@@ -34,7 +34,12 @@ def gelu(x, activation):
 
 def write_package(program, readers, directory, *, tokenizer=None):
     """Serialize reachable target captures and bundle only source-independent code."""
-    directory = Path(directory); directory.mkdir(parents=True, exist_ok=True)
+    directory = Path(directory)
+    if directory.exists() and any(directory.iterdir()):
+        require((directory / 'program.json').is_file() and
+                json.loads((directory / 'program.json').read_text()).get('format') == FORMAT,
+                'compiler output must be empty or an existing SPARK function package')
+    directory.mkdir(parents=True, exist_ok=True)
     target = optimize(program)
     with (directory / 'coefficients.bin.tmp').open('wb') as output:
         for parameter in target['parameters']:
@@ -64,6 +69,13 @@ def write_package(program, readers, directory, *, tokenizer=None):
         shutil.copytree(tokenizer, directory / 'tokenizer', dirs_exist_ok=True)
         target.setdefault('metadata', {})['tokenizer_sha256'] = digest(directory / 'tokenizer/tokenizer.json')
     (directory / 'program.json').write_text(json.dumps(target, indent=2, sort_keys=True, allow_nan=False) + '\n')
+    (directory / 'README.txt').write_text(
+        'Compiled SPARK function program.\n'
+        'Run numerical input: python tools/run_function_program.py --program . --inputs-json inputs.json\n'
+        'For text-enabled packages: python tools/run_function_program.py --program . --text "The capital of France is [MASK]."\n'
+        'Requires Python, a C++17 compiler and CPU BLAS (libblas.so.3); text input also needs tokenizers==0.21.4.\n'
+        'The target contains generated functions and generic numerical kernels. No source model framework is used for inference.\n'
+        'Coefficients and dense arithmetic remain. Numerical profile and source provenance are in program.json.\n')
     compile_program(directory)
     return target
 

@@ -103,6 +103,9 @@ class FunctionCompilerTests(unittest.TestCase):
                 self.assertEqual(values(), baseline)
                 with self.assertRaises(ValueError): runtime.set_active_width('function0', 9)
                 with self.assertRaises(ValueError): runtime.set_function_coefficient('function0', 'unknown', 0, 1.)
+                with self.assertRaises(ValueError): runtime.set_active_width('function0', 2**32 + 1)
+                with self.assertRaises(ValueError): runtime.set_function_coefficient('function0', 'readout_bias', 2**64, 1.)
+                self.assertEqual(values(), baseline)
             self.assertEqual(digest(Path(folder) / 'coefficients.bin'), checksum)
             with NativeFunctionProgram(folder) as fresh:
                 self.assertEqual(list(fresh.run({'x': points})['value']['values']), baseline)

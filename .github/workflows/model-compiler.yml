@@ -62,6 +62,30 @@ jobs:
           python -m venv "${RUNNER_TEMP}/compiler-runtime-only"
           "${RUNNER_TEMP}/compiler-runtime-only/bin/python" -m pip install tokenizers==0.21.4
           "${RUNNER_TEMP}/compiler-runtime-only/bin/python" tools/validate_model_compiler.py --phase compile --source-export "$SOURCE_DIRECTORY"
+      - name: Return compiled-program progress before reference testing
+        if: always()
+        env:
+          COMPILE_OUTCOME: ${{ steps.compile.outcome }}
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          root = Path('artifacts/model-compiler'); root.mkdir(parents=True, exist_ok=True)
+          path = root / 'runner-report.json'
+          r = json.loads(path.read_text()) if path.exists() else {}
+          success = os.environ['COMPILE_OUTCOME'] == 'success'
+          r.update(status='running' if success else 'failed', stage='reference-comparison' if success else 'compilation',
+                   compile_outcome=os.environ['COMPILE_OUTCOME'])
+          path.write_text(json.dumps(r, indent=2) + '\n')
+          PY
+          git add -f artifacts/model-compiler/runner-report.json
+          if test -f artifacts/model-compiler/compile-tests.json; then git add -f artifacts/model-compiler/compile-tests.json; fi
+          if test -f artifacts/model-compiler/package/program.json; then
+            cp artifacts/model-compiler/package/program.json artifacts/model-compiler/program.json
+            git add -f artifacts/model-compiler/program.json
+          fi
+          git commit -m 'Return compiled function program and runtime-only checks'
+          git push origin "HEAD:refs/heads/${GITHUB_REF_NAME}-results-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
       - name: Install pinned original-model reference dependencies
         if: steps.compile.outcome == 'success'
         run: |
